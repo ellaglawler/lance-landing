@@ -1,0 +1,751 @@
+import { Button } from "@/components/ui/button"
+import {
+  CheckCircle,
+  AlertCircle,
+  Target,
+  Clock,
+  TrendingUp,
+  Shield,
+  BarChart3,
+  FileText,
+  Palette,
+  Code,
+  Video,
+  ArrowRight,
+  Zap,
+  Star,
+  Cpu,
+  Receipt,
+  DollarSign,
+} from "lucide-react"
+import { Header } from "@/components/header"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
+export default function LanceLanding() {
+  return (
+    <div className="flex flex-col">
+      <Header />
+      {/* Spine Line */}
+      <div className="spine-line hidden lg:block"></div>
+
+      {/* Hero Section */}
+      <section className="relative py-32 flex items-center justify-center min-h-[80vh]">
+        {/* Wave Background - Now extended */}
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat wave-bg"
+          style={{
+            backgroundImage: "url('/hero-wave-bg.png')",
+            zIndex: 0
+          }}
+        ></div>
+
+        {/* Lance Logo */}
+        <div className="absolute -top-6 left-32 z-10">
+          <img src="/images/lance_white.png" alt="Lance" className="w-40 h-auto" />
+        </div>
+
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-6xl text-center">
+            {/* Beta Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full micro-badge text-blue-300 text-sm font-medium mb-8">
+              <Cpu className="h-4 w-4" />
+              <span>Lance AI</span>
+            </div>
+
+            <h1 className="h1-hero text-white mb-8">
+              Stop Chasing Clients. <br />
+              <span className="gradient-text-enhanced">Start Getting Paid.</span>
+            </h1>
+
+            <p className="text-xl mb-10 max-w-3xl mx-auto leading-relaxed" style={{ color: "#AEB6C4" }}>
+              Lance is your AI-powered collections agent: polite to your clients, relentless for you. Transform overdue
+              invoices into consistent cash flow.
+            </p>
+
+            {/* Enhanced Stats */}
+            <div className="grid gap-4 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
+              <div className="hero-stats-card">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-3xl font-bold text-gray-800">2×</div>
+                    <div className="text-sm text-gray-600 -mt-1">Faster Payments</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="hero-stats-card">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
+                    <Target className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-3xl font-bold text-gray-800">$500-1K</div>
+                    <div className="text-sm text-gray-600 -mt-1">Monthly Recovery</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="hero-stats-card">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
+                    <Clock className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-3xl font-bold text-gray-800">8+</div>
+                    <div className="text-sm text-gray-600 -mt-1">Hours Saved</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex w-full max-w-md gap-3">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  className="flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                />
+                <Button size="lg" className="cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap">
+                  Join Waitlist
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Scroll Indicator Section */}
+      <div className="relative z-10 pb-32" style={{ marginTop: "-8rem" }}>
+        <div className="scroll-indicator" aria-hidden="true"></div>
+      </div>
+
+      {/* Pain Section */}
+      <section className="relative bg-secondary-dark">
+        {/* Top Curve */}
+        <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-1px)' }}>
+          <svg 
+            viewBox="0 0 1200 120" 
+            preserveAspectRatio="none" 
+            className="relative block w-full h-[60px]" 
+            style={{ transform: 'rotateX(180deg)' }}
+          >
+            <path 
+              d="M600,112C268.63,112,0,69.39,0,69.39V0H1200V69.39C1200,69.39,931.37,112,600,112Z" 
+              className="fill-[#0B0F19]"
+            ></path>
+          </svg>
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0F19] to-[#0B0F19]/95"></div>
+        {/* AI Chip Pattern */}
+        <div className="absolute top-4 right-4 ai-chip-pattern opacity-20 w-32 h-32 rounded-lg"></div>
+
+        <div className="container mx-auto px-4 md:px-6 relative z-10 pt-20 pb-32">
+          <div className="mx-auto max-w-6xl text-center">
+            <h2 className="h2-section mb-6">The Pain Every Freelancer Knows</h2>
+            <p className="text-xl mb-16 max-w-3xl mx-auto" style={{ color: "#AEB6C4" }}>
+              Freelancing is freedom until late payments chain you down and steal your focus from what you love doing.
+            </p>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="depth-card-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-300">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
+                  <AlertCircle className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="h3-card mb-4 text-white">Endless Follow-ups</h3>
+                <p style={{ color: "#AEB6C4" }} className="leading-relaxed">
+                  Sending "just following up" emails that make you feel desperate and damage client relationships.
+                </p>
+              </div>
+
+              <div className="depth-card-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-300">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
+                  <Clock className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="h3-card mb-4 text-white">Waiting Game</h3>
+                <p style={{ color: "#AEB6C4" }} className="leading-relaxed">
+                  Waiting weeks or months to get paid while your bills pile up and stress levels skyrocket.
+                </p>
+              </div>
+
+              <div className="depth-card-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-300">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
+                  <DollarSign className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="h3-card mb-4 text-white">Lost Revenue</h3>
+                <p style={{ color: "#AEB6C4" }} className="leading-relaxed">
+                  Wondering if you'll ever see your money, leading to cash flow problems and sleepless nights.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* How Lance Works Section */}
+      <section className="py-20 relative section-blend">
+        {/* Gradient Overlay for smooth transition */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/90 to-[#0B0F19]"
+          style={{ zIndex: 1 }}
+        ></div>
+
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-7xl text-center">
+            <h1 className="text-5xl font-bold text-white mb-4">How Lance Works</h1>
+            <p className="text-xl text-gray-400 mb-16 max-w-3xl mx-auto">
+              Lance recovers overdue invoices for you—in just 3 simple steps.
+            </p>
+
+            {/* Spine Line */}
+            <div className="hidden lg:block absolute left-1/2 top-[25%] bottom-[10%] w-px bg-gradient-to-b from-blue-500/50 via-blue-500/25 to-transparent"></div>
+
+            {/* Connect Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32 relative">
+              <div className="text-left lg:pr-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
+                    1
+                  </div>
+                  <h2 className="text-4xl font-bold text-white">Connect to Google Workspace</h2>
+                </div>
+                <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+                  Link your account in seconds. Lance automatically scans your inbox for overdue invoices - securely and privately - so that you never waste time tracking payments manually.
+                </p>
+              </div>
+              <div className="relative">
+                {/* Window Controls */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  {/* Search Bar */}
+                  <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span className="text-gray-400 text-sm">inbox</span>
+                  </div>
+                </div>
+
+                {/* Gmail Interface */}
+                <div className="flex">
+                  {/* Sidebar */}
+                  <div className="w-48 pr-4">
+                    {/* Gmail Logo */}
+                    <div className="flex items-center gap-3 px-2 py-3 mb-2">
+                      <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-300" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                      </svg>
+                      <span className="text-gray-300 font-medium">Gmail</span>
+                    </div>
+
+                    {/* Sidebar Items */}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-300">
+                        <span>Inbox</span>
+                        <span className="bg-[#2A2D37] text-xs px-2 py-0.5 rounded">235</span>
+                      </div>
+                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                        <span>Starred</span>
+                      </div>
+                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                        <span>Snoozed</span>
+                      </div>
+                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                        <span>Sent</span>
+                      </div>
+                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                        <span>Drafts</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Email List */}
+                  <div className="flex-1 border-l border-gray-700">
+                    {/* Inbox Header */}
+                    <div className="px-4 py-2 border-b border-gray-700">
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium text-gray-300">Inobox</span>
+                      </div>
+                    </div>
+
+                    {/* Email Items */}
+                    <div className="divide-y divide-gray-700">
+                      {/* Selected Email */}
+                      <div className="px-4 py-3 bg-blue-600/20">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                            <span className="text-blue-400 text-sm font-medium">Invoice #123 is overdue</span>
+                          </div>
+                          <span className="text-blue-400 text-xs">10:23 AM</span>
+                        </div>
+                        <div className="mt-1 ml-8">
+                          <span className="text-blue-400 text-xs">Acme Corp</span>
+                        </div>
+                      </div>
+
+                      {/* Regular Email */}
+                      <div className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                            <span className="text-gray-300 text-sm">Weekly Report</span>
+                          </div>
+                          <span className="text-gray-400 text-xs">8:47 AM</span>
+                        </div>
+                        <div className="mt-1 ml-8">
+                          <span className="text-gray-400 text-xs">Alice Srown</span>
+                        </div>
+                      </div>
+
+                      {/* Another Email */}
+                      <div className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                            <span className="text-gray-300 text-sm">Project Update</span>
+                          </div>
+                          <span className="text-gray-400 text-xs">Yesterday</span>
+                        </div>
+                        <div className="mt-1 ml-8">
+                          <span className="text-gray-400 text-xs">David Lad</span>
+                        </div>
+                      </div>
+
+                      {/* One More Email */}
+                      <div className="px-4 py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                            <span className="text-gray-300 text-sm">Meeting Tomorrow</span>
+                          </div>
+                          <span className="text-gray-400 text-xs">Feb 16</span>
+                        </div>
+                        <div className="mt-1 ml-8">
+                          <span className="text-gray-400 text-xs">Richard Clone</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Follow Up Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32 relative">
+            <div className="lg:order-2 text-left lg:pl-16">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
+                  2
+                </div>
+                <h2 className="text-4xl font-bold text-white">Automated Follow Ups</h2>
+              </div>
+              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+                Lance sends friendly, professional reminders for you—persistent enough to recover overdue payments, yet polite enough to keep client relationships strong.
+              </p>
+            </div>
+            <div className="lg:order-1 relative">
+              {/* Window Controls */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                {/* Search Bar */}
+                <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <span className="text-gray-400 text-sm">compose</span>
+                </div>
+              </div>
+
+              {/* Email Interface */}
+              <div className="flex">
+                {/* Sidebar */}
+                <div className="w-48 pr-4">
+                  {/* Gmail Logo */}
+                  <div className="flex items-center gap-3 px-2 py-3 mb-2">
+                    <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-300" fill="currentColor">
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                    </svg>
+                    <span className="text-gray-300 font-medium">Gmail</span>
+                  </div>
+
+                  {/* Sidebar Items */}
+                  <div className="space-y-1">
+                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                      <span>Inbox</span>
+                    </div>
+                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                      <span>Drafts</span>
+                    </div>
+                    <div className="flex items-center px-3 py-2 bg-blue-600/20 rounded-lg text-blue-400 text-sm">
+                      <span>Compose</span>
+                    </div>
+                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                      <span>Sent</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Email Compose Area */}
+                <div className="flex-1 border-l border-gray-700">
+                  <div className="px-4 py-3 border-b border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-sm w-12">To:</span>
+                      <span className="text-gray-300 text-sm">sarah@acmecorp.com</span>
+                    </div>
+                  </div>
+
+                  <div className="px-4 py-3 border-b border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-sm w-12">Subject:</span>
+                      <span className="text-gray-300 text-sm">Following up on Invoice #123</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-3 text-sm text-left">
+                    <p className="text-gray-300">Hi Sarah,</p>
+                    
+                    <p className="text-gray-300">I hope this email finds you well. I'm following up on invoice #123 for $2,500, which was due on February 15th.</p>
+                    
+                    <div className="bg-blue-600/20 rounded-lg p-3 my-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                        <span className="text-blue-400 text-xs font-medium">Payment Summary</span>
+                      </div>
+                      <div className="space-y-1 ml-3 text-blue-300 text-xs">
+                        <p>Amount Due: $2,500</p>
+                        <p>Due Date: February 15, 2024</p>
+                        <p>Days Overdue: 5</p>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-300">Could you please provide an update on when we can expect payment?</p>
+                    
+                    <p className="text-gray-300">Best regards,<br />Alex</p>
+                  </div>
+
+                  {/* Email Actions */}
+                  <div className="px-4 flex items-center gap-2 pt-3 border-t border-gray-700">
+                    <button className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700">
+                      Send
+                    </button>
+                    <button className="p-1.5 text-gray-400 hover:text-gray-300">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Get Paid Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative">
+            <div className="text-left lg:pr-16">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
+                  3
+                </div>
+                <h2 className="text-4xl font-bold text-white">Get Paid Stress Free</h2>
+              </div>
+              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+                Sit back and watch the payments roll in. Lance's AI-powered system recovers overdue invoices quickly and reliably-boosting your cash flow without the headache of manual chasing.
+              </p>
+            </div>
+            <div className="relative">
+              {/* Window Controls */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                {/* Title Bar */}
+                <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-gray-400 text-sm">Payment Analytics</span>
+                </div>
+              </div>
+
+              <div className="flex">
+                {/* Sidebar */}
+                <div className="w-48 pr-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center px-3 py-2 bg-blue-600/20 rounded-lg text-blue-400 text-sm">
+                      <span>Overview</span>
+                    </div>
+                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                      <span>Invoices</span>
+                    </div>
+                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                      <span>Reports</span>
+                    </div>
+                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                      <span>Settings</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 border-l border-gray-700">
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-3 gap-2 p-3">
+                    <div className="bg-[#2A2D37] rounded-lg p-2">
+                      <div className="text-[10px] text-gray-400">Recovery Rate</div>
+                      <div className="text-sm font-bold text-green-400">94%</div>
+                      <div className="text-[10px] text-green-400">↑ 12%</div>
+                    </div>
+                    <div className="bg-[#2A2D37] rounded-lg p-2">
+                      <div className="text-[10px] text-gray-400">Payment Time</div>
+                      <div className="text-sm font-bold text-blue-400">4.2d</div>
+                      <div className="text-[10px] text-blue-400">↓ 3d</div>
+                    </div>
+                    <div className="bg-[#2A2D37] rounded-lg p-2">
+                      <div className="text-[10px] text-gray-400">Recovered</div>
+                      <div className="text-sm font-bold text-purple-400">$12.4k</div>
+                      <div className="text-[10px] text-purple-400">30d</div>
+                    </div>
+                  </div>
+
+                  {/* Recent Payments */}
+                  <div className="px-3 py-2">
+                    <div className="text-xs font-medium text-gray-300 mb-2">Recent Payments</div>
+                    <div className="space-y-1.5">
+                      <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
+                        <div className="flex justify-between items-center">
+                          <span className="text-green-400 text-xs font-medium">Invoice #123</span>
+                          <span className="text-green-400 text-xs">$2,500</span>
+                        </div>
+                        <div className="text-[10px] text-gray-400">Acme Corp • 2h ago</div>
+                      </div>
+                      <div className="bg-[#2A2D37] rounded-lg p-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-300 text-xs">Invoice #122</span>
+                          <span className="text-gray-300 text-xs">$1,800</span>
+                        </div>
+                        <div className="text-[10px] text-gray-400">TechStart • Yesterday</div>
+                      </div>
+                      <div className="bg-[#2A2D37] rounded-lg p-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-300 text-xs">Invoice #121</span>
+                          <span className="text-gray-300 text-xs">$3,200</span>
+                        </div>
+                        <div className="text-[10px] text-gray-400">DevCo • 3d ago</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Follow-up Performance */}
+                  <div className="px-3 py-2 border-t border-gray-700">
+                    <div className="text-xs font-medium text-gray-300 mb-2">Follow-up Success</div>
+                    <div className="bg-[#2A2D37] rounded-lg p-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="h-1.5 rounded-full bg-blue-600 w-3/4"></div>
+                        <span className="text-[10px] text-gray-400">75%</span>
+                      </div>
+                      <div className="text-[10px] text-gray-400">3/4 follow-ups successful</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Who It's For */}
+      <section className="py-32 bg-primary-dark relative">
+        {/* AI Chip Pattern */}
+        <div className="absolute top-4 right-4 ai-chip-pattern opacity-20 w-32 h-32 rounded-lg"></div>
+
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-6xl text-center">
+            <h2 className="h2-section mb-4">Built Exclusively for High-Earning Freelancers</h2>
+            <p className="text-xl text-blue-400 font-semibold mb-16">Designed for Freelancers Ready to Level Up to Bigger Projects</p>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-3xl gradient-primary flex items-center justify-center shadow-xl">
+                  <Palette className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="h3-card mb-4 text-white">Creative Professionals</h3>
+                <p className="text-lg" style={{ color: "#AEB6C4" }}>
+                  🎨 Designers, Copywriters, and Marketers
+                </p>
+              </div>
+              <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-3xl gradient-primary flex items-center justify-center shadow-xl">
+                  <Code className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="h3-card mb-4 text-white">Technical Experts</h3>
+                <p className="text-lg" style={{ color: "#AEB6C4" }}>
+                  💻 Developers, Web Designers and Consultants
+                </p>
+              </div>
+              <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-3xl gradient-primary flex items-center justify-center shadow-xl">
+                  <Video className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="h3-card mb-4 text-white">Media Creators</h3>
+                <p className="text-lg" style={{ color: "#AEB6C4" }}>
+                  🎥 Videographers, Photographers, and Event Pros
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <section className="py-32 bg-primary-dark relative">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="h2-section mb-4">Frequently Asked Questions</h2>
+            <p className="text-xl mb-16" style={{ color: "#AEB6C4" }}>
+              Everything you need to know about Lance and how it works.
+            </p>
+
+            <Accordion type="single" collapsible className="text-left">
+              <AccordionItem value="item-1" className="border-b border-blue-500/20">
+                <AccordionTrigger className="text-white hover:text-blue-400 text-lg py-6">
+                  How does Lance protect my data?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-400 pb-6 text-lg">
+                  Lance uses bank-level encryption and secure servers to protect your data. We never share your information with third parties, and all transactions are GDPR and CCPA compliant to ensure your privacy.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2" className="border-b border-blue-500/20">
+                <AccordionTrigger className="text-white hover:text-blue-400 text-lg py-6">
+                  How much time can Lance save me?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-400 pb-6 text-lg">
+                  Lance can save you 5–10 hours per week by automating follow-ups and payment reminders. This lets you focus on client work instead of chasing overdue invoices.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3" className="border-b border-blue-500/20">
+                <AccordionTrigger className="text-white hover:text-blue-400 text-lg py-6">
+                  Can I customize Lance's follow-up strategy?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-400 pb-6 text-lg">
+                  Yes! You can customize the timing, tone, and frequency of follow-ups. Lance learns from your preferences and client interactions to keep things professional and aligned with your style.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4" className="border-b border-blue-500/20">
+                <AccordionTrigger className="text-white hover:text-blue-400 text-lg py-6">
+                  What payment methods does Lance support?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-400 pb-6 text-lg">
+                  Lance supports credit cards, debit cards, PayPal, ACH transfers, and other popular payment methods. This makes it easier for clients to pay you quickly.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5" className="border-b border-blue-500/20">
+                <AccordionTrigger className="text-white hover:text-blue-400 text-lg py-6">
+                  Is Lance suitable for freelancers and small businesses?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-400 pb-6 text-lg">
+                  Absolutely. Lance is built for freelancers, consultants, and small businesses who want to automate follow-ups and get paid faster—without sounding pushy or losing client relationships.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-32 bg-[#141828] relative">
+        {/* Invoice Checkoff Background */}
+        <div className="absolute inset-0">
+          <Receipt className="invoice-checkoff w-24 h-24 top-20 left-20" style={{ animationDelay: "0s" }} />
+          <Receipt className="invoice-checkoff w-20 h-20 top-40 right-32" style={{ animationDelay: "1s" }} />
+          <Receipt className="invoice-checkoff w-28 h-28 bottom-32 left-1/4" style={{ animationDelay: "2s" }} />
+          <Receipt className="invoice-checkoff w-16 h-16 bottom-20 right-20" style={{ animationDelay: "0.5s" }} />
+        </div>
+
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-5xl text-center">
+            <h1 className="h1-hero mb-8 text-white">
+              Start Collecting Without the <span className="gradient-text">Awkward Conversations</span>
+            </h1>
+
+            <p className="text-xl mb-8" style={{ color: "#AEB6C4" }}>
+              Join thousands of freelancers who've transformed their payment process with Lance.
+            </p>
+
+            {/* CTA Input */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex w-full max-w-md gap-3">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  className="flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                />
+                <Button size="lg" className="cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap">
+                  Join Waitlist
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

@@ -1,0 +1,373 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+/* Typography System */
+.h1-hero {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.h2-section {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: white;
+}
+
+.h3-card {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .h1-hero {
+    font-size: 48px;
+  }
+  .h2-section {
+    font-size: 36px;
+  }
+  .h3-card {
+    font-size: 20px;
+  }
+}
+
+/* Brand Elements */
+.gradient-primary {
+  background: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Updated Hero Stats Cards */
+.hero-stats-card {
+  background: #f5f7fa;
+  border-radius: 12px;
+  box-shadow: inset 0 0 8px rgba(0, 198, 255, 0.15);
+  padding: 1rem 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.hero-stats-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Updated CTA Button */
+.cta-button-primary {
+  background: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
+  transition: all 0.3s ease;
+}
+
+.cta-button-primary:hover {
+  box-shadow: 0 0 15px rgba(0, 198, 255, 0.3);
+  opacity: 0.95;
+}
+
+/* Enhanced Gradient Text for H1 */
+.gradient-text-enhanced {
+  background: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.3), 0 0 40px rgba(0, 198, 255, 0.2);
+}
+
+/* Background System */
+.bg-primary-dark {
+  background: #0b0f19;
+}
+
+.bg-secondary-dark {
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+}
+
+.bg-solution-gradient {
+  background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+}
+
+/* Section Transitions */
+.section-blend {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-blend::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, rgba(11, 15, 25, 0.9));
+  pointer-events: none;
+}
+
+/* Wave Background */
+.wave-bg {
+  background-attachment: fixed;
+  background-size: cover;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Geometric AI Chip Pattern */
+.ai-chip-pattern {
+  background-image: linear-gradient(45deg, rgba(0, 102, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0, 102, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0, 198, 255, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0, 198, 255, 0.03) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  animation: chip-shift 25s linear infinite;
+}
+
+@keyframes chip-shift {
+  0% {
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+  100% {
+    background-position: 20px 20px, 20px 30px, 30px 10px, 10px 20px;
+  }
+}
+
+/* Geometric Grid */
+.geometric-grid {
+  background-image: linear-gradient(rgba(0, 102, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 102, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Depth Cards */
+.depth-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.depth-card-dark {
+  background: rgba(11, 15, 25, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Section Transitions */
+.angled-divider {
+  position: relative;
+}
+
+.angled-divider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: transparent;
+  clip-path: polygon(0 100%, 100% 0%, 100% 100%);
+}
+
+/* Spine Line */
+.spine-line {
+  position: fixed;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 102, 255, 0.3) 0%,
+    rgba(0, 198, 255, 0.5) 50%,
+    rgba(0, 232, 158, 0.3) 100%
+  );
+  z-index: 10;
+  opacity: 0.6;
+}
+
+/* Floating Elements */
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Micro Badge */
+.micro-badge {
+  background: rgba(0, 102, 255, 0.1);
+  border: 1px solid rgba(0, 102, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* Invoice Checkoff Animation */
+.invoice-checkoff {
+  position: absolute;
+  opacity: 0.1;
+  animation: checkoff 3s ease-in-out infinite;
+}
+
+@keyframes checkoff {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.05);
+  }
+}
+
+/* Transition Headlines */
+.transition-headline {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.transition-headline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 102, 255, 0.5), transparent);
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+  position: relative;
+  width: 30px;
+  height: 50px;
+  margin: 0 auto;  /* Changed from 6rem to 0 since we're using padding */
+  opacity: 0.8;  /* Added slight transparency */
+}
+
+.scroll-indicator::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 30px;
+  height: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  transform: translateX(-50%);
+}
+
+.scroll-indicator::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation: scrollIndicator 2s infinite;
+}
+
+@keyframes scrollIndicator {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
