@@ -106,9 +106,6 @@ export const metadata: Metadata = {
 export default function LanceLanding() {
   return (
     <div className="flex flex-col pt-24">
-      {/* Spine Line */}
-      <div className="spine-line hidden lg:block"></div>
-
       {/* Hero Section */}
       <section className="relative py-32 flex items-center justify-center min-h-[80vh]">
         {/* Wave Background - Main background that spans all sections */}
