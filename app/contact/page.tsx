@@ -11,6 +11,7 @@ import {
   ChevronLeft,
 } from "lucide-react"
 import { Header } from "@/components/header"
+import { WaitlistForm } from "@/components/waitlist-form"
 import Link from "next/link"
 
 export default function ContactPage() {
@@ -129,10 +130,7 @@ export default function ContactPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Schedule a Demo
-                </Button>
+                <WaitlistForm variant="demo" />
               </div>
             </div>
           </div>
