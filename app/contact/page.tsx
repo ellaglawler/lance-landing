@@ -49,11 +49,11 @@ export default function ContactPage() {
             </div>
 
             <h1 className="h1-hero text-white mb-8">
-              Let's Build Something <span className="gradient-text-enhanced">Brilliant</span>
+              Stop Chasing. <span className="gradient-text-enhanced">Start Collecting.</span>
             </h1>
 
             <p className="text-xl mb-10 max-w-3xl mx-auto leading-relaxed" style={{ color: "#AEB6C4" }}>
-              Whether you're scaling growth, solving payment challenges, or just exploring what AI-driven collections can do—Lance is ready to connect.
+              Whether you're tired of awkward follow-up emails, losing sleep over late payments, or just want to focus on your craft instead of admin, Lance is your AI collections agent.
             </p>
           </div>
         </div>
@@ -89,14 +89,14 @@ export default function ContactPage() {
                 </div>
                 <h3 className="h3-card mb-4 text-white text-center">Email Us</h3>
                 <p className="text-center mb-6" style={{ color: "#AEB6C4" }}>
-                  Prefer direct contact? Drop us a line, we usually respond within 1-2 business days.
+                  Have questions about how Lance works? Drop us a line, we usually respond within 1-2 business days.
                 </p>
                 <div className="text-center">
                   <a 
-                    href="mailto:team@lance.ai" 
+                    href="mailto:team@lanceos.ai" 
                     className="text-blue-400 hover:text-blue-300 text-lg font-medium transition-colors"
                   >
-                    team@lance.ai
+                    team@lanceos.ai
                   </a>
                 </div>
               </div>
@@ -108,21 +108,24 @@ export default function ContactPage() {
                 </div>
                 <h3 className="h3-card mb-4 text-white text-center">Talk to Sales</h3>
                 <p className="text-center mb-6" style={{ color: "#AEB6C4" }}>
-                  Ready to scale? Our growth specialists can walk you through a personalized demo or help you get started fast.
+                  Ready to stop chasing clients? Our team can walk you through how Lance recovers your overdue invoices.
                 </p>
                 <div className="text-center">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105">
-                    Contact Sales
-                  </Button>
+                <a 
+                    href="mailto:sales@lanceos.ai" 
+                    className="text-blue-400 hover:text-blue-300 text-lg font-medium transition-colors"
+                  >
+                    sales@lanceos.ai
+                  </a>
                 </div>
               </div>
             </div>
 
             {/* Demo Section */}
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-blue-400 mb-4">Prefer to See It In Action?</h2>
+              <h2 className="text-3xl font-bold text-blue-400 mb-4">See Your AI Collections Agent in Action</h2>
               <p className="text-xl mb-8" style={{ color: "#AEB6C4" }}>
-                We built Lance to make collections effortless, and we'd love to show you how.
+                Watch how Lance politely recovers your overdue invoices while protecting your client relationships.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -136,90 +139,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-32 bg-primary-dark relative">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="h2-section mb-4">Common Questions</h2>
-            <p className="text-xl mb-16" style={{ color: "#AEB6C4" }}>
-              Quick answers to help you get started with Lance.
-            </p>
-
-            <div className="grid gap-6 md:grid-cols-2 text-left">
-              <div className="depth-card-dark rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                    <Clock className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">How quickly can I get started?</h3>
-                </div>
-                <p style={{ color: "#AEB6C4" }}>
-                  Lance connects to your Google Workspace in under 2 minutes. Start recovering payments within the first hour.
-                </p>
-              </div>
-
-              <div className="depth-card-dark rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                    <MessageSquare className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">Can I customize the follow-up messages?</h3>
-                </div>
-                <p style={{ color: "#AEB6C4" }}>
-                  Absolutely. Lance learns your communication style and lets you customize timing, tone, and frequency.
-                </p>
-              </div>
-
-              <div className="depth-card-dark rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                    <Cpu className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">How does the AI work?</h3>
-                </div>
-                <p style={{ color: "#AEB6C4" }}>
-                  Lance scans your inbox for overdue invoices and sends personalized, professional follow-ups that maintain client relationships.
-                </p>
-              </div>
-
-              <div className="depth-card-dark rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                    <Phone className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">What if I need help?</h3>
-                </div>
-                <p style={{ color: "#AEB6C4" }}>
-                  Our support team is available via email and phone. We typically respond within 1-2 business days.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-32 bg-[#141828] relative">
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="h2-section mb-8 text-white">
-              Ready to Transform Your <span className="gradient-text">Payment Process?</span>
-            </h2>
-            <p className="text-xl mb-8" style={{ color: "#AEB6C4" }}>
-              Join thousands of freelancers who've automated their collections with Lance.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105">
-                Get Started Today
-              </Button>
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105">
-                Learn More
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 } 
