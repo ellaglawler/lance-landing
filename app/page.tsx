@@ -36,16 +36,16 @@ export default function LanceLanding() {
 
       {/* Hero Section */}
       <section className="relative py-32 flex items-center justify-center min-h-[80vh]">
-        {/* Wave Background - Now extended */}
+        {/* Wave Background - Main background that spans all sections */}
         <div
-          className="fixed inset-0 bg-cover bg-center bg-no-repeat wave-bg"
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: "url('/hero-wave-bg.png')",
-            zIndex: 0
+            zIndex: -1
           }}
         ></div>
 
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="container mx-auto px-4 md:px-6 relative">
           <div className="mx-auto max-w-6xl text-center">
             {/* Beta Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full micro-badge text-blue-300 text-sm font-medium mb-8">
@@ -124,8 +124,19 @@ export default function LanceLanding() {
         <div className="scroll-indicator" aria-hidden="true"></div>
       </div>
 
+      {/* Section Break - After Hero */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Pain Section */}
-      <section className="relative bg-secondary-dark">
+      <section className="relative py-24">
         {/* Top Curve */}
         <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-1px)' }}>
           <svg 
@@ -141,12 +152,9 @@ export default function LanceLanding() {
           </svg>
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0F19] to-[#0B0F19]/95"></div>
-        {/* AI Chip Pattern */}
-        <div className="absolute top-4 right-4 ai-chip-pattern opacity-20 w-32 h-32 rounded-lg"></div>
-
-        <div className="container mx-auto px-4 md:px-6 relative z-10 pt-20 pb-32">
-          <div className="mx-auto max-w-6xl text-center">
+        <div className="absolute inset-0 bg-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="mx-auto max-w-6xl text-center py-12">
             <h2 className="h2-section mb-6">The Pain Every Freelancer Knows</h2>
             <p className="text-xl mb-16 max-w-3xl mx-auto" style={{ color: "#AEB6C4" }}>
               Freelancing is freedom until late payments chain you down and steal your focus from what you love doing.
@@ -199,14 +207,9 @@ export default function LanceLanding() {
       </div>
 
       {/* How Lance Works Section */}
-      <section className="py-20 relative section-blend">
-        {/* Gradient Overlay for smooth transition */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/90 to-[#0B0F19]"
-          style={{ zIndex: 1 }}
-        ></div>
-
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
           <div className="mx-auto max-w-7xl text-center">
             <h1 className="text-5xl font-bold text-white mb-4">How Lance Works</h1>
             <p className="text-xl text-gray-400 mb-16 max-w-3xl mx-auto">
