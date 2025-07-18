@@ -72,16 +72,19 @@ export default function PrivacyPage() {
               <li>Request access to or deletion of your data</li>
               <li>Opt out of non-essential communications</li>
             </ul>
-            <p className="mb-6">
-              To exercise your rights, contact us at{" "}
-              <a 
-                href="mailto:legal@lanceos.ai" 
-                className="text-primary hover:underline"
-              >
-                legal@lanceos.ai
-              </a>
-              .
-            </p>
+            <div className="border-t pt-6 mt-8">
+              <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
+              <p className="mb-6">
+                To exercise your rights, contact us at{" "}
+                <a 
+                  href="mailto:legal@lanceos.ai" 
+                  className="text-primary hover:underline"
+                >
+                  legal@lanceos.ai
+                </a>
+                .
+              </p>
+            </div>
 
             <div className="border-t pt-6 mt-8">
               <p className="text-center text-lg font-medium">
