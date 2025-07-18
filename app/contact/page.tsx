@@ -2,12 +2,7 @@ import { Button } from "@/components/ui/button"
 import {
   Mail,
   Phone,
-  ArrowLeft,
   Cpu,
-  Clock,
-  MessageSquare,
-  Calendar,
-  Play,
   ChevronLeft,
 } from "lucide-react"
 import { Header } from "@/components/header"
