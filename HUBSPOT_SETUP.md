@@ -19,8 +19,13 @@ This guide will help you set up the HubSpot Forms API integration for the Lance 
 
 3. **Configure form fields**
    - Add an **Email** field (required)
-   - Set field type to "Email"
-   - Make it required
+     - Set field type to "Email"
+     - Make it required
+   - Add a **Source** field (hidden)
+     - Set field type to "Single-line text"
+     - Set the field name to "source"
+     - Check "Make this field hidden" to hide it from users
+     - Set "Default value" to "waitlist"
    - Optionally add additional fields like:
      - First Name (text)
      - Company (text)
@@ -104,7 +109,8 @@ After publishing, you'll need two pieces of information:
 2. **"Failed to submit to HubSpot" error**
    - Verify Portal ID and Form GUID are correct
    - Check that the form is published and active
-   - Ensure the form field name matches "email"
+   - Ensure the form field names match: "email" and "source"
+   - Verify the "source" field has "waitlist" as the default value
 
 3. **CORS errors**
    - The HubSpot Forms API should handle CORS automatically

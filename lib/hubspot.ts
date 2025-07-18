@@ -35,7 +35,8 @@ export async function submitToHubspot(email: string): Promise<HubSpotSubmissionR
   
   const payload = {
     fields: [
-      { name: 'email', value: email }
+      { name: 'email', value: email },
+      { name: 'source', value: 'waitlist' }
     ],
     context: {
       pageUri: typeof window !== 'undefined' ? window.location.href : '',
