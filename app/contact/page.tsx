@@ -7,6 +7,82 @@ import {
 } from "lucide-react"
 import { WaitlistForm } from "@/components/waitlist-form"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Contact Lance - Schedule Demo & Get Support | AI Collections Agent',
+  description: 'Get in touch with Lance to schedule a demo, ask questions, or get support. See how our AI collections agent can recover your overdue invoices and transform your payment process.',
+  keywords: [
+    'contact lance',
+    'schedule demo',
+    'lance support',
+    'AI collections demo',
+    'freelancer payment demo',
+    'invoice collection demo',
+    'lance customer support',
+    'freelancer payment help',
+    'AI collections agent demo',
+    'payment recovery demo',
+    'lance sales team',
+    'freelancer business consultation',
+    'automated collections demo',
+    'payment automation demo',
+    'lance customer service',
+    'freelancer payment solutions demo',
+    'AI for freelancers demo',
+    'payment recovery consultation',
+    'lance business support',
+    'freelancer payment automation demo'
+  ],
+  openGraph: {
+    title: 'Contact Lance - Schedule Demo & Get Support',
+    description: 'Schedule a demo to see how Lance can recover your overdue invoices. Get support and learn how our AI collections agent transforms payment processes.',
+    type: 'website',
+    url: 'https://lanceos.ai/contact',
+    siteName: 'Lance',
+    images: [
+      {
+        url: '/images/lance-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Contact Lance - AI Collections Agent Demo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact Lance - Schedule Demo & Get Support',
+    description: 'Schedule a demo to see how Lance can recover your overdue invoices and transform your payment process.',
+    images: ['/images/lance-logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://lanceos.ai/contact',
+  },
+  authors: [{ name: 'Lance Team' }],
+  category: 'Business & Finance',
+  other: {
+    'application-name': 'Lance',
+    'apple-mobile-web-app-title': 'Lance Contact',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0B0F19',
+    'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#0B0F19',
+  },
+}
 
 export default function ContactPage() {
   return (
