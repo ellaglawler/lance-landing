@@ -6,7 +6,7 @@ import { CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { submitToHubspot, validateEmail } from "@/lib/hubspot"
 
 interface WaitlistFormProps {
-  variant?: "hero" | "cta"
+  variant?: "hero" | "cta" | "demo"
   className?: string
 }
 
@@ -44,9 +44,9 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
     setMessage("")
 
     try {
-      await submitToHubspot(email)
+      await submitToHubspot(email, getSource())
       setStatus("success")
-      setMessage("Thanks! You've been added to our waitlist.")
+      setMessage(getSuccessMessage())
       setEmail("")
     } catch (error) {
       setStatus("error")
@@ -63,6 +63,41 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
   const buttonClasses = variant === "hero"
     ? "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
     : "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
+
+  const getButtonText = () => {
+    switch (variant) {
+      case "demo":
+        return "Schedule Demo"
+      case "hero":
+      case "cta":
+      default:
+        return "Join Waitlist"
+    }
+  }
+
+  const getSuccessMessage = () => {
+    switch (variant) {
+      case "demo":
+        return "Thanks! We'll be in touch to schedule your demo."
+      case "hero":
+      case "cta":
+      default:
+        return "Thanks! You've been added to our waitlist."
+    }
+  }
+
+  const getSource = () => {
+    switch (variant) {
+      case "demo":
+        return "demo"
+      case "hero":
+        return "waitlist"
+      case "cta":
+        return "waitlist"
+      default:
+        return "waitlist"
+    }
+  }
 
   return (
     <div className={className}>
@@ -88,7 +123,7 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
             ) : status === "success" ? (
               <CheckCircle className="h-5 w-5" />
             ) : (
-              "Join Waitlist"
+              getButtonText()
             )}
           </Button>
         </div>

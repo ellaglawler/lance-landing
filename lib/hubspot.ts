@@ -22,7 +22,7 @@ function getCookie(name: string): string | undefined {
 /**
  * Submit email to HubSpot form
  */
-export async function submitToHubspot(email: string): Promise<HubSpotSubmissionResponse> {
+export async function submitToHubspot(email: string, source: string = 'waitlist'): Promise<HubSpotSubmissionResponse> {
   const portalId = process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID;
   const formGuid = process.env.NEXT_PUBLIC_HUBSPOT_FORM_GUID;
 
@@ -36,7 +36,7 @@ export async function submitToHubspot(email: string): Promise<HubSpotSubmissionR
   const payload = {
     fields: [
       { name: 'email', value: email },
-      { name: 'source', value: 'waitlist' }
+      { name: 'source', value: source }
     ],
     context: {
       pageUri: typeof window !== 'undefined' ? window.location.href : '',
