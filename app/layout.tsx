@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Footer } from '@/components/footer'
-import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
   title: 'Lance - Smart Financial Tools',
@@ -30,7 +29,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex-1">
-            <Header />
             {children}
           </div>
           <Footer />
