@@ -44,7 +44,7 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
     setMessage("")
 
     try {
-      await submitToHubspot(email)
+      await submitToHubspot(email, getSource())
       setStatus("success")
       setMessage(getSuccessMessage())
       setEmail("")
@@ -83,6 +83,19 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
       case "cta":
       default:
         return "Thanks! You've been added to our waitlist."
+    }
+  }
+
+  const getSource = () => {
+    switch (variant) {
+      case "demo":
+        return "demo"
+      case "hero":
+        return "waitlist"
+      case "cta":
+        return "waitlist"
+      default:
+        return "waitlist"
     }
   }
 
