@@ -1,187 +1,187 @@
-import { Header } from "@/components/header"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Shield, Target, Users, Heart } from "lucide-react"
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col pt-24">
-      <Header />
-      
-      {/* Wave Background */}
-      <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat wave-bg"
-        style={{
-          backgroundImage: "url('/hero-wave-bg.png')",
-          zIndex: 0
-        }}
-      ></div>
-      
+    <main className="pt-32 pb-16">
       {/* Hero Section */}
-      <section className="relative py-24">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="wave-bg absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20">
-            <div className="wave-animation" />
-          </div>
-        </div>
-        <div className="container relative mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-8">
-              Making Freelancing <span className="gradient-text">Work Better</span>
-            </h1>
-            <p className="text-xl text-gray-400 mb-12 leading-relaxed">
-              Lance is revolutionizing how freelancers handle payment collection, using AI to transform the way independent professionals get paid.
+      <div className="relative bg-gradient-to-b from-primary/10 to-background pb-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Making Freelancing <span className="text-primary">Work Better</span></h1>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary">
+              The teammate who works as hard as you do — without burning out.
+            </h2>
+            <p className="text-xl mb-8 text-muted-foreground">
+              You've earned the right to focus on your craft. We'll handle the rest — 24/7.
+            </p>
+            <p className="text-lg mb-8 text-muted-foreground">
+              At Lance, we're reimagining what it means to work for yourself — without working <em>alone</em>.
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Mission Section */}
-      <section className="py-24 bg-white/5">
+      {/* The Problem Section */}
+      <div className="container mx-auto px-4 md:px-6 py-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-lg text-muted-foreground mb-8">
+            We know the grind: chasing clients. Writing proposals late at night. Following up on unpaid invoices. 
+            Scheduling endless meetings. Spending more time managing your business than creating.
+          </p>
+          <p className="text-lg mb-8">
+            We've been there.
+          </p>
+          <p className="text-lg text-muted-foreground mb-12">
+            So we built something better: a loyal teammate that handles the busywork — right inside your inbox 
+            and calendar — so you can focus on what really matters.
+          </p>
+          <div className="bg-primary/10 p-8 rounded-lg">
+            <h3 className="text-2xl font-semibold mb-4">Our Mission</h3>
+            <p className="text-xl font-medium">
+              Free freelancers from busywork so they can focus on their craft.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Why We Built Lance Section */}
+      <div className="bg-muted py-16">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Our Mission</h2>
-              <p className="text-xl text-gray-400">
-                We believe freelancers should focus on what they do best - creating amazing work for their clients. 
-                That's why we've built Lance to handle the challenging task of payment collection, using advanced AI 
-                to maintain professional relationships while ensuring you get paid on time.
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold mb-8">Why We Built Lance</h2>
+            <blockquote className="text-2xl font-medium italic mb-8 pl-4 border-l-4 border-primary">
+              Too many freelancers treat themselves like their own worst‑paid employee.
+            </blockquote>
+            <p className="text-lg text-muted-foreground mb-8">
+              We've been in your shoes. We've launched viral products, led growth at world‑class platforms, 
+              advised startups, and run our own creative shops. And through it all, we spent more time sending 
+              follow‑ups and wrangling contracts than creating.
+            </p>
+            <p className="text-lg text-muted-foreground mb-8">
+              Existing tools (Trello, Notion, QuickBooks) are scattered, manual, and designed for 
+              <em>small businesses</em>, not <em>solo creators</em>.
+            </p>
+            <p className="text-lg mb-6">So we built the teammate we wished we had:</p>
+            <ul className="space-y-4 mb-8">
+              <li className="flex items-center text-lg">
+                <span className="text-green-500 mr-2">✅</span>
+                Drafts & sends client emails, proposals & contracts
+              </li>
+              <li className="flex items-center text-lg">
+                <span className="text-green-500 mr-2">✅</span>
+                Tracks unpaid invoices & reminds clients
+              </li>
+              <li className="flex items-center text-lg">
+                <span className="text-green-500 mr-2">✅</span>
+                Books meetings & keeps your calendar in sync
+              </li>
+              <li className="flex items-center text-lg">
+                <span className="text-green-500 mr-2">✅</span>
+                Weekly summary of open tasks & next steps
+              </li>
+            </ul>
+            <p className="text-lg text-muted-foreground">
+              Delivered simply — through a web app & chat — with no steep learning curve.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* What Sets Us Apart */}
+      <div className="container mx-auto px-4 md:px-6 py-16">
+        <h2 className="text-3xl font-bold text-center mb-12">What Sets Us Apart</h2>
+        <p className="text-center text-lg mb-12">
+          Built <em>by freelancers, for freelancers</em>, Lance understands what you're going through — and actually helps.
+        </p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="p-6 rounded-lg border bg-card">
+            <div className="text-2xl mb-4">📝</div>
+            <h3 className="text-xl font-semibold mb-4">Workflow‑Focused</h3>
+            <p className="text-muted-foreground">
+              We don't just give you templates — we handle the work, the way you would.
+            </p>
+          </div>
+          <div className="p-6 rounded-lg border bg-card">
+            <div className="text-2xl mb-4">⚡</div>
+            <h3 className="text-xl font-semibold mb-4">Works With Your Tools</h3>
+            <p className="text-muted-foreground">
+              Integrated directly into your email & calendar. No clunky dashboards to learn.
+            </p>
+          </div>
+          <div className="p-6 rounded-lg border bg-card">
+            <div className="text-2xl mb-4">💻</div>
+            <h3 className="text-xl font-semibold mb-4">Affordable & Intuitive</h3>
+            <p className="text-muted-foreground">
+              Made for solopreneurs — accessible, straightforward, and ready to use.
+            </p>
+          </div>
+          <div className="p-6 rounded-lg border bg-card">
+            <div className="text-2xl mb-4">❤️</div>
+            <h3 className="text-xl font-semibold mb-4">Empathetic Design</h3>
+            <p className="text-muted-foreground">
+              We've been where you are. Every feature comes from lived experience.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Meet the Founders */}
+      <div className="bg-muted py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Meet the Founders</h2>
+          <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="relative w-48 h-48 mx-auto mb-4">
+                <Image
+                  src="/placeholder-user.jpg"
+                  alt="Charles Casillas"
+                  fill
+                  className="rounded-full object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-semibold">Charles Casillas</h3>
+              <p className="text-primary font-medium mb-2">Cofounder</p>
+              <p className="text-muted-foreground italic mb-4">Product Builder. Technologist. Visionary.</p>
+              <p className="text-muted-foreground text-sm">
+                From launching AI‑driven apps to leading engineering & product at Apple Music, Beats, 
+                Pandora, and beyond — Charles turns complex technology into seamless, human‑centered experiences.
               </p>
             </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg mb-6">
-                  <Target className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Vision</h3>
-                <p className="text-gray-400">
-                  A world where freelancers can focus on their craft without the stress of chasing payments, 
-                  powered by intelligent automation.
-                </p>
+            <div className="text-center">
+              <div className="relative w-48 h-48 mx-auto mb-4">
+                <Image
+                  src="/placeholder-user.jpg"
+                  alt="Ella Lawler"
+                  fill
+                  className="rounded-full object-cover"
+                />
               </div>
-
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg mb-6">
-                  <Shield className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Trust</h3>
-                <p className="text-gray-400">
-                  Building reliable, secure solutions that protect both freelancers and their client relationships.
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg mb-6">
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Community</h3>
-                <p className="text-gray-400">
-                  Supporting and empowering the freelance community to achieve their full potential.
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg mb-6">
-                  <Heart className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Care</h3>
-                <p className="text-gray-400">
-                  Delivering solutions with empathy, understanding the unique challenges freelancers face.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold">Ella Lawler</h3>
+              <p className="text-primary font-medium mb-2">Cofounder</p>
+              <p className="text-muted-foreground italic mb-4">Creative Strategist. Brand Storyteller. Designer.</p>
+              <p className="text-muted-foreground text-sm">
+                With a background in design, branding, and marketing, Ella has led campaigns, crafted identities, 
+                and built user‑focused products that connect deeply with audiences. As a freelancer herself, 
+                she knows the hustle — and is passionate about making it easier.
+              </p>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">Our Impact</h2>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">2×</div>
-                <div className="text-gray-400">Faster Payments</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">8+</div>
-                <div className="text-gray-400">Hours Saved/Week</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">95%</div>
-                <div className="text-gray-400">Success Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">1K+</div>
-                <div className="text-gray-400">Users Waitlist</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Values Section */}
-      <section className="py-24 bg-white/5">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">Our Commitment</h2>
-            
-            <div className="space-y-8">
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <h3 className="text-2xl font-semibold text-white mb-4">Professional Excellence</h3>
-                <p className="text-gray-400">
-                  We maintain the highest standards of professionalism in every interaction. Our AI is designed to 
-                  represent your business with the same level of excellence you bring to your work.
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <h3 className="text-2xl font-semibold text-white mb-4">Client Relationships First</h3>
-                <p className="text-gray-400">
-                  Every feature and interaction is designed to strengthen, not strain, your client relationships. 
-                  We believe in being persistent yet polite, professional yet personable.
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm">
-                <h3 className="text-2xl font-semibold text-white mb-4">Continuous Innovation</h3>
-                <p className="text-gray-400">
-                  We're constantly evolving our AI technology to better serve the freelance community, staying 
-                  ahead of industry changes and adapting to new challenges.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
 
       {/* CTA Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Transform Your Freelance Business?
-            </h2>
-            <p className="text-xl text-gray-400 mb-8">
-              Join thousands of freelancers who've revolutionized their payment collection process with Lance.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <div className="flex w-full max-w-md gap-3">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                />
-                <Button size="lg" className="cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap">
-                  Join Waitlist
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+      <div className="container mx-auto px-4 md:px-6 py-16 text-center">
+        <h2 className="text-3xl font-bold mb-8">Ready to Reclaim Your Time?</h2>
+        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+          Lance is now onboarding select beta users — hardworking freelancers who are ready to 
+          stop drowning in admin and start living their craft.
+        </p>
+        <p className="text-xl font-medium mb-8">Your loyal teammate is ready when you are.</p>
+        <Button size="lg" className="text-lg px-8">
+          ✨ Join the Beta
+        </Button>
+      </div>
+    </main>
   )
 } 

@@ -18,7 +18,6 @@ import {
   Receipt,
   DollarSign,
 } from "lucide-react"
-import { Header } from "@/components/header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Accordion,
@@ -26,11 +25,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { WaitlistForm } from "@/components/waitlist-form"
 
 export default function LanceLanding() {
   return (
     <div className="flex flex-col pt-24">
-      <Header />
       {/* Spine Line */}
       <div className="spine-line hidden lg:block"></div>
 
@@ -103,18 +102,7 @@ export default function LanceLanding() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <div className="flex w-full max-w-md gap-3">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                />
-                <Button size="lg" className="cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap">
-                  Join Waitlist
-                </Button>
-              </div>
-            </div>
+            <WaitlistForm variant="hero" />
           </div>
         </div>
       </section>
@@ -729,18 +717,7 @@ export default function LanceLanding() {
             </p>
 
             {/* CTA Input */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <div className="flex w-full max-w-md gap-3">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                />
-                <Button size="lg" className="cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap">
-                  Join Waitlist
-                </Button>
-              </div>
-            </div>
+            <WaitlistForm variant="cta" />
           </div>
         </div>
       </section>
