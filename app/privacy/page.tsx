@@ -1,3 +1,80 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy - Lance AI Collections Agent | Data Protection & Security',
+  description: 'Learn how Lance protects your data and privacy. Our Privacy Policy explains how we collect, use, and safeguard your information when using our AI collections agent platform.',
+  keywords: [
+    'lance privacy policy',
+    'lance data protection',
+    'AI collections privacy',
+    'freelancer data security',
+    'lance privacy protection',
+    'payment recovery privacy',
+    'lance data handling',
+    'AI collections data security',
+    'freelancer privacy policy',
+    'lance information security',
+    'payment automation privacy',
+    'lance data privacy',
+    'AI collections data protection',
+    'freelancer data privacy',
+    'lance security policy',
+    'payment recovery data security',
+    'lance privacy protection',
+    'AI collections information security',
+    'freelancer privacy protection',
+    'lance data security policy'
+  ],
+  openGraph: {
+    title: 'Privacy Policy - Lance AI Collections Agent',
+    description: 'Learn how Lance protects your data and privacy. Our Privacy Policy explains how we collect, use, and safeguard your information.',
+    type: 'website',
+    url: 'https://lanceos.ai/privacy',
+    siteName: 'Lance',
+    images: [
+      {
+        url: '/images/lance-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lance Privacy Policy - Data Protection',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy - Lance AI Collections Agent',
+    description: 'Learn how Lance protects your data and privacy with our comprehensive Privacy Policy.',
+    images: ['/images/lance-logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://lanceos.ai/privacy',
+  },
+  authors: [{ name: 'Lance Team' }],
+  category: 'Legal',
+  other: {
+    'application-name': 'Lance',
+    'apple-mobile-web-app-title': 'Lance Privacy',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0B0F19',
+    'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#0B0F19',
+  },
+}
+
 export default function PrivacyPage() {
   return (
     <main className="pb-16">

@@ -5,12 +5,86 @@ import { AboutWhy } from "./components/AboutWhy"
 import { AboutFeatures } from "./components/AboutFeatures"
 import { AboutTeam } from "./components/AboutTeam"
 import { AboutCTA } from "./components/AboutCTA"
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'About Lance - AI Collections Agent for Freelancers | Our Mission & Team',
+  description: 'Learn about Lance\'s mission to help freelancers get paid faster with AI-powered collections. Meet our team and discover how we\'re transforming payment recovery for independent professionals.',
+  keywords: [
+    'about lance',
+    'lance mission',
+    'lance team',
+    'AI collections company',
+    'freelancer payment company',
+    'lance founders',
+    'payment recovery mission',
+    'AI for freelancers company',
+    'lance company story',
+    'freelancer payment solutions company',
+    'automated collections company',
+    'lance business model',
+    'freelancer payment automation company',
+    'lance company values',
+    'payment recovery technology',
+    'lance company culture',
+    'AI collections agent company',
+    'freelancer business tools company',
+    'lance company background',
+    'payment automation mission'
+  ],
+  openGraph: {
+    title: 'About Lance - AI Collections Agent for Freelancers',
+    description: 'Learn about Lance\'s mission to help freelancers get paid faster with AI-powered collections. Meet our team and discover our story.',
+    type: 'website',
+    url: 'https://lanceos.ai/about',
+    siteName: 'Lance',
+    images: [
+      {
+        url: '/images/lance-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'About Lance - AI Collections Agent Company',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Lance - AI Collections Agent for Freelancers',
+    description: 'Learn about Lance\'s mission to help freelancers get paid faster with AI-powered collections.',
+    images: ['/images/lance-logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://lanceos.ai/about',
+  },
+  authors: [{ name: 'Lance Team' }],
+  category: 'Business & Finance',
+  other: {
+    'application-name': 'Lance',
+    'apple-mobile-web-app-title': 'About Lance',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0B0F19',
+    'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#0B0F19',
+  },
+}
 
 export default function AboutPage() {
   return (
     <div className="flex flex-col pt-24 dark">
-      <Header />
-      
       {/* Hero Section */}
       <AboutHero />
 

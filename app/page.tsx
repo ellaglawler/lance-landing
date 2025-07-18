@@ -26,6 +26,82 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { WaitlistForm } from "@/components/waitlist-form"
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Lance - AI Collections Agent for Freelancers | Stop Chasing, Start Collecting',
+  description: 'Lance is your AI-powered collections agent that politely recovers overdue invoices while protecting client relationships. Get paid 2x faster and save 8+ hours monthly.',
+  keywords: [
+    'AI collections agent',
+    'freelancer payment recovery',
+    'overdue invoice collection',
+    'automated payment follow-up',
+    'freelancer cash flow',
+    'client payment automation',
+    'invoice collection software',
+    'freelancer business tools',
+    'payment recovery AI',
+    'automated collections',
+    'freelancer payment solutions',
+    'late payment recovery',
+    'client relationship management',
+    'freelance business automation',
+    'get paid faster',
+    'stop chasing clients',
+    'AI for freelancers',
+    'payment automation tools',
+    'invoice follow-up automation',
+    'freelancer financial tools'
+  ],
+  openGraph: {
+    title: 'Lance - AI Collections Agent for Freelancers',
+    description: 'Stop chasing clients, start collecting. Lance is your AI-powered collections agent that recovers overdue invoices while protecting client relationships.',
+    type: 'website',
+    url: 'https://lanceos.ai',
+    siteName: 'Lance',
+    images: [
+      {
+        url: '/images/lance-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lance - AI Collections Agent for Freelancers',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Lance - AI Collections Agent for Freelancers',
+    description: 'Stop chasing clients, start collecting. AI-powered collections agent that recovers overdue invoices.',
+    images: ['/images/lance-logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://lanceos.ai',
+  },
+  authors: [{ name: 'Lance Team' }],
+  category: 'Business & Finance',
+  other: {
+    'application-name': 'Lance',
+    'apple-mobile-web-app-title': 'Lance',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0B0F19',
+    'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#0B0F19',
+  },
+}
 
 export default function LanceLanding() {
   return (
