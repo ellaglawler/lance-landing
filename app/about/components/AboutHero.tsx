@@ -15,17 +15,6 @@ export function AboutHero() {
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="mx-auto max-w-4xl text-center">
-          {/* Back to Home Link */}
-          <div className="flex justify-center mb-8">
-            <Link 
-              href="/" 
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span>Back to Home</span>
-            </Link>
-          </div>
-
           {/* Beta Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full micro-badge text-blue-300 text-sm font-medium mb-8">
             <Cpu className="h-4 w-4" />
