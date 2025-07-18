@@ -1,3 +1,80 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy - Lance AI Collections Agent | Cookie Usage & Management',
+  description: 'Learn how Lance uses cookies and similar technologies to improve your experience. Our Cookie Policy explains what cookies we use and how you can manage them.',
+  keywords: [
+    'lance cookie policy',
+    'lance cookies',
+    'AI collections cookies',
+    'freelancer cookie policy',
+    'lance cookie usage',
+    'payment recovery cookies',
+    'lance cookie management',
+    'AI collections cookie policy',
+    'freelancer cookie usage',
+    'lance tracking cookies',
+    'payment automation cookies',
+    'lance cookie settings',
+    'AI collections tracking',
+    'freelancer cookie management',
+    'lance cookie preferences',
+    'payment recovery tracking',
+    'lance cookie consent',
+    'AI collections cookie usage',
+    'freelancer cookie settings',
+    'lance cookie technology'
+  ],
+  openGraph: {
+    title: 'Cookie Policy - Lance AI Collections Agent',
+    description: 'Learn how Lance uses cookies and similar technologies to improve your experience. Understand our cookie usage and management options.',
+    type: 'website',
+    url: 'https://lanceos.ai/cookies',
+    siteName: 'Lance',
+    images: [
+      {
+        url: '/images/lance-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lance Cookie Policy - Cookie Usage',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cookie Policy - Lance AI Collections Agent',
+    description: 'Learn how Lance uses cookies and similar technologies to improve your experience.',
+    images: ['/images/lance-logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://lanceos.ai/cookies',
+  },
+  authors: [{ name: 'Lance Team' }],
+  category: 'Legal',
+  other: {
+    'application-name': 'Lance',
+    'apple-mobile-web-app-title': 'Lance Cookies',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0B0F19',
+    'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#0B0F19',
+  },
+}
+
 export default function CookiesPage() {
   return (
     <main className="pb-16">

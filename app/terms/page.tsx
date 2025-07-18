@@ -1,3 +1,80 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Terms of Service - Lance AI Collections Agent | Legal Terms & Conditions',
+  description: 'Read Lance\'s Terms of Service for our AI collections agent platform. Understand your rights, responsibilities, and the terms governing your use of our freelancer payment recovery tools.',
+  keywords: [
+    'lance terms of service',
+    'lance legal terms',
+    'AI collections terms',
+    'freelancer payment terms',
+    'lance user agreement',
+    'payment recovery terms',
+    'lance platform terms',
+    'AI collections legal',
+    'freelancer business terms',
+    'lance service agreement',
+    'payment automation terms',
+    'lance terms and conditions',
+    'AI collections user agreement',
+    'freelancer payment legal',
+    'lance platform agreement',
+    'payment recovery legal terms',
+    'lance business terms',
+    'AI collections conditions',
+    'freelancer payment terms of service',
+    'lance legal agreement'
+  ],
+  openGraph: {
+    title: 'Terms of Service - Lance AI Collections Agent',
+    description: 'Read Lance\'s Terms of Service for our AI collections agent platform. Understand your rights and responsibilities.',
+    type: 'website',
+    url: 'https://lanceos.ai/terms',
+    siteName: 'Lance',
+    images: [
+      {
+        url: '/images/lance-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lance Terms of Service - Legal Terms',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms of Service - Lance AI Collections Agent',
+    description: 'Read Lance\'s Terms of Service for our AI collections agent platform.',
+    images: ['/images/lance-logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://lanceos.ai/terms',
+  },
+  authors: [{ name: 'Lance Team' }],
+  category: 'Legal',
+  other: {
+    'application-name': 'Lance',
+    'apple-mobile-web-app-title': 'Lance Terms',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#0B0F19',
+    'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#0B0F19',
+  },
+}
+
 export default function TermsPage() {
   return (
     <main className="pb-16">
