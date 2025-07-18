@@ -5,14 +5,12 @@ import {
   Cpu,
   ChevronLeft,
 } from "lucide-react"
-import { Header } from "@/components/header"
 import { WaitlistForm } from "@/components/waitlist-form"
 import Link from "next/link"
 
 export default function ContactPage() {
   return (
     <div className="flex flex-col pt-24">
-      <Header />
       
       {/* Hero Section */}
       <section className="relative py-32 flex items-center justify-center min-h-[60vh]">
