@@ -188,7 +188,7 @@ export default function ContactPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <WaitlistForm variant="demo" />
+                <WaitlistForm variant="contact" />
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { submitToHubspot, validateEmail } from "@/lib/hubspot"
 
 interface WaitlistFormProps {
-  variant?: "hero" | "cta" | "demo"
+  variant?: "hero" | "cta" | "demo" | "contact"
   className?: string
 }
 
@@ -66,19 +66,23 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
 
   const getButtonText = () => {
     switch (variant) {
+      case "contact":
+        return "Start Getting Paid Faster"
       case "demo":
-        return "Schedule Demo"
+        return "Get Early Access"
       case "hero":
       case "cta":
       default:
-        return "Join Waitlist"
+        return "Be First to Try Lance"
     }
   }
 
   const getSuccessMessage = () => {
     switch (variant) {
+      case "contact":
+        return "Thanks! You'll be getting paid faster soon."
       case "demo":
-        return "Thanks! We'll be in touch to schedule your demo."
+        return "Thanks! You'll be among the first to try Lance."
       case "hero":
       case "cta":
       default:
