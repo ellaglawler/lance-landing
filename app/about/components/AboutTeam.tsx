@@ -8,7 +8,7 @@ export function AboutTeam() {
         <div className="depth-card-dark rounded-3xl p-6 text-center transform hover:scale-105 transition-all duration-300">
           <div className="relative w-36 h-36 mx-auto mb-3">
             <Image
-              src="/placeholder-user.jpg"
+              src="/images/charles.png"
               alt="Charles Casillas"
               fill
               className="rounded-full object-cover"
@@ -24,7 +24,7 @@ export function AboutTeam() {
         <div className="depth-card-dark rounded-3xl p-6 text-center transform hover:scale-105 transition-all duration-300">
           <div className="relative w-36 h-36 mx-auto mb-3">
             <Image
-              src="/placeholder-user.jpg"
+              src="/images/ella.png"
               alt="Ella Lawler"
               fill
               className="rounded-full object-cover"
