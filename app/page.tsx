@@ -18,7 +18,6 @@ import {
   Receipt,
   DollarSign,
 } from "lucide-react"
-import { Header } from "@/components/header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Accordion,
@@ -30,7 +29,6 @@ import {
 export default function LanceLanding() {
   return (
     <div className="flex flex-col pt-24">
-      <Header />
       {/* Spine Line */}
       <div className="spine-line hidden lg:block"></div>
 
