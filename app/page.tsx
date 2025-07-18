@@ -29,7 +29,7 @@ import {
 
 export default function LanceLanding() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pt-24">
       <Header />
       {/* Spine Line */}
       <div className="spine-line hidden lg:block"></div>
@@ -44,11 +44,6 @@ export default function LanceLanding() {
             zIndex: 0
           }}
         ></div>
-
-        {/* Lance Logo */}
-        <div className="absolute -top-6 left-32 z-10">
-          <img src="/images/lance_white.png" alt="Lance" className="w-40 h-auto" />
-        </div>
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mx-auto max-w-6xl text-center">
