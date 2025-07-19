@@ -141,7 +141,7 @@ export default function LanceLanding() {
             </h1>
 
             <p className="text-xl mb-6 max-w-3xl mx-auto leading-relaxed" style={{ color: "#AEB6C4" }}>
-              Lance is your AI-powered collections agent: polite to your clients, relentless for you. Transform overdue
+              Lance is your trusted AI-powered collections agent: polite to your clients, relentless for you. Transform overdue
               invoices into consistent cash flow.
             </p>
 
@@ -154,7 +154,7 @@ export default function LanceLanding() {
                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
               </div>
-              <span className="text-sm text-gray-400">Trusted by 500+ freelancers</span>
+              <span className="text-sm text-gray-400">We are just getting started, join our small group of 100+ freelancers getting paid 2x faster.</span>
             </div>
 
             {/* Enhanced Stats with Visual Hierarchy */}
@@ -737,7 +737,7 @@ export default function LanceLanding() {
           </div>
 
           {/* Final CTA Section */}
-          <div className="text-center mt-20">
+          {/* <div className="text-center mt-20">
             <h3 className="text-3xl font-bold text-white mb-4">Ready to Stop Chasing Invoices?</h3>
             <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
               Join 500+ freelancers who've recovered over $2.3M in overdue payments
@@ -751,7 +751,7 @@ export default function LanceLanding() {
               </button>
             </div>
             <p className="text-sm text-gray-500 mt-4">No credit card required • Setup in 2 minutes</p>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -896,7 +896,7 @@ export default function LanceLanding() {
             </h1>
 
             <p className="text-xl mb-8" style={{ color: "#AEB6C4" }}>
-              Join thousands of freelancers who've transformed their payment process with Lance.
+              Join hundreds of pioneering freelancers who've transformed their payment process with Lance.
             </p>
 
             {/* CTA Input */}

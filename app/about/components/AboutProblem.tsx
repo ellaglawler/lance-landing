@@ -10,8 +10,8 @@ export function AboutProblem() {
           We've been there.
         </p>
         <p className="text-xl leading-relaxed" style={{ color: "#AEB6C4" }}>
-          So we built something better: a loyal teammate that handles the busywork — right inside your inbox 
-          and calendar — so you can focus on what really matters.
+          So we built something better: a loyal teammate that handles the busywork, right inside your inbox 
+          and calendar, so you can focus on what really matters.
         </p>
       </div>
       <div className="depth-card-dark rounded-3xl p-12 text-left">
