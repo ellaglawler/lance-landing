@@ -248,6 +248,20 @@ export default function LanceLanding() {
             </div>
           </div>
         </div>
+
+        {/* Pain Section Bottom CTA */}
+        <div className="container mx-auto px-4 md:px-6 relative mt-16">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="p-6 bg-red-600/10 rounded-2xl border border-red-500/20">
+              <p className="text-red-300 text-lg font-semibold mb-2">
+                Freelancers lose $9-12K per year to unpaid invoices
+              </p>
+              <p className="text-red-400 text-sm">
+                Don't let your hard work go unpaid. Let Lance help you recover what's yours.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Section Break */}
