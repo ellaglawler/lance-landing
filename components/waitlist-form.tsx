@@ -57,11 +57,11 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
   }
 
   const inputClasses = variant === "hero" 
-    ? "flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+    ? "flex-1 px-4 py-3 text-lg rounded-l-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-r-0"
     : "flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
 
   const buttonClasses = variant === "hero"
-    ? "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
+    ? "cta-button-primary text-white px-8 py-3 text-lg font-semibold rounded-r-xl whitespace-nowrap border-l-0 -ml-px"
     : "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
 
   const getButtonText = () => {
@@ -73,7 +73,18 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
       case "hero":
       case "cta":
       default:
-        return "Be First to Try Lance"
+        return "Get Early Access"
+    }
+  }
+
+  const getPlaceholderText = () => {
+    switch (variant) {
+      case "hero":
+        return "Your best email for early access →"
+      case "cta":
+        return "Your email for early access →"
+      default:
+        return "Enter your email"
     }
   }
 
@@ -106,31 +117,59 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
   return (
     <div className={className}>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <div className="flex w-full max-w-md gap-3">
-          <input 
-            type="email" 
-            placeholder="Enter your email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isSubmitting || status === "success"}
-            className={inputClasses}
-            required
-          />
-          <Button 
-            type="submit"
-            size="lg" 
-            disabled={isSubmitting || status === "success"}
-            className={buttonClasses}
-          >
-            {isSubmitting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : status === "success" ? (
-              <CheckCircle className="h-5 w-5" />
-            ) : (
-              getButtonText()
-            )}
-          </Button>
-        </div>
+        {variant === "hero" ? (
+          <div className="flex w-full max-w-md shadow-lg">
+            <input 
+              type="email" 
+              placeholder={getPlaceholderText()} 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitting || status === "success"}
+              className={inputClasses}
+              required
+            />
+            <Button 
+              type="submit"
+              size="lg" 
+              disabled={isSubmitting || status === "success"}
+              className={buttonClasses}
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : status === "success" ? (
+                <CheckCircle className="h-5 w-5" />
+              ) : (
+                getButtonText()
+              )}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex w-full max-w-md gap-3">
+            <input 
+              type="email" 
+              placeholder={getPlaceholderText()} 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitting || status === "success"}
+              className={inputClasses}
+              required
+            />
+            <Button 
+              type="submit"
+              size="lg" 
+              disabled={isSubmitting || status === "success"}
+              className={buttonClasses}
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : status === "success" ? (
+                <CheckCircle className="h-5 w-5" />
+              ) : (
+                getButtonText()
+              )}
+            </Button>
+          </div>
+        )}
         
         {/* Honeypot field for spam protection */}
         <input

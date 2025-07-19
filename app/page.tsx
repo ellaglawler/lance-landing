@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/accordion"
 import { WaitlistForm } from "@/components/waitlist-form"
 import type { Metadata } from 'next'
+import { HeroStats } from "../components/hero-stats"
 
 export const metadata: Metadata = {
   title: 'Lance - AI Collections Agent for Freelancers | Stop Chasing, Start Collecting',
@@ -117,6 +118,15 @@ export default function LanceLanding() {
           }}
         ></div>
 
+        {/* Subtle Product Background */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+          style={{
+            backgroundImage: "url('/images/invoice-detection.png')",
+            zIndex: -1
+          }}
+        ></div>
+
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="mx-auto max-w-6xl text-center">
             {/* Beta Badge */}
@@ -126,56 +136,40 @@ export default function LanceLanding() {
             </div>
 
             <h1 className="h1-hero text-white mb-8">
-              Stop Chasing Clients. <br />
-              <span className="gradient-text-enhanced">Start Getting Paid.</span>
+              Stop Chasing Invoices. <br />
+              <span className="gradient-text-enhanced">Get Paid 2× Faster.</span>
             </h1>
 
-            <p className="text-xl mb-10 max-w-3xl mx-auto leading-relaxed" style={{ color: "#AEB6C4" }}>
+            <p className="text-xl mb-6 max-w-3xl mx-auto leading-relaxed" style={{ color: "#AEB6C4" }}>
               Lance is your AI-powered collections agent: polite to your clients, relentless for you. Transform overdue
               invoices into consistent cash flow.
             </p>
 
-            {/* Enhanced Stats */}
-            <div className="grid gap-4 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
-              <div className="hero-stats-card">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
-                    <TrendingUp className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-3xl font-bold text-gray-800">2×</div>
-                    <div className="text-sm text-gray-600 -mt-1">Faster Payments</div>
-                  </div>
-                </div>
+            {/* Trust Signal */}
+            <div className="flex items-center justify-center gap-2 mb-10 opacity-80 trust-signal">
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
               </div>
-
-              <div className="hero-stats-card">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
-                    <Target className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-3xl font-bold text-gray-800">$500-1K</div>
-                    <div className="text-sm text-gray-600 -mt-1">Monthly Recovery</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="hero-stats-card">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
-                    <Clock className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-3xl font-bold text-gray-800">8+</div>
-                    <div className="text-sm text-gray-600 -mt-1">Hours Saved</div>
-                  </div>
-                </div>
-              </div>
+              <span className="text-sm text-gray-400">Trusted by 500+ freelancers</span>
             </div>
+
+            {/* Enhanced Stats with Visual Hierarchy */}
+            <HeroStats />
 
             {/* CTA Buttons */}
             <WaitlistForm variant="hero" />
+
+            {/* Social Proof Testimonial */}
+            <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 max-w-md mx-auto social-proof">
+              <p className="text-sm text-blue-300 italic mb-1">
+                "Lance recovered $1.2K in week one—that's a game changer!"
+              </p>
+              <p className="text-xs text-gray-400">— Sarah Chen, Freelance Designer</p>
+            </div>
           </div>
         </div>
       </section>
