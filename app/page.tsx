@@ -274,373 +274,489 @@ export default function LanceLanding() {
           <div className="mx-auto max-w-7xl text-center">
             <h1 className="text-5xl font-bold text-white mb-4">How Lance Works</h1>
             <p className="text-xl text-gray-400 mb-16 max-w-3xl mx-auto">
-              Lance recovers overdue invoices for you—in just 3 simple steps.
+              Recover overdue invoices automatically, in just 3 simple steps.
             </p>
 
-            {/* Spine Line */}
-            <div className="hidden lg:block absolute left-1/2 top-[25%] bottom-[10%] w-px bg-gradient-to-b from-blue-500/50 via-blue-500/25 to-transparent"></div>
-
-            {/* Connect Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32 relative">
-              <div className="text-left lg:pr-16">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
-                    1
-                  </div>
-                  <h2 className="text-4xl font-bold text-white">Connect to Google Workspace</h2>
-                </div>
-                <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-                  Link your account in seconds. Lance automatically scans your inbox for overdue invoices - securely and privately - so that you never waste time tracking payments manually.
-                </p>
-              </div>
-              <div className="relative">
-                {/* Window Controls */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  </div>
-                  {/* Search Bar */}
-                  <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <span className="text-gray-400 text-sm">inbox</span>
-                  </div>
-                </div>
-
-                {/* Gmail Interface */}
-                <div className="flex">
-                  {/* Sidebar */}
-                  <div className="w-48 pr-4">
-                    {/* Gmail Logo */}
-                    <div className="flex items-center gap-3 px-2 py-3 mb-2">
-                      <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-300" fill="currentColor">
-                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
-                      </svg>
-                      <span className="text-gray-300 font-medium">Gmail</span>
-                    </div>
-
-                    {/* Sidebar Items */}
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-300">
-                        <span>Inbox</span>
-                        <span className="bg-[#2A2D37] text-xs px-2 py-0.5 rounded">235</span>
-                      </div>
-                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                        <span>Starred</span>
-                      </div>
-                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                        <span>Snoozed</span>
-                      </div>
-                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                        <span>Sent</span>
-                      </div>
-                      <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                        <span>Drafts</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Email List */}
-                  <div className="flex-1 border-l border-gray-700">
-                    {/* Inbox Header */}
-                    <div className="px-4 py-2 border-b border-gray-700">
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium text-gray-300">Inobox</span>
-                      </div>
-                    </div>
-
-                    {/* Email Items */}
-                    <div className="divide-y divide-gray-700">
-                      {/* Selected Email */}
-                      <div className="px-4 py-3 bg-blue-600/20">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
-                            <span className="text-blue-400 text-sm font-medium">Invoice #123 is overdue</span>
-                          </div>
-                          <span className="text-blue-400 text-xs">10:23 AM</span>
-                        </div>
-                        <div className="mt-1 ml-8">
-                          <span className="text-blue-400 text-xs">Acme Corp</span>
-                        </div>
-                      </div>
-
-                      {/* Regular Email */}
-                      <div className="px-4 py-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
-                            <span className="text-gray-300 text-sm">Weekly Report</span>
-                          </div>
-                          <span className="text-gray-400 text-xs">8:47 AM</span>
-                        </div>
-                        <div className="mt-1 ml-8">
-                          <span className="text-gray-400 text-xs">Alice Srown</span>
-                        </div>
-                      </div>
-
-                      {/* Another Email */}
-                      <div className="px-4 py-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
-                            <span className="text-gray-300 text-sm">Project Update</span>
-                          </div>
-                          <span className="text-gray-400 text-xs">Yesterday</span>
-                        </div>
-                        <div className="mt-1 ml-8">
-                          <span className="text-gray-400 text-xs">David Lad</span>
-                        </div>
-                      </div>
-
-                      {/* One More Email */}
-                      <div className="px-4 py-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
-                            <span className="text-gray-300 text-sm">Meeting Tomorrow</span>
-                          </div>
-                          <span className="text-gray-400 text-xs">Feb 16</span>
-                        </div>
-                        <div className="mt-1 ml-8">
-                          <span className="text-gray-400 text-xs">Richard Clone</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Trust Signals */}
+            <div className="flex items-center justify-center gap-8 mb-16 opacity-60">
+              <div className="text-gray-400 text-sm">Trusted by 500+ freelancers</div>
+              <div className="w-px h-4 bg-gray-600"></div>
+              <div className="text-gray-400 text-sm">94% recovery rate</div>
+              <div className="w-px h-4 bg-gray-600"></div>
+              <div className="text-gray-400 text-sm">$2.3M recovered</div>
             </div>
-          </div>
 
-          {/* Follow Up Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32 relative">
-            <div className="lg:order-2 text-left lg:pl-16">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
-                  2
-                </div>
-                <h2 className="text-4xl font-bold text-white">Automated Follow Ups</h2>
-              </div>
-              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-                Lance sends friendly, professional reminders for you—persistent enough to recover overdue payments, yet polite enough to keep client relationships strong.
-              </p>
-            </div>
-            <div className="lg:order-1 relative">
-              {/* Window Controls */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                </div>
-                {/* Search Bar */}
-                <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {/* Timeline Container */}
+            <div className="relative">
+              {/* Vertical Timeline Line */}
+              <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500/30 via-blue-500/20 to-transparent transform -translate-x-1/2"></div>
+
+              {/* Step 1: Auto-Detect Section */}
+              <div className="relative mb-32">
+                {/* Timeline Circle */}
+                <div className="hidden lg:block absolute left-1/2 top-8 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-glow border-4 border-[#0B0F19] transform -translate-x-1/2 z-10">
+                  <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <span className="text-gray-400 text-sm">compose</span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                  <div className="text-left lg:pr-16">
+                    <div className="flex items-center gap-4 mb-8 lg:hidden">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
+                        <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                      <h2 className="text-4xl font-bold text-white">Instantly Find Overdue Invoices</h2>
+                    </div>
+                    <div className="lg:mt-16">
+                      <h2 className="text-4xl font-bold text-white mb-8 lg:block hidden">Instantly Find Overdue Invoices</h2>
+                      <div className="space-y-4 text-lg text-gray-400">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
+                          <span>One-click Google Workspace connection</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
+                          <span>Private, secure inbox scanning</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
+                          <span>Auto-detect late payments in seconds</span>
+                        </div>
+                      </div>
+                      <div className="mt-6 p-4 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                        <p className="text-blue-300 text-sm italic">"Lance found 8 overdue invoices I had completely forgotten about!"</p>
+                        <p className="text-blue-400 text-xs mt-1">— Sarah Chen, Freelance Designer</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    {/* Window Controls */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      </div>
+                      {/* Search Bar */}
+                      <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <span className="text-gray-400 text-sm">inbox</span>
+                      </div>
+                    </div>
+
+                    {/* Gmail Interface */}
+                    <div className="flex">
+                      {/* Sidebar */}
+                      <div className="w-48 pr-4">
+                        {/* Gmail Logo */}
+                        <div className="flex items-center gap-3 px-2 py-3 mb-2">
+                          <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-300" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                          </svg>
+                          <span className="text-gray-300 font-medium">Gmail</span>
+                        </div>
+
+                        {/* Sidebar Items */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-300">
+                            <span>Inbox</span>
+                            <span className="bg-[#2A2D37] text-xs px-2 py-0.5 rounded">235</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Starred</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Snoozed</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Sent</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Drafts</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Email List */}
+                      <div className="flex-1 border-l border-gray-700">
+                        {/* Inbox Header */}
+                        <div className="px-4 py-2 border-b border-gray-700">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium text-gray-300">Inobox</span>
+                          </div>
+                        </div>
+
+                        {/* Email Items */}
+                        <div className="divide-y divide-gray-700">
+                          {/* Selected Email */}
+                          <div className="px-4 py-3 bg-blue-600/20">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                                <span className="text-blue-400 text-sm font-medium">Invoice #123 is overdue</span>
+                              </div>
+                              <span className="text-blue-400 text-xs">10:23 AM</span>
+                            </div>
+                            <div className="mt-1 ml-8">
+                              <span className="text-blue-400 text-xs">Acme Corp</span>
+                            </div>
+                          </div>
+
+                          {/* Regular Email */}
+                          <div className="px-4 py-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                                <span className="text-gray-300 text-sm">Weekly Report</span>
+                              </div>
+                              <span className="text-gray-400 text-xs">8:47 AM</span>
+                            </div>
+                            <div className="mt-1 ml-8">
+                              <span className="text-gray-400 text-xs">Alice Srown</span>
+                            </div>
+                          </div>
+
+                          {/* Another Email */}
+                          <div className="px-4 py-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                                <span className="text-gray-300 text-sm">Project Update</span>
+                              </div>
+                              <span className="text-gray-400 text-xs">Yesterday</span>
+                            </div>
+                            <div className="mt-1 ml-8">
+                              <span className="text-gray-400 text-xs">David Lad</span>
+                            </div>
+                          </div>
+
+                          {/* One More Email */}
+                          <div className="px-4 py-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                                <span className="text-gray-300 text-sm">Meeting Tomorrow</span>
+                              </div>
+                              <span className="text-gray-400 text-xs">Feb 16</span>
+                            </div>
+                            <div className="mt-1 ml-8">
+                              <span className="text-gray-400 text-xs">Richard Clone</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Email Interface */}
-              <div className="flex">
-                {/* Sidebar */}
-                <div className="w-48 pr-4">
-                  {/* Gmail Logo */}
-                  <div className="flex items-center gap-3 px-2 py-3 mb-2">
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-300" fill="currentColor">
-                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
-                    </svg>
-                    <span className="text-gray-300 font-medium">Gmail</span>
-                  </div>
+              {/* Step 2: Automated Follow-ups Section */}
+              <div className="relative mb-32">
+                {/* Timeline Circle */}
+                <div className="hidden lg:block absolute left-1/2 top-8 w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-2xl font-bold shadow-glow border-4 border-[#0B0F19] transform -translate-x-1/2 z-10">
+                  <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
 
-                  {/* Sidebar Items */}
-                  <div className="space-y-1">
-                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                      <span>Inbox</span>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                  <div className="text-left lg:pr-16">
+                    <div className="flex items-center gap-4 mb-8 lg:hidden">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
+                        <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <h2 className="text-4xl font-bold text-white">Smart Follow-ups That Get Results</h2>
                     </div>
-                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                      <span>Drafts</span>
+                    <div className="lg:mt-16">
+                      <h2 className="text-4xl font-bold text-white mb-8 lg:block hidden">Smart Follow-ups That Get Results</h2>
+                      <div className="space-y-4 text-lg text-gray-400">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
+                          <span>AI-crafted professional reminders</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
+                          <span>Persistent enough to recover payments</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-green-400 mt-2 flex-shrink-0"></div>
+                          <span>Polite enough to maintain relationships</span>
+                        </div>
+                      </div>
+                      <div className="mt-6 p-4 bg-green-600/10 rounded-lg border border-green-500/20">
+                        <p className="text-green-300 text-sm italic">"Lance recovered $12K in unpaid invoices within 2 weeks—that's a 40% lift!"</p>
+                        <p className="text-green-400 text-xs mt-1">— Alex Rodriguez, Freelance Developer</p>
+                      </div>
                     </div>
-                    <div className="flex items-center px-3 py-2 bg-blue-600/20 rounded-lg text-blue-400 text-sm">
-                      <span>Compose</span>
+                  </div>
+                  <div className="relative">
+                    {/* Window Controls */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      </div>
+                      {/* Search Bar */}
+                      <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <span className="text-gray-400 text-sm">compose</span>
+                      </div>
                     </div>
-                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                      <span>Sent</span>
+
+                    {/* Email Interface */}
+                    <div className="flex">
+                      {/* Sidebar */}
+                      <div className="w-48 pr-4">
+                        {/* Gmail Logo */}
+                        <div className="flex items-center gap-3 px-2 py-3 mb-2">
+                          <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-300" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                          </svg>
+                          <span className="text-gray-300 font-medium">Gmail</span>
+                        </div>
+
+                        {/* Sidebar Items */}
+                        <div className="space-y-1">
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Inbox</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Drafts</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 bg-green-600/20 rounded-lg text-green-400 text-sm">
+                            <span>Compose</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Sent</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Email Compose Area */}
+                      <div className="flex-1 border-l border-gray-700">
+                        <div className="px-4 py-3 border-b border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-400 text-sm w-12">To:</span>
+                            <span className="text-gray-300 text-sm">sarah@acmecorp.com</span>
+                          </div>
+                        </div>
+
+                        <div className="px-4 py-3 border-b border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-400 text-sm w-12">Subject:</span>
+                            <span className="text-gray-300 text-sm">Following up on Invoice #123</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 space-y-3 text-sm text-left">
+                          <p className="text-gray-300">Hi Sarah,</p>
+                          
+                          <p className="text-gray-300">I hope this email finds you well. I'm following up on invoice #123 for $2,500, which was due on February 15th.</p>
+                          
+                          <div className="bg-green-600/20 rounded-lg p-3 my-3">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                              <span className="text-green-400 text-xs font-medium">Payment Summary</span>
+                            </div>
+                            <div className="space-y-1 ml-3 text-green-300 text-xs">
+                              <p>Amount Due: $2,500</p>
+                              <p>Due Date: February 15, 2024</p>
+                              <p>Days Overdue: 5</p>
+                            </div>
+                          </div>
+
+                          <p className="text-gray-300">Could you please provide an update on when we can expect payment?</p>
+                          
+                          <p className="text-gray-300">Best regards,<br />Alex</p>
+                        </div>
+
+                        {/* Email Actions */}
+                        <div className="px-4 flex items-center gap-2 pt-3 border-t border-gray-700">
+                          <button className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700">
+                            Send
+                          </button>
+                          <button className="p-1.5 text-gray-400 hover:text-gray-300">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Email Compose Area */}
-                <div className="flex-1 border-l border-gray-700">
-                  <div className="px-4 py-3 border-b border-gray-700">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-sm w-12">To:</span>
-                      <span className="text-gray-300 text-sm">sarah@acmecorp.com</span>
-                    </div>
-                  </div>
+              {/* Step 3: Get Paid Section */}
+              <div className="relative mb-32">
+                {/* Timeline Circle */}
+                <div className="hidden lg:block absolute left-1/2 top-8 w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-glow border-4 border-[#0B0F19] transform -translate-x-1/2 z-10">
+                  <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
 
-                  <div className="px-4 py-3 border-b border-gray-700">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-sm w-12">Subject:</span>
-                      <span className="text-gray-300 text-sm">Following up on Invoice #123</span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 space-y-3 text-sm text-left">
-                    <p className="text-gray-300">Hi Sarah,</p>
-                    
-                    <p className="text-gray-300">I hope this email finds you well. I'm following up on invoice #123 for $2,500, which was due on February 15th.</p>
-                    
-                    <div className="bg-blue-600/20 rounded-lg p-3 my-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
-                        <span className="text-blue-400 text-xs font-medium">Payment Summary</span>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                  <div className="text-left lg:pr-16">
+                    <div className="flex items-center gap-4 mb-8 lg:hidden">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
+                        <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
                       </div>
-                      <div className="space-y-1 ml-3 text-blue-300 text-xs">
-                        <p>Amount Due: $2,500</p>
-                        <p>Due Date: February 15, 2024</p>
-                        <p>Days Overdue: 5</p>
+                      <h2 className="text-4xl font-bold text-white">Watch Payments Roll In</h2>
+                    </div>
+                    <div className="lg:mt-16">
+                      <h2 className="text-4xl font-bold text-white mb-8 lg:block hidden">Watch Payments Roll In</h2>
+                      <div className="space-y-4 text-lg text-gray-400">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
+                          <span>AI-powered recovery system</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
+                          <span>Boost cash flow automatically</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
+                          <span>No more manual payment chasing</span>
+                        </div>
+                      </div>
+                      <div className="mt-6 p-4 bg-purple-600/10 rounded-lg border border-purple-500/20">
+                        <p className="text-purple-300 text-sm italic">"I've recovered 23% more on-time payments since using Lance!"</p>
+                        <p className="text-purple-400 text-xs mt-1">— Maria Santos, Freelance Consultant</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative transform scale-105">
+                    {/* Window Controls */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      </div>
+                      {/* Title Bar */}
+                      <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span className="text-gray-400 text-sm">Payment Analytics</span>
                       </div>
                     </div>
 
-                    <p className="text-gray-300">Could you please provide an update on when we can expect payment?</p>
-                    
-                    <p className="text-gray-300">Best regards,<br />Alex</p>
-                  </div>
+                    <div className="flex">
+                      {/* Sidebar */}
+                      <div className="w-48 pr-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center px-3 py-2 bg-purple-600/20 rounded-lg text-purple-400 text-sm">
+                            <span>Overview</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Invoices</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Reports</span>
+                          </div>
+                          <div className="flex items-center px-3 py-2 text-sm text-gray-400">
+                            <span>Settings</span>
+                          </div>
+                        </div>
+                      </div>
 
-                  {/* Email Actions */}
-                  <div className="px-4 flex items-center gap-2 pt-3 border-t border-gray-700">
-                    <button className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700">
-                      Send
-                    </button>
-                    <button className="p-1.5 text-gray-400 hover:text-gray-300">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                      </svg>
-                    </button>
+                      {/* Main Content */}
+                      <div className="flex-1 border-l border-gray-700">
+                        {/* Stats Row */}
+                        <div className="grid grid-cols-3 gap-2 p-3">
+                          <div className="bg-[#2A2D37] rounded-lg p-2 border border-green-500/30 animate-pulse">
+                            <div className="text-[10px] text-gray-400">Recovery Rate</div>
+                            <div className="text-sm font-bold text-green-400">94%</div>
+                            <div className="text-[10px] text-green-400">↑ 12%</div>
+                          </div>
+                          <div className="bg-[#2A2D37] rounded-lg p-2">
+                            <div className="text-[10px] text-gray-400">Payment Time</div>
+                            <div className="text-sm font-bold text-blue-400">4.2d</div>
+                            <div className="text-[10px] text-blue-400">↓ 3d</div>
+                          </div>
+                          <div className="bg-[#2A2D37] rounded-lg p-2">
+                            <div className="text-[10px] text-gray-400">Recovered</div>
+                            <div className="text-sm font-bold text-purple-400">$12.4k</div>
+                            <div className="text-[10px] text-purple-400">30d</div>
+                          </div>
+                        </div>
+
+                        {/* Recent Payments */}
+                        <div className="px-3 py-2">
+                          <div className="text-xs font-medium text-gray-300 mb-2">Recent Payments</div>
+                          <div className="space-y-1.5">
+                            <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
+                              <div className="flex justify-between items-center">
+                                <span className="text-green-400 text-xs font-medium">Invoice #123</span>
+                                <span className="text-green-400 text-xs">$2,500</span>
+                              </div>
+                              <div className="text-[10px] text-gray-400">Acme Corp • 2h ago</div>
+                            </div>
+                            <div className="bg-[#2A2D37] rounded-lg p-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-300 text-xs">Invoice #122</span>
+                                <span className="text-gray-300 text-xs">$1,800</span>
+                              </div>
+                              <div className="text-[10px] text-gray-400">TechStart • Yesterday</div>
+                            </div>
+                            <div className="bg-[#2A2D37] rounded-lg p-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-300 text-xs">Invoice #121</span>
+                                <span className="text-gray-300 text-xs">$3,200</span>
+                              </div>
+                              <div className="text-[10px] text-gray-400">DevCo • 3d ago</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Follow-up Performance */}
+                        <div className="px-3 py-2 border-t border-gray-700">
+                          <div className="text-xs font-medium text-gray-300 mb-2">Follow-up Success</div>
+                          <div className="bg-[#2A2D37] rounded-lg p-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="h-1.5 rounded-full bg-purple-600 w-3/4"></div>
+                              <span className="text-[10px] text-gray-400">75%</span>
+                            </div>
+                            <div className="text-[10px] text-gray-400">3/4 follow-ups successful</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Get Paid Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative">
-            <div className="text-left lg:pr-16">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-glow">
-                  3
-                </div>
-                <h2 className="text-4xl font-bold text-white">Get Paid Stress Free</h2>
-              </div>
-              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-                Sit back and watch the payments roll in. Lance's AI-powered system recovers overdue invoices quickly and reliably-boosting your cash flow without the headache of manual chasing.
-              </p>
+          {/* Final CTA Section */}
+          <div className="text-center mt-20">
+            <h3 className="text-3xl font-bold text-white mb-4">Ready to Stop Chasing Invoices?</h3>
+            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+              Join 500+ freelancers who've recovered over $2.3M in overdue payments
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Get Started Free
+              </button>
+              <button className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-lg hover:border-blue-500 hover:text-blue-400 transition-all duration-300">
+                See Quick Demo
+              </button>
             </div>
-            <div className="relative">
-              {/* Window Controls */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                </div>
-                {/* Title Bar */}
-                <div className="flex-1 bg-[#2A2D37] rounded-md px-3 py-1.5 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-gray-400 text-sm">Payment Analytics</span>
-                </div>
-              </div>
-
-              <div className="flex">
-                {/* Sidebar */}
-                <div className="w-48 pr-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center px-3 py-2 bg-blue-600/20 rounded-lg text-blue-400 text-sm">
-                      <span>Overview</span>
-                    </div>
-                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                      <span>Invoices</span>
-                    </div>
-                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                      <span>Reports</span>
-                    </div>
-                    <div className="flex items-center px-3 py-2 text-sm text-gray-400">
-                      <span>Settings</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Main Content */}
-                <div className="flex-1 border-l border-gray-700">
-                  {/* Stats Row */}
-                  <div className="grid grid-cols-3 gap-2 p-3">
-                    <div className="bg-[#2A2D37] rounded-lg p-2">
-                      <div className="text-[10px] text-gray-400">Recovery Rate</div>
-                      <div className="text-sm font-bold text-green-400">94%</div>
-                      <div className="text-[10px] text-green-400">↑ 12%</div>
-                    </div>
-                    <div className="bg-[#2A2D37] rounded-lg p-2">
-                      <div className="text-[10px] text-gray-400">Payment Time</div>
-                      <div className="text-sm font-bold text-blue-400">4.2d</div>
-                      <div className="text-[10px] text-blue-400">↓ 3d</div>
-                    </div>
-                    <div className="bg-[#2A2D37] rounded-lg p-2">
-                      <div className="text-[10px] text-gray-400">Recovered</div>
-                      <div className="text-sm font-bold text-purple-400">$12.4k</div>
-                      <div className="text-[10px] text-purple-400">30d</div>
-                    </div>
-                  </div>
-
-                  {/* Recent Payments */}
-                  <div className="px-3 py-2">
-                    <div className="text-xs font-medium text-gray-300 mb-2">Recent Payments</div>
-                    <div className="space-y-1.5">
-                      <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
-                        <div className="flex justify-between items-center">
-                          <span className="text-green-400 text-xs font-medium">Invoice #123</span>
-                          <span className="text-green-400 text-xs">$2,500</span>
-                        </div>
-                        <div className="text-[10px] text-gray-400">Acme Corp • 2h ago</div>
-                      </div>
-                      <div className="bg-[#2A2D37] rounded-lg p-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-300 text-xs">Invoice #122</span>
-                          <span className="text-gray-300 text-xs">$1,800</span>
-                        </div>
-                        <div className="text-[10px] text-gray-400">TechStart • Yesterday</div>
-                      </div>
-                      <div className="bg-[#2A2D37] rounded-lg p-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-300 text-xs">Invoice #121</span>
-                          <span className="text-gray-300 text-xs">$3,200</span>
-                        </div>
-                        <div className="text-[10px] text-gray-400">DevCo • 3d ago</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Follow-up Performance */}
-                  <div className="px-3 py-2 border-t border-gray-700">
-                    <div className="text-xs font-medium text-gray-300 mb-2">Follow-up Success</div>
-                    <div className="bg-[#2A2D37] rounded-lg p-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="h-1.5 rounded-full bg-blue-600 w-3/4"></div>
-                        <span className="text-[10px] text-gray-400">75%</span>
-                      </div>
-                      <div className="text-[10px] text-gray-400">3/4 follow-ups successful</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <p className="text-sm text-gray-500 mt-4">No credit card required • Setup in 2 minutes</p>
           </div>
         </div>
       </section>
