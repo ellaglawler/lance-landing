@@ -64,7 +64,7 @@ export function HeroStats() {
           </div>
           <div className="flex-1">
             <div className="text-3xl font-bold text-gray-800">
-              $<span className="counter" data-target="2750">0</span>
+              $<span className="counter" data-target="1000">0</span>
             </div>
             <div className="text-sm text-gray-600 -mt-1">Monthly Recovery</div>
           </div>
@@ -80,7 +80,7 @@ export function HeroStats() {
             <div className="text-3xl font-bold text-gray-800">
               <span className="counter" data-target="8">0</span>+
             </div>
-            <div className="text-sm text-gray-600 -mt-1">Hours Saved</div>
+            <div className="text-sm text-gray-600 -mt-1">Hours Saved Monthly</div>
           </div>
         </div>
       </div>
