@@ -287,15 +287,15 @@ export default function LanceLanding() {
             </div>
 
             {/* Timeline Container */}
-            <div className="relative">
+            <div className="relative min-h-[600px]">
               {/* Vertical Timeline Line */}
-              <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500/30 via-blue-500/20 to-transparent transform -translate-x-1/2"></div>
+              <div className="spine-line"></div>
 
               {/* Step 1: Auto-Detect Section */}
               <div className="relative mb-32">
                 {/* Timeline Circle */}
-                <div className="hidden lg:block absolute left-1/2 top-8 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-glow border-4 border-[#0B0F19] transform -translate-x-1/2 z-10">
-                  <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="timeline-icon timeline-icon-detect">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -458,8 +458,8 @@ export default function LanceLanding() {
               {/* Step 2: Automated Follow-ups Section */}
               <div className="relative mb-32">
                 {/* Timeline Circle */}
-                <div className="hidden lg:block absolute left-1/2 top-8 w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-2xl font-bold shadow-glow border-4 border-[#0B0F19] transform -translate-x-1/2 z-10">
-                  <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="timeline-icon timeline-icon-email">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -600,8 +600,8 @@ export default function LanceLanding() {
               {/* Step 3: Get Paid Section */}
               <div className="relative mb-32">
                 {/* Timeline Circle */}
-                <div className="hidden lg:block absolute left-1/2 top-8 w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-glow border-4 border-[#0B0F19] transform -translate-x-1/2 z-10">
-                  <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="timeline-icon timeline-icon-paid">
+                  <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
