@@ -80,13 +80,11 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
   const getSuccessMessage = () => {
     switch (variant) {
       case "contact":
-        return "Thanks! You'll be getting paid faster soon."
       case "demo":
-        return "Thanks! You'll be among the first to try Lance."
       case "hero":
       case "cta":
       default:
-        return "Thanks! You've been added to our waitlist."
+        return "Thanks! You'll be getting paid faster soon"
     }
   }
 
