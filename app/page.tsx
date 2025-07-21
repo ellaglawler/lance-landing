@@ -286,13 +286,13 @@ export default function LanceLanding() {
             </p>
 
             {/* Trust Signals */}
-            <div className="flex items-center justify-center gap-8 mb-16 opacity-60">
+            {/* <div className="flex items-center justify-center gap-8 mb-16 opacity-60">
               <div className="text-gray-400 text-sm">Trusted by 500+ freelancers</div>
               <div className="w-px h-4 bg-gray-600"></div>
               <div className="text-gray-400 text-sm">94% recovery rate</div>
               <div className="w-px h-4 bg-gray-600"></div>
               <div className="text-gray-400 text-sm">$2.3M recovered</div>
-            </div>
+            </div> */}
 
             {/* Timeline Container */}
             <div className="relative min-h-[600px]">
