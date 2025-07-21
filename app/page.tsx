@@ -797,7 +797,7 @@ export default function LanceLanding() {
                 </div>
                 <h3 className="h3-card mb-4 text-white">Creative Professionals</h3>
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
-                  🎨 Designers, Copywriters, and Marketers
+                   Designers, Copywriters, and Marketers
                 </p>
               </div>
               <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
@@ -806,7 +806,7 @@ export default function LanceLanding() {
                 </div>
                 <h3 className="h3-card mb-4 text-white">Technical Experts</h3>
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
-                  💻 Developers, Web Designers and Consultants
+                   Developers, Web Designers and Consultants
                 </p>
               </div>
               <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
@@ -815,7 +815,7 @@ export default function LanceLanding() {
                 </div>
                 <h3 className="h3-card mb-4 text-white">Media Creators</h3>
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
-                  🎥 Videographers, Photographers, and Event Pros
+                   Videographers, Photographers, and Event Pros
                 </p>
               </div>
             </div>
