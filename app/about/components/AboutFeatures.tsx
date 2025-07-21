@@ -10,7 +10,7 @@ export function AboutFeatures() {
           <div className="text-xl mb-3">📝</div>
           <h3 className="text-xl font-semibold text-white mb-3">Workflow‑Focused</h3>
           <p className="text-xl" style={{ color: "#AEB6C4" }}>
-            We don't just give you templates — we handle the work, the way you would.
+            We don't just give you templates, we handle the work, the way you would.
           </p>
         </div>
         <div className="depth-card-dark rounded-3xl p-6 transform hover:scale-105 transition-all duration-300">
@@ -24,7 +24,7 @@ export function AboutFeatures() {
           <div className="text-xl mb-3">💻</div>
           <h3 className="text-xl font-semibold text-white mb-3">Affordable & Intuitive</h3>
           <p className="text-xl" style={{ color: "#AEB6C4" }}>
-            Made for solopreneurs — accessible, straightforward, and ready to use.
+            Made for solopreneurs, accessible, straightforward, and ready to use.
           </p>
         </div>
         <div className="depth-card-dark rounded-3xl p-6 transform hover:scale-105 transition-all duration-300">

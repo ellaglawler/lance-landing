@@ -34,7 +34,7 @@ export function AboutWhy() {
         </li>
       </ul>
       <p className="text-xl" style={{ color: "#AEB6C4" }}>
-        Delivered simply — through a web app & chat — with no steep learning curve.
+        Delivered simply, through a web app & chat, with no steep learning curve.
       </p>
     </div>
   )

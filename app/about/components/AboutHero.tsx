@@ -26,7 +26,7 @@ export function AboutHero() {
           </h1>
 
           <p className="text-xl mb-10 max-w-3xl mx-auto leading-relaxed" style={{ color: "#AEB6C4" }}>
-            The teammate who works as hard as you do — without burning out. You've earned the right to focus on your craft. We'll handle the rest — 24/7.
+            The teammate who works as hard as you do, without burning out. You've earned the right to focus on your craft. We'll handle the rest, 24/7.
           </p>
         </div>
       </div>
