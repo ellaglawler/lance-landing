@@ -102,6 +102,11 @@ export const metadata: Metadata = {
     'msapplication-config': '/browserconfig.xml',
     'theme-color': '#0B0F19',
   },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function LanceLanding() {

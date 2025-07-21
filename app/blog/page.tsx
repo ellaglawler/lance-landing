@@ -73,6 +73,11 @@ export const metadata: Metadata = {
   },
   authors: [{ name: 'Lance Team' }],
   category: 'Business & Finance',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function BlogPage() {
