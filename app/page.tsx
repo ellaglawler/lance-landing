@@ -171,7 +171,7 @@ export default function LanceLanding() {
             {/* Social Proof Testimonial */}
             <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 max-w-md mx-auto social-proof">
               <p className="text-sm text-blue-300 italic mb-1">
-                "Lance recovered $1.2K in week one—that's a game changer!"
+                "Lance recovered $1.2K in week one, that's a game changer!"
               </p>
               <p className="text-xs text-gray-400">— Sarah Chen, Freelance Designer</p>
             </div>
@@ -890,7 +890,7 @@ export default function LanceLanding() {
                   Is Lance suitable for freelancers and small businesses?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-400 pb-6 text-lg">
-                  Absolutely. Lance is built for freelancers, consultants, and small businesses who want to automate follow-ups and get paid faster—without sounding pushy or losing client relationships.
+                  Absolutely. Lance is built for freelancers, consultants, and small businesses who want to automate follow-ups and get paid faster, without sounding pushy or losing client relationships.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
