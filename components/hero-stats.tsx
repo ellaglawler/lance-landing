@@ -42,14 +42,14 @@ export function HeroStats() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
-      {/* Primary Stat - Larger and more prominent */}
-      <div className="hero-stats-card transform scale-105">
+      {/* Primary Stat */}
+      <div className="hero-stats-card primary">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
-            <TrendingUp className="h-7 w-7 text-white" />
+          <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg">
+            <TrendingUp className="h-6 w-6 text-white" />
           </div>
           <div className="flex-1">
-            <div className="text-4xl font-bold text-gray-800">
+            <div className="text-3xl font-bold text-gray-800">
               <span className="counter" data-target="2">0</span>×
             </div>
             <div className="text-sm text-gray-600 -mt-1">Faster Payments</div>
@@ -80,7 +80,7 @@ export function HeroStats() {
             <div className="text-3xl font-bold text-gray-800">
               <span className="counter" data-target="8">0</span>+
             </div>
-            <div className="text-sm text-gray-600 -mt-1">Hours Saved Monthly</div>
+            <div className="text-sm text-gray-600 -mt-1">Hours Saved Weekly</div>
           </div>
         </div>
       </div>

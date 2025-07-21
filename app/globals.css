@@ -116,16 +116,23 @@
   border-radius: 12px;
   box-shadow: inset 0 0 8px rgba(0, 198, 255, 0.15);
   padding: 1rem 1.25rem;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .hero-stats-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: inset 0 0 12px rgba(0, 198, 255, 0.25), 0 4px 20px rgba(0, 102, 255, 0.1);
 }
 
 /* Primary stat card - more prominent */
-.hero-stats-card.transform.scale-105 {
+.hero-stats-card.primary {
   box-shadow: inset 0 0 12px rgba(0, 198, 255, 0.25), 0 4px 20px rgba(0, 102, 255, 0.1);
+  background: linear-gradient(to right bottom, #f8faff, #f5f7fa);
+  border: 1px solid rgba(0, 198, 255, 0.1);
+}
+
+.hero-stats-card.primary:hover {
+  transform: scale(1.05) translateY(-4px);
 }
 
 /* Count-up animation */
@@ -287,9 +294,9 @@
   width: 2px;
   background: linear-gradient(
     to bottom,
-    rgba(0, 102, 255, 0.3) 0%,
-    rgba(0, 198, 255, 0.5) 50%,
-    rgba(0, 232, 158, 0.3) 100%
+    rgba(0, 102, 255, 0.3) 0%,    /* Light blue at top */
+    rgba(0, 198, 255, 0.5) 50%,   /* Brighter blue in middle */
+    rgba(0, 51, 153, 0.3) 100%    /* Dark blue at bottom */
   );
   z-index: 10;
   opacity: 0.6;
@@ -418,12 +425,20 @@
 }
 
 /* Scroll Indicator */
+.scroll-indicator-container {
+  position: relative;
+  z-index: 10;
+  padding: 4rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .scroll-indicator {
   position: relative;
   width: 30px;
   height: 50px;
-  margin: 0 auto;  /* Changed from 6rem to 0 since we're using padding */
-  opacity: 0.8;  /* Added slight transparency */
+  opacity: 0.8;
 }
 
 .scroll-indicator::before {
@@ -459,6 +474,13 @@
   100% {
     opacity: 0;
     transform: translateX(-50%) translateY(20px);
+  }
+}
+
+/* Add responsive adjustments */
+@media (max-width: 768px) {
+  .scroll-indicator-container {
+    padding: 3rem 0;
   }
 }
 

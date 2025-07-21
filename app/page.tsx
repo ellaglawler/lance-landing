@@ -175,7 +175,7 @@ export default function LanceLanding() {
       </section>
 
       {/* Scroll Indicator Section */}
-      <div className="relative z-10 pb-32" style={{ marginTop: "-8rem" }}>
+      <div className="scroll-indicator-container">
         <div className="scroll-indicator" aria-hidden="true"></div>
       </div>
 
