@@ -400,7 +400,7 @@ export default function LanceLanding() {
                         {/* Inbox Header */}
                         <div className="px-4 py-2 border-b border-gray-700">
                           <div className="flex items-center">
-                            <span className="text-sm font-medium text-gray-300">Inobox</span>
+                            <span className="text-sm font-medium text-gray-300">Inbox</span>
                           </div>
                         </div>
 
