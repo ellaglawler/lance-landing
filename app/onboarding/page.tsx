@@ -1,17 +1,36 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Placeholder: Replace with your backend's Google OAuth URL
 const GOOGLE_OAUTH_URL = "/api/auth/google";
 
-// Step Enum
 const STEP = {
   SIGNIN: 0,
   SCANNING: 1,
   RESULTS: 2,
   ERROR: 3,
 };
+
+const checklist = [
+  {
+    icon: <CheckCircle className="text-green-500 mr-2" />, label: "Log in securely with your Google account"
+  },
+  {
+    icon: <Mail className="text-blue-500 mr-2" />, label: "Scan your inbox for unpaid invoices"
+  },
+  {
+    icon: <Zap className="text-yellow-500 mr-2" />, label: "Draft (and if you choose, send) polite reminders"
+  },
+  {
+    icon: <Shield className="text-purple-500 mr-2" />, label: "Never read unrelated emails or spam anyone"
+  },
+];
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(STEP.SIGNIN);
@@ -20,16 +39,13 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Listen for OAuth callback via postMessage
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
       const { code, error } = event.data || {};
       if (code) {
         setStep(STEP.SCANNING);
-        // Placeholder: Simulate backend scan
         setTimeout(() => {
-          // Simulate scan result (random for demo)
           const found = Math.random() > 0.3;
           if (found) {
             setScanResult({ count: 3, total: 2700 });
@@ -48,121 +64,124 @@ export default function OnboardingPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  // Step 1: Sign in with Google
-  if (step === STEP.SIGNIN) {
-    return (
-      <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded shadow">
-        <h1 className="text-2xl font-bold mb-4">Welcome to Lance — your smarter way to get paid.</h1>
-        <p className="mb-6">
-          Let us find and follow up on unpaid invoices in your inbox — so you can spend less time chasing clients and more time doing what you love.
-        </p>
-        <div className="mb-4 text-sm bg-gray-50 p-3 rounded">
-          <div>Here’s what happens when you continue:</div>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>✅ Log in securely with your Google account</li>
-            <li>✅ Scan your inbox for unpaid invoices</li>
-            <li>✅ Draft (and if you choose, send) polite reminders to your clients</li>
-            <li>✅ Never read unrelated emails or spam anyone — you’re always in control</li>
-          </ul>
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center relative">
+      {/* Wave Background - Main background that spans all sections */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/hero-wave-bg.png')",
+          zIndex: -1
+        }}
+      ></div>
+      {/* Hero background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19] opacity-90 z-10" />
+      <main className="relative z-20 w-full flex flex-col items-center justify-center min-h-screen">
+        <div className="w-full max-w-lg mx-auto">
+          <Card className="shadow-2xl bg-white/95 backdrop-blur-xl border-0">
+            <CardHeader className="flex flex-col items-center gap-2 pb-2">
+              <Badge className="mb-2 bg-blue-600/90 text-white px-4 py-1 text-sm font-semibold">Onboarding</Badge>
+              <CardTitle className="text-center text-3xl font-bold text-[#0B0F19] mb-2">
+                {step === STEP.SIGNIN && (
+                  <>
+                    Welcome to Lance — <span className="gradient-text-enhanced">your smarter way to get paid.</span>
+                  </>
+                )}
+                {step === STEP.SCANNING && "Scanning your inbox…"}
+                {step === STEP.RESULTS && (noInvoices ? "No Unpaid Invoices Found" : "Here’s what we found!")}
+                {step === STEP.ERROR && "Oops — we couldn’t connect to your inbox."}
+              </CardTitle>
+              {step === STEP.SIGNIN && (
+                <CardDescription className="text-center text-gray-500 text-lg">
+                  Let us find and follow up on unpaid invoices in your inbox — so you can spend less time chasing clients and more time doing what you love.
+                </CardDescription>
+              )}
+              {step === STEP.SCANNING && (
+                <CardDescription className="text-center text-gray-500 text-lg">
+                  Hang tight while we search your inbox for unpaid invoices and set things up.<br />This usually takes just a few seconds.
+                </CardDescription>
+              )}
+              {step === STEP.RESULTS && noInvoices && (
+                <CardDescription className="text-center text-gray-500 text-lg">
+                  You can still use Lance to track and manage future invoices from your dashboard.
+                </CardDescription>
+              )}
+              {step === STEP.ERROR && (
+                <CardDescription className="text-center text-gray-500 text-lg">
+                  Without access, we can’t find or follow up on your invoices.<br />You can try again or explore the dashboard and connect later.
+                </CardDescription>
+              )}
+            </CardHeader>
+            <CardContent>
+              {step === STEP.SIGNIN && (
+                <>
+                  <ul className="mb-6 mt-2 space-y-3">
+                    {checklist.map((item, i) => (
+                      <li key={i} className="flex items-center text-base text-gray-700">
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className="w-full py-2 px-4 text-lg mt-2"
+                    onClick={() => {
+                      window.open(
+                        GOOGLE_OAUTH_URL,
+                        "google-oauth",
+                        "width=500,height=600"
+                      );
+                    }}
+                  >
+                    <UserCheck className="mr-2" /> Sign in with Google
+                  </Button>
+                  <div className="text-xs text-gray-500 mt-3 text-center">
+                    On the next screen, Google will ask you to confirm the permissions above. You can revoke access anytime at myaccount.google.com/security.
+                  </div>
+                  {/* Testimonial */}
+                  <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100 max-w-md mx-auto">
+                    <p className="text-sm text-blue-700 italic mb-1">
+                      "Lance found 3 overdue invoices I had completely forgotten about!"
+                    </p>
+                    <p className="text-xs text-blue-500">— Sarah Chen, Freelance Designer</p>
+                  </div>
+                </>
+              )}
+              {step === STEP.SCANNING && (
+                <div className="flex flex-col items-center gap-6 mt-4">
+                  <Progress value={80} className="w-full h-3 bg-gray-200" />
+                  <div className="text-xs text-gray-400">We only scan emails related to invoices — never your personal conversations.</div>
+                </div>
+              )}
+              {step === STEP.RESULTS && !noInvoices && (
+                <div className="flex flex-col items-center gap-6 mt-2">
+                  <div className="text-2xl font-semibold text-green-700 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>${scanResult?.total}</b>.</div>
+                  <div className="text-gray-600 text-base mb-4">Next, we’ll help you follow up with your clients — you choose if we draft them for you (Copilot) or send them automatically (Autopilot).</div>
+                  <div className="flex flex-col gap-3 w-full">
+                    <Button className="w-full" onClick={() => router.push("/app/dashboard?mode=copilot")}>→ Review Draft Follow-Ups (Copilot)</Button>
+                    <Button className="w-full" variant="secondary" onClick={() => router.push("/app/dashboard?mode=autopilot")}>→ Start Sending Automatically (Autopilot)</Button>
+                  </div>
+                </div>
+              )}
+              {step === STEP.RESULTS && noInvoices && (
+                <Button className="w-full mt-6" onClick={() => router.push("/app/dashboard")}>→ Go to My Dashboard</Button>
+              )}
+              {step === STEP.ERROR && (
+                <div className="flex flex-col gap-3 w-full mt-4">
+                  <Button className="w-full" onClick={() => { setError(null); setStep(STEP.SIGNIN); }}>→ Try Again</Button>
+                  <Button className="w-full" variant="secondary" onClick={() => router.push("/app/dashboard")}>→ Go to Dashboard</Button>
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-5 w-5 text-red-500" />
+                    <AlertDescription>
+                      There was a problem connecting to Google. Please try again or contact support if the issue persists.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
-        <button
-          className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-lg"
-          onClick={() => {
-            // Open OAuth in popup
-            window.open(
-              GOOGLE_OAUTH_URL,
-              "google-oauth",
-              "width=500,height=600"
-            );
-          }}
-        >
-          ☑ Sign in with Google
-        </button>
-        <div className="text-xs text-gray-500 mt-2">
-          On the next screen, Google will ask you to confirm the permissions above. You can revoke access anytime at myaccount.google.com/security.
-        </div>
-      </div>
-    );
-  }
-
-  // Step 2: Scanning Inbox
-  if (step === STEP.SCANNING) {
-    return (
-      <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded shadow text-center">
-        <h1 className="text-2xl font-bold mb-4">Scanning your inbox…</h1>
-        <p className="mb-6">Hang tight while we search your inbox for unpaid invoices and set things up.<br/>This usually takes just a few seconds.</p>
-        <div className="w-full h-2 bg-gray-200 rounded mb-4">
-          <div className="h-2 bg-blue-500 rounded animate-pulse" style={{ width: "80%" }}></div>
-        </div>
-        <div className="text-xs text-gray-500">We only scan emails related to invoices — never your personal conversations.</div>
-      </div>
-    );
-  }
-
-  // Step 3: Results
-  if (step === STEP.RESULTS) {
-    if (noInvoices) {
-      return (
-        <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded shadow text-center">
-          <h1 className="text-2xl font-bold mb-4">We didn’t find any unpaid invoices in your inbox — nice work!</h1>
-          <p className="mb-6">You can still use Lance to track and manage future invoices from your dashboard.</p>
-          <button
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-lg"
-            onClick={() => router.push("/app/dashboard")}
-          >
-            → Go to My Dashboard
-          </button>
-        </div>
-      );
-    }
-    return (
-      <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded shadow text-center">
-        <h1 className="text-2xl font-bold mb-4">Here’s what we found!</h1>
-        <p className="mb-6">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>${scanResult?.total}</b>.<br/>Next, we’ll help you follow up with your clients — you choose if we draft them for you (Copilot) or send them automatically (Autopilot).</p>
-        <div className="flex flex-col gap-3">
-          <button
-            className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700 font-semibold text-lg"
-            onClick={() => router.push("/app/dashboard?mode=copilot")}
-          >
-            → Review Draft Follow-Ups (Copilot)
-          </button>
-          <button
-            className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-lg"
-            onClick={() => router.push("/app/dashboard?mode=autopilot")}
-          >
-            → Start Sending Automatically (Autopilot)
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Step 4: OAuth Failure/Error
-  if (step === STEP.ERROR) {
-    return (
-      <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded shadow text-center">
-        <h1 className="text-2xl font-bold mb-4">Oops — we couldn’t connect to your inbox.</h1>
-        <p className="mb-6">Without access, we can’t find or follow up on your invoices.<br/>You can try again or explore the dashboard and connect later.</p>
-        <div className="flex flex-col gap-3">
-          <button
-            className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-lg"
-            onClick={() => {
-              setError(null);
-              setStep(STEP.SIGNIN);
-            }}
-          >
-            → Try Again
-          </button>
-          <button
-            className="py-2 px-4 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 font-semibold text-lg"
-            onClick={() => router.push("/app/dashboard")}
-          >
-            → Go to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+      </main>
+    </div>
+  );
 } 
