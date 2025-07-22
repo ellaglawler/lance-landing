@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/lance-logo.png',
+        url: '/images/social-preview.png',
         width: 1200,
         height: 630,
         alt: 'Lance Blog - Freelancer Payment Strategies',
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Lance Blog - Freelancer Payment Strategies & Business Automation',
     description: 'Exclusive insights on payment strategies, client relationships, and business automation for freelancers.',
-    images: ['/images/lance-logo.png'],
+    images: ['/images/social-preview.png'],
   },
   robots: {
     index: true,

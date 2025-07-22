@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/lance-logo.png',
+        url: '/images/social-preview.png',
         width: 1200,
         height: 630,
         alt: 'Contact Lance - AI Collections Agent Demo',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Contact Lance - Schedule Demo & Get Support',
     description: 'Schedule a demo to see how Lance can recover your overdue invoices and transform your payment process.',
-    images: ['/images/lance-logo.png'],
+    images: ['/images/social-preview.png'],
   },
   robots: {
     index: true,
