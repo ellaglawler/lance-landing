@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/social-preview.png',
+        url: '/images/lance-logo.png',
         width: 1200,
         height: 630,
         alt: 'Lance Cookie Policy - Cookie Usage',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Cookie Policy - Lance AI Collections Agent',
     description: 'Learn how Lance uses cookies and similar technologies to improve your experience.',
-    images: ['/images/social-preview.png'],
+    images: ['/images/lance-logo.png'],
   },
   robots: {
     index: true,

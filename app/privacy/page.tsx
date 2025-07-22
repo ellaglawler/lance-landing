@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/social-preview.png',
+        url: '/images/lance-logo.png',
         width: 1200,
         height: 630,
         alt: 'Lance Privacy Policy - Data Protection',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Privacy Policy - Lance AI Collections Agent',
     description: 'Learn how Lance protects your data and privacy with our comprehensive Privacy Policy.',
-    images: ['/images/social-preview.png'],
+    images: ['/images/lance-logo.png'],
   },
   robots: {
     index: true,

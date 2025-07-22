@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/social-preview.png',
+        url: '/images/lance-logo.png',
         width: 1200,
         height: 630,
         alt: 'About Lance - AI Collections Agent Company',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'About Lance - AI Collections Agent for Freelancers',
     description: 'Learn about Lance\'s mission to help freelancers get paid faster with AI-powered collections.',
-    images: ['/images/social-preview.png'],
+    images: ['/images/lance-logo.png'],
   },
   robots: {
     index: true,
