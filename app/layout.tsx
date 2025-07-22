@@ -1,7 +1,9 @@
-import React from "react"
 import type { Metadata } from 'next'
-import { ThemeProvider } from "@/components/theme-provider"
-import "./globals.css"
+import './globals.css'
+import { ThemeProvider } from '@/components/theme-provider'
+import { Footer } from '@/components/footer'
+import { Header } from '@/components/header'
+import { GoogleAnalyticsComponent } from '@/components/google-analytics'
 
 export const metadata: Metadata = {
   title: 'Lance - Smart Financial Tools',
@@ -19,20 +21,27 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className="min-h-screen flex flex-col">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <div className="flex-1">
+            <Header />
+            {children}
+          </div>
+          <Footer />
         </ThemeProvider>
+        <GoogleAnalyticsComponent gaId={gaId || ''} />
       </body>
     </html>
   )
