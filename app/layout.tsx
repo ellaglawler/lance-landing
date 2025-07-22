@@ -6,8 +6,8 @@ import { Header } from '@/components/header'
 import { GoogleAnalyticsComponent } from '@/components/google-analytics'
 
 export const metadata: Metadata = {
-  title: 'Lance - Smart Financial Tools',
-  description: 'Empowering freelancers and small businesses with smart financial tools.',
+  title: 'Lance - AI Collections Agent for Freelancers | Stop Chasing, Start Collecting',
+  description: 'Lance is your AI-powered collections agent that politely recovers overdue invoices while protecting client relationships. Get paid 2x faster and save 8+ hours monthly.',
   generator: 'v0.dev',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
