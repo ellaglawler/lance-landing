@@ -504,7 +504,7 @@ export default function LanceLanding() {
                         </div>
                       </div>
                       <div className="mt-6 p-4 bg-green-600/10 rounded-lg border border-green-500/20">
-                        <p className="text-green-300 text-sm italic">"Lance recovered $12K in unpaid invoices within 2 weeks—that's a 40% lift!"</p>
+                        <p className="text-green-300 text-sm italic">"Lance recovered $12K in unpaid invoices within 2 weeks, that's a 40% lift!"</p>
                         <p className="text-green-400 text-xs mt-1">— Alex Rodriguez, Freelance Developer</p>
                       </div>
                     </div>
