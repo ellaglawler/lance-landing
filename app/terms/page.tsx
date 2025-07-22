@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/lance-logo.png',
+        url: '/images/social-preview.png',
         width: 1200,
         height: 630,
         alt: 'Lance Terms of Service - Legal Terms',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Terms of Service - Lance AI Collections Agent',
     description: 'Read Lance\'s Terms of Service for our AI collections agent platform.',
-    images: ['/images/lance-logo.png'],
+    images: ['/images/social-preview.png'],
   },
   robots: {
     index: true,
