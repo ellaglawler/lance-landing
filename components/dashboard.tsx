@@ -159,10 +159,10 @@ export default function LanceDashboard() {
     if (daysFilter !== "all") {
       filtered = filtered.filter((invoice) => {
         if (invoice.status === "paid") return true // Always show paid invoices
-        if (daysFilter === "1-7") return invoice.daysOverdue >= 1 && invoice.daysOverdue <= 7
-        if (daysFilter === "8-14") return invoice.daysOverdue >= 8 && invoice.daysOverdue <= 14
-        if (daysFilter === "15-30") return invoice.daysOverdue >= 15 && invoice.daysOverdue <= 30
-        if (daysFilter === "30+") return invoice.daysOverdue > 30
+        if (daysFilter === "1-7") return "daysOverdue" in invoice && invoice.daysOverdue >= 1 && invoice.daysOverdue <= 7
+        if (daysFilter === "8-14") return "daysOverdue" in invoice && invoice.daysOverdue >= 8 && invoice.daysOverdue <= 14
+        if (daysFilter === "15-30") return "daysOverdue" in invoice && invoice.daysOverdue >= 15 && invoice.daysOverdue <= 30
+        if (daysFilter === "30+") return "daysOverdue" in invoice && invoice.daysOverdue > 30
         return true
       })
     }
@@ -493,23 +493,23 @@ export default function LanceDashboard() {
                           <div className="font-bold text-xl text-white">{invoice.client}</div>
                           <div className="text-sm text-slate-300 font-medium">
                             <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
-                            in {invoice.daysToPayment} days
+                            {'daysToPayment' in invoice ? ` in ${invoice.daysToPayment} days` : ''}
                           </div>
                           <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Sent: {formatDate(invoice.dateSent)}
+                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
                             </div>
                             <div className="flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
-                              Paid: {formatDate(invoice.datePaid)}
+                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid) : ''}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`font-semibold border ${getToneColor(invoice.messageType)}`}>
-                          {invoice.messageType}
+                        <Badge className={`font-semibold border ${'messageType' in invoice ? getToneColor(invoice.messageType) : ''}`}>
+                          {'messageType' in invoice ? invoice.messageType : ''}
                         </Badge>
                         <Button
                           variant="outline"
@@ -546,7 +546,7 @@ export default function LanceDashboard() {
                   return (
                     <div
                       key={invoice.id}
-                      className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getStatusColor(invoice.daysOverdue)}`}
+                      className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${'daysOverdue' in invoice ? getStatusColor(invoice.daysOverdue) : ''}`}
                     >
                       <div className="flex items-center gap-4">
                         <Avatar className="h-14 w-14 ring-4 ring-slate-600 shadow-lg">
@@ -558,19 +558,19 @@ export default function LanceDashboard() {
                           <div className="font-bold text-xl text-white">{invoice.client}</div>
                           <div className="text-sm text-slate-300 font-medium">
                             <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> •{" "}
-                            {invoice.daysOverdue} days overdue
+                            {'daysOverdue' in invoice ? `${invoice.daysOverdue} days overdue` : ''}
                           </div>
-                          <div className={`text-xs mt-1 font-medium ${getStatusTextColor(invoice.daysOverdue)}`}>
-                            {getStatusText(invoice.daysOverdue)}
+                          <div className={`text-xs mt-1 font-medium ${'daysOverdue' in invoice ? getStatusTextColor(invoice.daysOverdue) : ''}`}>
+                            {'daysOverdue' in invoice ? getStatusText(invoice.daysOverdue) : ''}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge
-                          variant={invoice.tone === "Polite" ? "secondary" : "outline"}
+                          variant={'tone' in invoice && invoice.tone === "Polite" ? "secondary" : "outline"}
                           className="font-semibold bg-slate-700 text-slate-300 border-slate-600"
                         >
-                          {invoice.tone} Tone
+                          {'tone' in invoice ? `${invoice.tone} Tone` : ''}
                         </Badge>
                         <Button
                           variant="outline"
