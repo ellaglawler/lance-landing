@@ -104,7 +104,7 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
   return (
     <div className={className}>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <div className="flex w-full max-w-md gap-3">
+        <div className="flex flex-col sm:flex-row w-full max-w-md gap-3">
           <input 
             type="email" 
             placeholder="Enter your email" 
