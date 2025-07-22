@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     siteName: 'Lance',
     images: [
       {
-        url: '/images/social-preview.png',
+        url: '/social-preview.png',
         width: 1200,
         height: 630,
         alt: 'Lance - Stop Chasing Invoices, Get Paid 2× Faster',
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Lance - AI Collections Agent for Freelancers',
     description: 'Stop chasing clients, start collecting. AI-powered collections agent that recovers overdue invoices.',
-    images: ['/images/social-preview.png'],
+    images: ['/social-preview.png'],
   },
   robots: {
     index: true,
