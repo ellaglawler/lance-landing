@@ -6,19 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Mail, ArrowLeft, Upload, Check } from "lucide-react"
+import { Mail, ArrowLeft, Upload, Check, LogOut } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 interface ProfileData {
-  notifications: {
-    emailNotifications: boolean
-    smsNotifications: boolean
-    paymentReminders: boolean
-    weeklyReports: boolean
-    marketingEmails: boolean
-  }
+  // Empty interface as we no longer need notifications
 }
 
 export default function ProfilePage() {
@@ -27,15 +21,7 @@ export default function ProfilePage() {
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   
   // Initial profile data state
-  const [profileData, setProfileData] = useState<ProfileData>({
-    notifications: {
-      emailNotifications: true,
-      smsNotifications: false,
-      paymentReminders: true,
-      weeklyReports: true,
-      marketingEmails: false,
-    }
-  })
+  const [profileData, setProfileData] = useState<ProfileData>({})
 
   // Track original data to detect changes
   const [originalData, setOriginalData] = useState<ProfileData>(profileData)
@@ -48,16 +34,6 @@ export default function ProfilePage() {
     const hasImageChanges = previewImage !== null
     setHasChanges(hasDataChanges || hasImageChanges)
   }, [profileData, previewImage, originalData])
-
-  const handleNotificationChange = (key: keyof typeof profileData.notifications) => {
-    setProfileData(prev => ({
-      ...prev,
-      notifications: {
-        ...prev.notifications,
-        [key]: !prev.notifications[key]
-      }
-    }))
-  }
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -101,6 +77,17 @@ export default function ProfilePage() {
       toast.error("Failed to save changes")
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      // Simulate logout API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      router.push('/') // Redirect to home page after logout
+      toast.success("Logged out successfully")
+    } catch (error) {
+      toast.error("Failed to logout")
     }
   }
 
@@ -271,77 +258,24 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Preferences Card */}
-        <Card className="bg-slate-800 border-slate-700 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-white">Preferences</CardTitle>
-            <CardDescription className="text-slate-400">
-              Customize your notification and communication preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {/* Notification Preferences */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Email Notifications</Label>
-                    <p className="text-sm text-slate-400">Receive notifications about payment updates via email</p>
-                  </div>
-                  <Switch
-                    checked={profileData.notifications.emailNotifications}
-                    onCheckedChange={() => handleNotificationChange('emailNotifications')}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">SMS Notifications</Label>
-                    <p className="text-sm text-slate-400">Get important updates via text message</p>
-                  </div>
-                  <Switch
-                    checked={profileData.notifications.smsNotifications}
-                    onCheckedChange={() => handleNotificationChange('smsNotifications')}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Payment Reminders</Label>
-                    <p className="text-sm text-slate-400">Receive reminders about upcoming and overdue payments</p>
-                  </div>
-                  <Switch
-                    checked={profileData.notifications.paymentReminders}
-                    onCheckedChange={() => handleNotificationChange('paymentReminders')}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Weekly Reports</Label>
-                    <p className="text-sm text-slate-400">Get a summary of your payment collection activities</p>
-                  </div>
-                  <Switch
-                    checked={profileData.notifications.weeklyReports}
-                    onCheckedChange={() => handleNotificationChange('weeklyReports')}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-white">Marketing Emails</Label>
-                    <p className="text-sm text-slate-400">Receive updates about new features and promotions</p>
-                  </div>
-                  <Switch
-                    checked={profileData.notifications.marketingEmails}
-                    onCheckedChange={() => handleNotificationChange('marketingEmails')}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-              </div>
+        {/* Logout Section */}
+        <div className="border-t border-slate-700 pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-white">Logout</h3>
+              <p className="text-sm text-slate-400">End your current session</p>
             </div>
-          </CardContent>
-        </Card>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleLogout}
+              className="bg-red-900/20 border-red-800/50 text-red-400 hover:bg-red-900/30 hover:text-red-300"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -216,7 +216,7 @@ export default function LanceDashboard() {
             </Button>
             <Avatar 
               className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
-              onClick={() => router.push('/dashboard/profile')}
+              onClick={() => router.push('/profile')}
             >
               <AvatarImage src="/images/ella.png" />
               <AvatarFallback className="bg-blue-600 text-white font-bold">E</AvatarFallback>
