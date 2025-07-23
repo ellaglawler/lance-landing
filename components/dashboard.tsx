@@ -13,6 +13,14 @@ import {
   Mail,
   AlertTriangle,
   Settings,
+  BarChart2,
+  BadgeDollarSign,
+  Check,
+  Hourglass,
+  AlertCircle,
+  Pin,
+  CircleDot,
+  Circle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -358,7 +366,7 @@ export default function LanceDashboard() {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-600 rounded-lg">
-                <span role="img" aria-label="chart" className="text-white text-lg">📈</span>
+                <BarChart2 className="text-white h-5 w-5" />
               </div>
               <div>
                 <CardTitle className="text-white text-lg">Weekly Insights</CardTitle>
@@ -371,7 +379,7 @@ export default function LanceDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* You’re Owed */}
               <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
-                <span role="img" aria-label="money" className="text-2xl">💰</span>
+                <BadgeDollarSign className="text-green-400 h-7 w-7" />
                 <div>
                   <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
                   <div className="text-white text-xl font-bold">
@@ -381,7 +389,7 @@ export default function LanceDashboard() {
               </div>
               {/* Collected This Week */}
               <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
-                <span role="img" aria-label="check" className="text-2xl">✅</span>
+                <CheckCircle className="text-blue-400 h-7 w-7" />
                 <div>
                   <div className="text-slate-400 text-xs font-medium">Collected This Week</div>
                   <div className="text-white text-xl font-bold">
@@ -396,7 +404,7 @@ export default function LanceDashboard() {
               </div>
               {/* Hours Saved */}
               <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
-                <span role="img" aria-label="hourglass" className="text-2xl">⏳</span>
+                <Hourglass className="text-yellow-400 h-7 w-7" />
                 <div>
                   <div className="text-slate-400 text-xs font-medium">Hours Saved</div>
                   <div className="text-white text-xl font-bold">
@@ -422,7 +430,7 @@ export default function LanceDashboard() {
             {/* At-Risk Clients */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2">
-                <span role="img" aria-label="risk">🚦</span>
+                <AlertCircle className="text-yellow-400 h-5 w-5" />
                 <span className="text-white font-semibold">At-Risk Clients</span>
               </div>
               <div className="overflow-x-auto">
@@ -454,7 +462,7 @@ export default function LanceDashboard() {
                           <td className="px-2 py-1">{inv.daysOverdue}</td>
                           <td className="px-2 py-1">
                             <span className="inline-flex items-center gap-1 font-semibold text-red-400">
-                              <span role="img" aria-label="high">🔴</span> High
+                              <CircleDot className="h-4 w-4 text-red-400" /> High
                             </span>
                           </td>
                         </tr>
@@ -470,13 +478,13 @@ export default function LanceDashboard() {
             {/* Next Steps */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span role="img" aria-label="pin">📌</span>
+                <Pin className="text-blue-400 h-5 w-5" />
                 <span className="text-white font-semibold">Next Steps</span>
               </div>
               <ul className="space-y-2">
                 {overdueInvoices.filter(inv => inv.daysOverdue >= 21).map(inv => (
                   <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
-                    <span className="text-blue-300">🔹</span>
+                    <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Approve escalated reminder to <span className="font-semibold text-white">{inv.client}</span></span>
                     <Button
                       size="sm"
@@ -495,7 +503,7 @@ export default function LanceDashboard() {
                 {/* Example: View action for a client with 7-20 days overdue */}
                 {overdueInvoices.filter(inv => inv.daysOverdue >= 8 && inv.daysOverdue < 21).map(inv => (
                   <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
-                    <span className="text-blue-300">🔹</span>
+                    <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
                     <Button
                       size="sm"
