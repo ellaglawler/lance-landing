@@ -219,148 +219,6 @@ export default function LanceDashboard() {
           </div>
         </div>
 
-        {/* Lance Activity Bar */}
-        <Card className="bg-slate-800 border-slate-700 shadow-xl">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-600 rounded-lg">
-                  <Bot className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <CardTitle className="text-white text-lg">Lance Activity</CardTitle>
-                  <CardDescription className="text-slate-400">
-                    Your AI agent is actively working on {overdueInvoices.length} overdue invoices
-                  </CardDescription>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm text-green-400 font-medium">Active</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            {/* Visual Timeline */}
-            <div className="mb-6 p-4 bg-slate-700/30 rounded-lg">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-slate-300">Activity Timeline</span>
-                <span className="text-xs text-slate-400">Last 24 hours</span>
-              </div>
-              <div className="relative">
-                {/* Timeline base line */}
-                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-600 transform -translate-y-1/2"></div>
-
-                {/* Timeline points */}
-                <div className="relative flex justify-between items-center h-8">
-                  {/* Recent activity points */}
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-blue-400 rounded-full border-2 border-slate-800 animate-pulse"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      2m
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      1h
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-green-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      3h
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      5h
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="w-2.5 h-2.5 bg-yellow-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      1d
-                    </div>
-                  </div>
-
-                  {/* Additional smaller points for more activity */}
-                  <div className="relative">
-                    <div className="w-1.5 h-1.5 bg-blue-300 rounded-full border border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
-                      2d
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="w-2 h-2 bg-green-300 rounded-full border border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
-                      3d
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="w-1.5 h-1.5 bg-orange-300 rounded-full border border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
-                      4d
-                    </div>
-                  </div>
-                </div>
-
-                {/* Activity summary */}
-                <div className="mt-8 flex items-center justify-center gap-6 text-xs">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span className="text-slate-400">Follow-ups</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    <span className="text-slate-400">Detections</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-slate-400">Payments</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-slate-400">Scheduling</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <span className="text-slate-400">Adjustments</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Activity Timeline Text Feed */}
-            <div className="space-y-3 max-h-48 overflow-y-auto">
-              {activityFeed.map((activity, index) => {
-                const IconComponent = activity.icon
-                return (
-                  <div
-                    key={activity.id}
-                    className="flex items-start gap-3 p-3 bg-slate-700/50 rounded-lg hover:bg-slate-700 transition-colors"
-                  >
-                    <div className={`p-1.5 rounded-full bg-slate-600 ${activity.color}`}>
-                      <IconComponent className="h-3 w-3" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white font-medium">{activity.message}</p>
-                      <p className="text-xs text-slate-400 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Weekly Insights Card */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
           <CardHeader className="pb-2">
@@ -527,6 +385,148 @@ export default function LanceDashboard() {
                   <li className="text-slate-500 py-2">No urgent actions needed this week.</li>
                 )}
               </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Lance Activity Bar */}
+        <Card className="bg-slate-800 border-slate-700 shadow-xl">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-600 rounded-lg">
+                  <Bot className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-white text-lg">Lance Activity</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Your AI agent is actively working on {overdueInvoices.length} overdue invoices
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-green-400 font-medium">Active</span>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {/* Visual Timeline */}
+            <div className="mb-6 p-4 bg-slate-700/30 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-slate-300">Activity Timeline</span>
+                <span className="text-xs text-slate-400">Last 24 hours</span>
+              </div>
+              <div className="relative">
+                {/* Timeline base line */}
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-600 transform -translate-y-1/2"></div>
+
+                {/* Timeline points */}
+                <div className="relative flex justify-between items-center h-8">
+                  {/* Recent activity points */}
+                  <div className="relative">
+                    <div className="w-3 h-3 bg-blue-400 rounded-full border-2 border-slate-800 animate-pulse"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                      2m
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                      1h
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="w-3 h-3 bg-green-400 rounded-full border-2 border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                      3h
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full border-2 border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                      5h
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="w-2.5 h-2.5 bg-yellow-400 rounded-full border-2 border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                      1d
+                    </div>
+                  </div>
+
+                  {/* Additional smaller points for more activity */}
+                  <div className="relative">
+                    <div className="w-1.5 h-1.5 bg-blue-300 rounded-full border border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
+                      2d
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="w-2 h-2 bg-green-300 rounded-full border border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
+                      3d
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="w-1.5 h-1.5 bg-orange-300 rounded-full border border-slate-800"></div>
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
+                      4d
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activity summary */}
+                <div className="mt-8 flex items-center justify-center gap-6 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span className="text-slate-400">Follow-ups</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                    <span className="text-slate-400">Detections</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span className="text-slate-400">Payments</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-slate-400">Scheduling</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span className="text-slate-400">Adjustments</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity Timeline Text Feed */}
+            <div className="space-y-3 max-h-48 overflow-y-auto">
+              {activityFeed.map((activity, index) => {
+                const IconComponent = activity.icon
+                return (
+                  <div
+                    key={activity.id}
+                    className="flex items-start gap-3 p-3 bg-slate-700/50 rounded-lg hover:bg-slate-700 transition-colors"
+                  >
+                    <div className={`p-1.5 rounded-full bg-slate-600 ${activity.color}`}>
+                      <IconComponent className="h-3 w-3" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white font-medium">{activity.message}</p>
+                      <p className="text-xs text-slate-400 mt-1">{activity.time}</p>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </CardContent>
         </Card>
