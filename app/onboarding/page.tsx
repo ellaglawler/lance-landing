@@ -66,7 +66,7 @@ export default function OnboardingPage() {
           checkGmailToken()
             .then((tokensValid) => {
               if (tokensValid) {
-                router.push("/app/dashboard");
+                router.push("/dashboard");
               } else {
                 setStep(STEP.RECONNECT);
               }
@@ -132,6 +132,16 @@ export default function OnboardingPage() {
   if (step === STEP.SIGNIN) {
     const handleGoogleAuth = async () => {
       setLoading(true);
+      // Open a blank popup immediately to avoid browser popup blocking
+      const popup = window.open('', 'google-oauth', 'width=500,height=600');
+      if (!popup) {
+        setError('Popup blocked. Please allow popups for this site.');
+        setStep(STEP.ERROR);
+        setLoading(false);
+        return;
+      }
+      // Optionally show a loading message in the popup
+      popup.document.write('<p style="font-family:sans-serif;text-align:center;margin-top:2em;">Loading Google sign-in…</p>');
       try {
         let url = '';
         if (isSignUp) {
@@ -139,8 +149,9 @@ export default function OnboardingPage() {
         } else {
           url = await getGoogleSigninUrl();
         }
-        window.open(url, 'google-oauth', 'width=500,height=600');
+        popup.location.href = url;
       } catch (err) {
+        popup.close();
         setError('Failed to initiate Google authentication.');
         setStep(STEP.ERROR);
       } finally {
@@ -220,10 +231,20 @@ export default function OnboardingPage() {
   if (step === STEP.RECONNECT) {
     const handleReconnect = async () => {
       setLoading(true);
+      // Open a blank popup immediately to avoid browser popup blocking
+      const popup = window.open('', 'google-oauth', 'width=500,height=600');
+      if (!popup) {
+        setError('Popup blocked. Please allow popups for this site.');
+        setStep(STEP.ERROR);
+        setLoading(false);
+        return;
+      }
+      popup.document.write('<p style="font-family:sans-serif;text-align:center;margin-top:2em;">Loading Google sign-in…</p>');
       try {
         const url = await getGoogleSignupUrl();
-        window.open(url, 'google-oauth', 'width=500,height=600');
+        popup.location.href = url;
       } catch (err) {
+        popup.close();
         setError('Failed to initiate Google authentication.');
         setStep(STEP.ERROR);
       } finally {
@@ -368,18 +389,18 @@ export default function OnboardingPage() {
                   <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>${scanResult?.total}</b>.</div>
                   <div className="text-gray-300 text-base mb-4">Next, we’ll help you follow up with your clients, you choose if we draft them for you (Copilot) or send them automatically (Autopilot).</div>
                   <div className="flex flex-col gap-3 w-full">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/app/dashboard?mode=copilot")}>→ Review Draft Follow-Ups (Copilot)</Button>
-                    <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => router.push("/app/dashboard?mode=autopilot")}>→ Start Sending Automatically (Autopilot)</Button>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/dashboard?mode=copilot")}>→ Review Draft Follow-Ups (Copilot)</Button>
+                    <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => router.push("/dashboard?mode=autopilot")}>→ Start Sending Automatically (Autopilot)</Button>
                   </div>
                 </div>
               )}
               {step === STEP.RESULTS && noInvoices && (
-                <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/app/dashboard")}>→ Go to My Dashboard</Button>
+                <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/dashboard")}>→ Go to My Dashboard</Button>
               )}
               {step === STEP.ERROR && (
                 <div className="flex flex-col gap-3 w-full mt-4">
                   <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setError(null); setStep(STEP.SIGNIN); }}>→ Try Again</Button>
-                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => router.push("/app/dashboard")}>→ Go to Dashboard</Button>
+                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => router.push("/dashboard")}>→ Go to Dashboard</Button>
                   <Alert variant="destructive" className="mt-4 bg-[#232B3A] border border-red-700 text-red-300">
                     <AlertCircle className="h-5 w-5 text-red-500" />
                     <AlertDescription>
