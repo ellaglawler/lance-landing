@@ -11,10 +11,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 const GOOGLE_OAUTH_URL = "/api/auth/google";
 
 const STEP = {
+  ENTRY: -1,
   SIGNIN: 0,
   SCANNING: 1,
   RESULTS: 2,
   ERROR: 3,
+  RECONNECT: 4,
 };
 
 const checklist = [
@@ -33,28 +35,42 @@ const checklist = [
 ];
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState(STEP.SIGNIN);
+  const [step, setStep] = useState(STEP.ENTRY);
   const [scanResult, setScanResult] = useState<null | { count: number; total: number }>(null);
   const [noInvoices, setNoInvoices] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const router = useRouter();
 
+  // Listen for OAuth callback via postMessage
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      const { code, error } = event.data || {};
+      const { code, error, flow } = event.data || {};
       if (code) {
-        setStep(STEP.SCANNING);
-        setTimeout(() => {
-          const found = Math.random() > 0.3;
-          if (found) {
-            setScanResult({ count: 3, total: 2700 });
-            setStep(STEP.RESULTS);
-          } else {
-            setNoInvoices(true);
-            setStep(STEP.RESULTS);
-          }
-        }, 2000);
+        if (isSignUp) {
+          setStep(STEP.SCANNING);
+          setTimeout(() => {
+            const found = Math.random() > 0.3;
+            if (found) {
+              setScanResult({ count: 3, total: 2700 });
+              setStep(STEP.RESULTS);
+            } else {
+              setNoInvoices(true);
+              setStep(STEP.RESULTS);
+            }
+          }, 2000);
+        } else {
+          // Simulate backend Gmail token check for returning user
+          setTimeout(() => {
+            const tokensValid = Math.random() > 0.5; // 50% chance tokens are valid
+            if (tokensValid) {
+              router.push("/app/dashboard");
+            } else {
+              setStep(STEP.RECONNECT);
+            }
+          }, 1200);
+        }
       } else if (error) {
         setError("OAuth failed or was denied.");
         setStep(STEP.ERROR);
@@ -62,7 +78,171 @@ export default function OnboardingPage() {
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [isSignUp, router]);
+
+  // Entry screen: Sign Up or Sign In
+  if (step === STEP.ENTRY) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center relative">
+        {/* Wave Background - Main background that spans all sections */}
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/hero-wave-bg.png')",
+            zIndex: -1
+          }}
+        ></div>
+        {/* Hero background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19] opacity-90 z-10" />
+        <main className="relative z-20 w-full flex flex-col items-center justify-center min-h-screen">
+          <div className="w-full max-w-lg mx-auto">
+            <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
+              <CardHeader className="flex flex-col items-center gap-2 pb-2">
+                <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Onboarding</Badge>
+                <CardTitle className="text-center text-3xl font-bold text-white mb-2">
+                  Welcome back — or welcome aboard!
+                </CardTitle>
+                <CardDescription className="text-center text-gray-300 text-lg">
+                  Lance helps you track unpaid invoices and follow up with clients — automatically or with your review.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-8 pb-8 pt-2">
+                <div className="flex flex-col gap-4 w-full mt-4">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
+                    → I’m New — Sign Up
+                  </Button>
+                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
+                    → I Already Have an Account — Sign In
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Step 1: Sign in with Google (Sign Up or Sign In)
+  if (step === STEP.SIGNIN) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center relative">
+        {/* Wave Background - Main background that spans all sections */}
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/hero-wave-bg.png')",
+            zIndex: -1
+          }}
+        ></div>
+        {/* Hero background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19] opacity-90 z-10" />
+        <main className="relative z-20 w-full flex flex-col items-center justify-center min-h-screen">
+          <div className="w-full max-w-lg mx-auto">
+            <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
+              <CardHeader className="flex flex-col items-center gap-2 pb-2">
+                <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">{isSignUp ? "Sign Up" : "Sign In"}</Badge>
+                <CardTitle className="text-center text-3xl font-bold text-white mb-2">
+                  {isSignUp ? (
+                    <>Welcome to Lance <span className="gradient-text-enhanced">your smarter way to get paid.</span></>
+                  ) : (
+                    <>Sign in to Lance <span className="gradient-text-enhanced">get paid faster.</span></>
+                  )}
+                </CardTitle>
+                <CardDescription className="text-center text-gray-300 text-lg">
+                  {isSignUp
+                    ? "Let us find and follow up on unpaid invoices in your inbox, so you can spend less time chasing clients and more time doing what you love."
+                    : "Sign in with Google to access your dashboard and keep tracking your invoices."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-8 pb-8 pt-2">
+                {isSignUp && (
+                  <ul className="mb-6 mt-2 space-y-3">
+                    {checklist.map((item, i) => (
+                      <li key={i} className="flex items-center text-base text-gray-200">
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Button
+                  className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  onClick={() => {
+                    // For sign up: full OAuth. For sign in: SSO only.
+                    window.open(
+                      isSignUp ? GOOGLE_OAUTH_URL : `${GOOGLE_OAUTH_URL}?profileOnly=true`,
+                      "google-oauth",
+                      "width=500,height=600"
+                    );
+                  }}
+                >
+                  <UserCheck className="mr-2" /> {isSignUp ? "Sign up with Google" : "Sign in with Google"}
+                </Button>
+                <div className="text-xs text-gray-400 mt-3 text-center">
+                  {isSignUp
+                    ? "On the next screen, Google will ask you to confirm the permissions above. You can revoke access anytime at myaccount.google.com/security."
+                    : "We’ll never access your inbox unless you give us permission."}
+                </div>
+                {isSignUp && (
+                  <div className="mt-8 p-4 bg-[#232B3A] rounded-xl border border-white/10 max-w-md mx-auto">
+                    <p className="text-sm text-blue-200 italic mb-1">
+                      "Lance found 3 overdue invoices I had completely forgotten about!"
+                    </p>
+                    <p className="text-xs text-blue-400">— Sarah Chen, Freelance Designer</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Step: Reconnect Gmail OAuth for returning users with expired tokens
+  if (step === STEP.RECONNECT) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center relative">
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/hero-wave-bg.png')",
+            zIndex: -1
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19] opacity-90 z-10" />
+        <main className="relative z-20 w-full flex flex-col items-center justify-center min-h-screen">
+          <div className="w-full max-w-lg mx-auto">
+            <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
+              <CardHeader className="flex flex-col items-center gap-2 pb-2">
+                <Badge className="mb-2 bg-yellow-700/80 text-white px-4 py-1 text-sm font-semibold">Reconnect Inbox</Badge>
+                <CardTitle className="text-center text-2xl font-bold text-white mb-2">
+                  We need to reconnect to your inbox to keep tracking your invoices.
+                </CardTitle>
+                <CardDescription className="text-center text-gray-300 text-lg">
+                  Please re-authorize Gmail access so Lance can keep finding and following up on unpaid invoices for you.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-8 pb-8 pt-2">
+                <Button
+                  className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  onClick={() => {
+                    window.open(GOOGLE_OAUTH_URL, "google-oauth", "width=500,height=600");
+                  }}
+                >
+                  <UserCheck className="mr-2" /> Reconnect Inbox
+                </Button>
+                <div className="text-xs text-gray-400 mt-3 text-center">
+                  You can revoke access anytime at myaccount.google.com/security.
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center relative">
