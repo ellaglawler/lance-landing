@@ -6,6 +6,18 @@ const api = axios.create({
   withCredentials: true, // send cookies for auth if needed
 });
 
+// Attach JWT to all requests if present
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
   const res = await api.get('/auth/google/signup');

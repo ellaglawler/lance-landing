@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode } from '@/lib/api';
+import { useAuth } from '@/components/auth-context';
 
 const STEP = {
   ENTRY: -1,
@@ -41,6 +42,7 @@ export default function OnboardingPage() {
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   // Listen for OAuth callback via postMessage
   useEffect(() => {
@@ -50,7 +52,9 @@ export default function OnboardingPage() {
       if (code) {
         setLoading(true);
         exchangeGoogleCode(code)
-          .then(() => {
+          .then((data) => {
+            // Store JWT and user info in AuthContext
+            login(data.access_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
               setTimeout(() => {
@@ -68,6 +72,7 @@ export default function OnboardingPage() {
               checkGmailToken()
                 .then((tokensValid) => {
                   if (tokensValid) {
+                    // Redirect to dashboard
                     router.push("/app/dashboard");
                   } else {
                     setStep(STEP.RECONNECT);
@@ -91,7 +96,7 @@ export default function OnboardingPage() {
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isSignUp, router]);
+  }, [isSignUp, router, login]);
 
   // Entry screen: Sign Up or Sign In
   if (step === STEP.ENTRY) {
