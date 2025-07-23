@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken } from '@/lib/api';
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode } from '@/lib/api';
 
 const STEP = {
   ENTRY: -1,
@@ -48,34 +48,42 @@ export default function OnboardingPage() {
       if (event.origin !== window.location.origin) return;
       const { code, error, flow } = event.data || {};
       if (code) {
-        if (isSignUp) {
-          setStep(STEP.SCANNING);
-          setTimeout(() => {
-            const found = Math.random() > 0.3;
-            if (found) {
-              setScanResult({ count: 3, total: 2700 });
-              setStep(STEP.RESULTS);
+        setLoading(true);
+        exchangeGoogleCode(code)
+          .then(() => {
+            if (isSignUp) {
+              setStep(STEP.SCANNING);
+              setTimeout(() => {
+                const found = Math.random() > 0.3;
+                if (found) {
+                  setScanResult({ count: 3, total: 2700 });
+                  setStep(STEP.RESULTS);
+                } else {
+                  setNoInvoices(true);
+                  setStep(STEP.RESULTS);
+                }
+              }, 2000);
             } else {
-              setNoInvoices(true);
-              setStep(STEP.RESULTS);
+              setStep(STEP.SCANNING);
+              checkGmailToken()
+                .then((tokensValid) => {
+                  if (tokensValid) {
+                    router.push("/app/dashboard");
+                  } else {
+                    setStep(STEP.RECONNECT);
+                  }
+                })
+                .catch(() => {
+                  setError('Failed to check Gmail token.');
+                  setStep(STEP.ERROR);
+                });
             }
-          }, 2000);
-        } else {
-          // Use real backend token check for returning user
-          setStep(STEP.SCANNING);
-          checkGmailToken()
-            .then((tokensValid) => {
-              if (tokensValid) {
-                router.push("/dashboard");
-              } else {
-                setStep(STEP.RECONNECT);
-              }
-            })
-            .catch(() => {
-              setError('Failed to check Gmail token.');
-              setStep(STEP.ERROR);
-            });
-        }
+          })
+          .catch(() => {
+            setError('Google authentication failed.');
+            setStep(STEP.ERROR);
+          })
+          .finally(() => setLoading(false));
       } else if (error) {
         setError("OAuth failed or was denied.");
         setStep(STEP.ERROR);
