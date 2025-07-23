@@ -26,8 +26,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from "next/navigation"
 
 export default function LanceDashboard() {
+  const router = useRouter()
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [amountFilter, setAmountFilter] = useState("all")
@@ -212,8 +214,11 @@ export default function LanceDashboard() {
               <Settings className="h-4 w-4 mr-2" />
               Settings
             </Button>
-            <Avatar className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900">
-              <AvatarImage src="/placeholder.svg?height=40&width=40" />
+            <Avatar 
+              className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
+              onClick={() => router.push('/profile')}
+            >
+              <AvatarImage src="/images/ella.png" />
               <AvatarFallback className="bg-blue-600 text-white font-bold">E</AvatarFallback>
             </Avatar>
           </div>

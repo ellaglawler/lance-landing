@@ -93,17 +93,19 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col pt-24">
       
+      {/* Wave Background - Fixed position for entire page */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat wave-bg"
+        style={{
+          backgroundImage: "url('/hero-wave-bg.png')",
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      ></div>
+
       {/* Hero Section */}
       <section className="relative py-32 flex items-center justify-center min-h-[60vh]">
-        {/* Wave Background */}
-        <div
-          className="fixed inset-0 bg-cover bg-center bg-no-repeat wave-bg"
-          style={{
-            backgroundImage: "url('/hero-wave-bg.png')",
-            zIndex: 0
-          }}
-        ></div>
-
+        {/* Remove old wave background from here */}
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="mx-auto max-w-4xl text-center">
             {/* Beta Badge */}
@@ -124,7 +126,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Options Section */}
-      <section className="relative bg-secondary-dark py-32">
+      <section className="relative py-32">
         {/* Top Curve */}
         <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-1px)' }}>
           <svg 
@@ -184,8 +186,25 @@ export default function ContactPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Demo Section */}
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Demo/CTA Section */}
+      <section className="relative py-24 bg-[#0B0F19]">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <h2 className="text-3xl font-bold text-blue-400 mb-4">See Your AI Collections Agent in Action</h2>
               <p className="text-xl mb-8" style={{ color: "#AEB6C4" }}>

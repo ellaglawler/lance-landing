@@ -64,6 +64,10 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
     ? "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
     : "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
 
+  const secondaryButtonClasses = variant === "hero"
+    ? "bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap border border-white/20"
+    : "bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap border border-white/20"
+
   const getButtonText = () => {
     switch (variant) {
       case "contact":
@@ -103,8 +107,8 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
 
   return (
     <div className={className}>
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <div className="flex flex-col sm:flex-row w-full max-w-md gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 w-full max-w-3xl mx-auto">
           <input 
             type="email" 
             placeholder="Enter your email" 
@@ -127,6 +131,14 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
             ) : (
               getButtonText()
             )}
+          </Button>
+          <Button 
+            type="button"
+            size="lg"
+            className={secondaryButtonClasses}
+            onClick={() => window.location.href = '/dashboard'}
+          >
+            See Demo
           </Button>
         </div>
         
