@@ -379,7 +379,7 @@ export default function LanceDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* You’re Owed */}
               <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
-                <BadgeDollarSign className="text-green-400 h-7 w-7" />
+                <BadgeDollarSign className="text-red-400 h-7 w-7" />
                 <div>
                   <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
                   <div className="text-white text-xl font-bold">
@@ -389,7 +389,7 @@ export default function LanceDashboard() {
               </div>
               {/* Collected This Week */}
               <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
-                <CheckCircle className="text-blue-400 h-7 w-7" />
+                <CheckCircle className="text-green-400 h-7 w-7" />
                 <div>
                   <div className="text-slate-400 text-xs font-medium">Collected This Week</div>
                   <div className="text-white text-xl font-bold">
