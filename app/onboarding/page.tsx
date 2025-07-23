@@ -7,8 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
-const GOOGLE_OAUTH_URL = "/api/auth/google";
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken } from '@/lib/api';
 
 const STEP = {
   ENTRY: -1,
@@ -40,6 +39,7 @@ export default function OnboardingPage() {
   const [noInvoices, setNoInvoices] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   // Listen for OAuth callback via postMessage
@@ -61,15 +61,20 @@ export default function OnboardingPage() {
             }
           }, 2000);
         } else {
-          // Simulate backend Gmail token check for returning user
-          setTimeout(() => {
-            const tokensValid = Math.random() > 0.5; // 50% chance tokens are valid
-            if (tokensValid) {
-              router.push("/app/dashboard");
-            } else {
-              setStep(STEP.RECONNECT);
-            }
-          }, 1200);
+          // Use real backend token check for returning user
+          setStep(STEP.SCANNING);
+          checkGmailToken()
+            .then((tokensValid) => {
+              if (tokensValid) {
+                router.push("/app/dashboard");
+              } else {
+                setStep(STEP.RECONNECT);
+              }
+            })
+            .catch(() => {
+              setError('Failed to check Gmail token.');
+              setStep(STEP.ERROR);
+            });
         }
       } else if (error) {
         setError("OAuth failed or was denied.");
@@ -125,6 +130,23 @@ export default function OnboardingPage() {
 
   // Step 1: Sign in with Google (Sign Up or Sign In)
   if (step === STEP.SIGNIN) {
+    const handleGoogleAuth = async () => {
+      setLoading(true);
+      try {
+        let url = '';
+        if (isSignUp) {
+          url = await getGoogleSignupUrl();
+        } else {
+          url = await getGoogleSigninUrl();
+        }
+        window.open(url, 'google-oauth', 'width=500,height=600');
+      } catch (err) {
+        setError('Failed to initiate Google authentication.');
+        setStep(STEP.ERROR);
+      } finally {
+        setLoading(false);
+      }
+    };
     return (
       <div className="min-h-screen flex flex-col justify-center items-center relative">
         {/* Wave Background - Main background that spans all sections */}
@@ -168,16 +190,10 @@ export default function OnboardingPage() {
                 )}
                 <Button
                   className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                  onClick={() => {
-                    // For sign up: full OAuth. For sign in: SSO only.
-                    window.open(
-                      isSignUp ? GOOGLE_OAUTH_URL : `${GOOGLE_OAUTH_URL}?profileOnly=true`,
-                      "google-oauth",
-                      "width=500,height=600"
-                    );
-                  }}
+                  onClick={handleGoogleAuth}
+                  disabled={loading}
                 >
-                  <UserCheck className="mr-2" /> {isSignUp ? "Sign up with Google" : "Sign in with Google"}
+                  <UserCheck className="mr-2" /> {loading ? 'Loading…' : isSignUp ? "Sign up with Google" : "Sign in with Google"}
                 </Button>
                 <div className="text-xs text-gray-400 mt-3 text-center">
                   {isSignUp
@@ -202,6 +218,18 @@ export default function OnboardingPage() {
 
   // Step: Reconnect Gmail OAuth for returning users with expired tokens
   if (step === STEP.RECONNECT) {
+    const handleReconnect = async () => {
+      setLoading(true);
+      try {
+        const url = await getGoogleSignupUrl();
+        window.open(url, 'google-oauth', 'width=500,height=600');
+      } catch (err) {
+        setError('Failed to initiate Google authentication.');
+        setStep(STEP.ERROR);
+      } finally {
+        setLoading(false);
+      }
+    };
     return (
       <div className="min-h-screen flex flex-col justify-center items-center relative">
         <div
@@ -227,11 +255,10 @@ export default function OnboardingPage() {
               <CardContent className="px-8 pb-8 pt-2">
                 <Button
                   className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                  onClick={() => {
-                    window.open(GOOGLE_OAUTH_URL, "google-oauth", "width=500,height=600");
-                  }}
+                  onClick={handleReconnect}
+                  disabled={loading}
                 >
-                  <UserCheck className="mr-2" /> Reconnect Inbox
+                  <UserCheck className="mr-2" /> {loading ? 'Loading…' : 'Reconnect Inbox'}
                 </Button>
                 <div className="text-xs text-gray-400 mt-3 text-center">
                   You can revoke access anytime at myaccount.google.com/security.
@@ -306,11 +333,14 @@ export default function OnboardingPage() {
                   <Button
                     className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                     onClick={() => {
-                      window.open(
-                        GOOGLE_OAUTH_URL,
-                        "google-oauth",
-                        "width=500,height=600"
-                      );
+                      setLoading(true);
+                      getGoogleSigninUrl()
+                        .then((url) => window.open(url, "google-oauth", "width=500,height=600"))
+                        .catch((err) => {
+                          setError('Failed to initiate Google authentication.');
+                          setStep(STEP.ERROR);
+                        })
+                        .finally(() => setLoading(false));
                     }}
                   >
                     <UserCheck className="mr-2" /> Sign in with Google
