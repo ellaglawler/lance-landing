@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Email AccessOAuth Callback</title>
+    <script>
+        (function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get("code");
+            const error = urlParams.get("error");
+
+            if (window.opener) {
+                window.opener.postMessage({ code, error }, window.location.origin);
+                window.close();
+            }
+        })();
+    </script>
+</head>
+<body>
+    <p>Authenticating Google Email Access...</p>
+</body>
+</html> 
