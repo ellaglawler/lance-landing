@@ -136,7 +136,7 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
             type="button"
             size="lg"
             className={secondaryButtonClasses}
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={() => window.location.href = '/dashboard?demo-mode=true'}
           >
             See Demo
           </Button>
