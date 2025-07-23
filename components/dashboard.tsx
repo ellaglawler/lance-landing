@@ -13,6 +13,14 @@ import {
   Mail,
   AlertTriangle,
   Settings,
+  BarChart2,
+  BadgeDollarSign,
+  Check,
+  Hourglass,
+  AlertCircle,
+  Pin,
+  CircleDot,
+  Circle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -210,6 +218,176 @@ export default function LanceDashboard() {
             </Avatar>
           </div>
         </div>
+
+        {/* Weekly Insights Card */}
+        <Card className="bg-slate-800 border-slate-700 shadow-xl">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-600 rounded-lg">
+                <BarChart2 className="text-white h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="text-white text-lg">Weekly Insights</CardTitle>
+                <CardDescription className="text-slate-400">Your freelance business at a glance.</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0 pb-4">
+            {/* Key Metrics Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* You’re Owed */}
+              <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
+                <BadgeDollarSign className="text-red-400 h-7 w-7" />
+                <div>
+                  <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
+                  <div className="text-white text-xl font-bold">
+                    ${overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              {/* Collected This Week */}
+              <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
+                <CheckCircle className="text-green-400 h-7 w-7" />
+                <div>
+                  <div className="text-slate-400 text-xs font-medium">Collected This Week</div>
+                  <div className="text-white text-xl font-bold">
+                    ${pastInvoices.filter(inv => {
+                      const paid = new Date(inv.datePaid)
+                      const now = new Date()
+                      const diff = (now.getTime() - paid.getTime()) / (1000 * 60 * 60 * 24)
+                      return diff <= 7
+                    }).reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              {/* Hours Saved */}
+              <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
+                <Hourglass className="text-yellow-400 h-7 w-7" />
+                <div>
+                  <div className="text-slate-400 text-xs font-medium">Hours Saved</div>
+                  <div className="text-white text-xl font-bold">
+                    ~{(() => {
+                      // Assume each follow-up sent saves 10min (0.1667h)
+                      const followUpsThisWeek = activityFeed.filter(a => {
+                        if (a.type !== 'follow_up_sent') return false
+                        // Parse time string (e.g., '2 minutes ago', '1 hour ago', '1 day ago')
+                        const t = a.time
+                        if (t.includes('minute')) return true
+                        if (t.includes('hour')) return true
+                        if (t.includes('day')) return parseInt(t) <= 7
+                        return false
+                      }).length
+                      const hours = followUpsThisWeek * 0.1667
+                      return hours.toFixed(1)
+                    })()} hours
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* At-Risk Clients */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertCircle className="text-yellow-400 h-5 w-5" />
+                <span className="text-white font-semibold">At-Risk Clients</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-slate-300">
+                  <thead>
+                    <tr className="text-slate-400">
+                      <th className="px-2 py-1 text-left">Client</th>
+                      <th className="px-2 py-1 text-left">Amount</th>
+                      <th className="px-2 py-1 text-left">Days Overdue</th>
+                      <th className="px-2 py-1 text-left">Risk Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {overdueInvoices
+                      .filter(inv => inv.daysOverdue >= 14) // High risk: 14+ days overdue
+                      .slice(0, 2)
+                      .map(inv => (
+                        <tr key={inv.id} className="hover:bg-slate-700 cursor-pointer transition" onClick={() => {
+                          // Scroll to invoice in list
+                          const el = document.getElementById(`invoice-${inv.id}`)
+                          if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                            el.classList.add('ring-4', 'ring-red-500')
+                            setTimeout(() => el.classList.remove('ring-4', 'ring-red-500'), 2000)
+                          }
+                        }}>
+                          <td className="px-2 py-1 text-blue-400 underline">{inv.client}</td>
+                          <td className="px-2 py-1">${inv.amount.toLocaleString()}</td>
+                          <td className="px-2 py-1">{inv.daysOverdue}</td>
+                          <td className="px-2 py-1">
+                            <span className="inline-flex items-center gap-1 font-semibold text-red-400">
+                              <CircleDot className="h-4 w-4 text-red-400" /> High
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    {overdueInvoices.filter(inv => inv.daysOverdue >= 14).length === 0 && (
+                      <tr><td colSpan={4} className="text-slate-500 py-2">No high-risk clients this week.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Next Steps */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Pin className="text-blue-400 h-5 w-5" />
+                <span className="text-white font-semibold">Next Steps</span>
+              </div>
+              <ul className="space-y-2">
+                {overdueInvoices.filter(inv => inv.daysOverdue >= 21).map(inv => (
+                  <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
+                    <Circle className="h-3 w-3 text-blue-400" />
+                    <span className="flex-1 text-slate-300">Approve escalated reminder to <span className="font-semibold text-white">{inv.client}</span></span>
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
+                      onClick={() => {
+                        // Simulate escalation action
+                        if (typeof window !== 'undefined') {
+                          window.dispatchEvent(new CustomEvent('toast', { detail: { message: `Escalated reminder approved for ${inv.client}` } }))
+                        }
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  </li>
+                ))}
+                {/* Example: View action for a client with 7-20 days overdue */}
+                {overdueInvoices.filter(inv => inv.daysOverdue >= 8 && inv.daysOverdue < 21).map(inv => (
+                  <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
+                    <Circle className="h-3 w-3 text-blue-400" />
+                    <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white font-semibold px-4 py-1"
+                      onClick={() => {
+                        const el = document.getElementById(`invoice-${inv.id}`)
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                          el.classList.add('ring-4', 'ring-blue-500')
+                          setTimeout(() => el.classList.remove('ring-4', 'ring-blue-500'), 2000)
+                        }
+                      }}
+                    >
+                      View
+                    </Button>
+                  </li>
+                ))}
+                {/* If no next steps */}
+                {overdueInvoices.filter(inv => inv.daysOverdue >= 8).length === 0 && (
+                  <li className="text-slate-500 py-2">No urgent actions needed this week.</li>
+                )}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Lance Activity Bar */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
@@ -546,6 +724,7 @@ export default function LanceDashboard() {
                   return (
                     <div
                       key={invoice.id}
+                      id={`invoice-${invoice.id}`}
                       className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${'daysOverdue' in invoice ? getStatusColor(invoice.daysOverdue) : ''}`}
                     >
                       <div className="flex items-center gap-4">
