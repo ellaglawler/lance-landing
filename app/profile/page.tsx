@@ -10,6 +10,7 @@ import { Mail, ArrowLeft, Upload, Check, LogOut } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useAuth } from "@/components/auth-context"
 
 interface ProfileData {
   // Empty interface as we no longer need notifications
@@ -17,6 +18,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   const router = useRouter()
+  const { logout } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   
@@ -82,8 +84,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      // Simulate logout API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      logout() // Use the real logout from auth context
       router.push('/') // Redirect to home page after logout
       toast.success("Logged out successfully")
     } catch (error) {

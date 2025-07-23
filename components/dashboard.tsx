@@ -200,29 +200,6 @@ export default function LanceDashboard() {
   return (
     <div className="min-h-screen bg-slate-900 p-6 pt-32">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-white">Hey Ella,</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
-            <Avatar 
-              className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
-              onClick={() => router.push('/profile')}
-            >
-              <AvatarImage src="/images/ella.png" />
-              <AvatarFallback className="bg-blue-600 text-white font-bold">E</AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
 
         {/* Weekly Insights Card */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
