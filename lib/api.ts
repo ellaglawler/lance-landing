@@ -18,6 +18,59 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Helper to get tokens from localStorage
+function getTokens() {
+  return {
+    access: localStorage.getItem('jwt'),
+    refresh: localStorage.getItem('refresh_token'),
+  };
+}
+
+// Helper to set tokens in localStorage
+function setTokens(access: string, refresh: string) {
+  localStorage.setItem('jwt', access);
+  localStorage.setItem('refresh_token', refresh);
+}
+
+// Helper to clear tokens
+function clearTokens() {
+  localStorage.removeItem('jwt');
+  localStorage.removeItem('refresh_token');
+}
+
+// Attempt to refresh JWT if 401 is encountered
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry &&
+      typeof window !== 'undefined'
+    ) {
+      originalRequest._retry = true;
+      const { refresh } = getTokens();
+      if (refresh) {
+        try {
+          const res = await api.post('/auth/refresh', { refresh_token: refresh });
+          setTokens(res.data.access_token, res.data.refresh_token);
+          // Update Authorization header and retry original request
+          originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
+          return api(originalRequest);
+        } catch (refreshError) {
+          clearTokens();
+          // Optionally, redirect to login page here
+        }
+      } else {
+        clearTokens();
+        // Optionally, redirect to login page here
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
   const res = await api.get('/auth/google/signup');
