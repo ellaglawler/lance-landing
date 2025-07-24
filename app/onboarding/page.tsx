@@ -121,10 +121,10 @@ export default function OnboardingPage() {
               <CardHeader className="flex flex-col items-center gap-2 pb-2">
                 <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Onboarding</Badge>
                 <CardTitle className="text-center text-3xl font-bold text-white mb-2">
-                  Welcome back — or welcome aboard!
+                  Welcome back, or welcome aboard!
                 </CardTitle>
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Lance helps you track unpaid invoices and follow up with clients — automatically or with your review.
+                  Lance helps you track unpaid invoices and follow up with clients, automatically or with your review.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-8 pb-8 pt-2">
