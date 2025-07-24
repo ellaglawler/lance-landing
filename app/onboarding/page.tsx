@@ -57,7 +57,7 @@ export default function OnboardingPage() {
         exchangeGoogleCode(code)
           .then((data) => {
             // Store JWT and user info in AuthContext
-            login(data.access_token, data.user);
+            login(data.access_token, data.refresh_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
               // Call scanInvoices API here

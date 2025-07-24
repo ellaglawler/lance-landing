@@ -49,22 +49,31 @@ api.interceptors.response.use(
       !originalRequest._retry &&
       typeof window !== 'undefined'
     ) {
+      console.log('[API] 401 detected, attempting token refresh...');
       originalRequest._retry = true;
       const { refresh } = getTokens();
       if (refresh) {
         try {
+          console.log('[API] Found refresh token, calling /auth/refresh...');
           const res = await api.post('/auth/refresh', { refresh_token: refresh });
           setTokens(res.data.access_token, res.data.refresh_token);
+          console.log('[API] Token refresh successful, retrying original request...');
           // Update Authorization header and retry original request
           originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
           return api(originalRequest);
         } catch (refreshError) {
+          console.error('[API] Token refresh failed:', refreshError);
           clearTokens();
           // Optionally, redirect to login page here
         }
       } else {
+        console.warn('[API] No refresh token found, clearing tokens.');
         clearTokens();
         // Optionally, redirect to login page here
+      }
+    } else {
+      if (error.response && error.response.status === 401) {
+        console.warn('[API] 401 received, but refresh logic not triggered (maybe already retried or not in browser).');
       }
     }
     return Promise.reject(error);

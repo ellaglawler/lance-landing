@@ -14,7 +14,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
+  login: (token: string, refreshToken: string, user: User) => void;
   logout: () => void;
   setUser: (user: User | null) => void;
   loading: boolean; // Add loading state to the interface
@@ -36,10 +36,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false); // Mark loading as complete
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
+  const login = (newToken: string, refreshToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('jwt', newToken);
+    localStorage.setItem('refresh_token', refreshToken);
     localStorage.setItem('user', JSON.stringify(newUser));
   };
 
@@ -50,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user');
   };
 
-  console.log('AuthContext.Provider rendered', { user, token, isAuthenticated: !!token });
+  //console.log('AuthContext.Provider rendered', { user, token, isAuthenticated: !!token });
   return (
     <AuthContext.Provider
       value={{
