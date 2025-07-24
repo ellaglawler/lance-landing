@@ -7,7 +7,9 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken } from '@/lib/api';
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode } from '@/lib/api';
+import { useAuth } from '@/components/auth-context';
+import { WaitlistForm } from '@/components/waitlist-form';
 
 const STEP = {
   ENTRY: -1,
@@ -41,6 +43,7 @@ export default function OnboardingPage() {
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   // Listen for OAuth callback via postMessage
   useEffect(() => {
@@ -48,34 +51,45 @@ export default function OnboardingPage() {
       if (event.origin !== window.location.origin) return;
       const { code, error, flow } = event.data || {};
       if (code) {
-        if (isSignUp) {
-          setStep(STEP.SCANNING);
-          setTimeout(() => {
-            const found = Math.random() > 0.3;
-            if (found) {
-              setScanResult({ count: 3, total: 2700 });
-              setStep(STEP.RESULTS);
+        setLoading(true);
+        exchangeGoogleCode(code)
+          .then((data) => {
+            // Store JWT and user info in AuthContext
+            login(data.access_token, data.user);
+            if (isSignUp) {
+              setStep(STEP.SCANNING);
+              setTimeout(() => {
+                const found = Math.random() > 0.3;
+                if (found) {
+                  setScanResult({ count: 3, total: 2700 });
+                  setStep(STEP.RESULTS);
+                } else {
+                  setNoInvoices(true);
+                  setStep(STEP.RESULTS);
+                }
+              }, 2000);
             } else {
-              setNoInvoices(true);
-              setStep(STEP.RESULTS);
+              setStep(STEP.SCANNING);
+              checkGmailToken()
+                .then((tokensValid) => {
+                  if (tokensValid) {
+                    // Redirect to dashboard
+                    router.push("/dashboard");
+                  } else {
+                    setStep(STEP.RECONNECT);
+                  }
+                })
+                .catch(() => {
+                  setError('Failed to check Gmail token.');
+                  setStep(STEP.ERROR);
+                });
             }
-          }, 2000);
-        } else {
-          // Use real backend token check for returning user
-          setStep(STEP.SCANNING);
-          checkGmailToken()
-            .then((tokensValid) => {
-              if (tokensValid) {
-                router.push("/dashboard");
-              } else {
-                setStep(STEP.RECONNECT);
-              }
-            })
-            .catch(() => {
-              setError('Failed to check Gmail token.');
-              setStep(STEP.ERROR);
-            });
-        }
+          })
+          .catch(() => {
+            setError('Google authentication failed.');
+            setStep(STEP.ERROR);
+          })
+          .finally(() => setLoading(false));
       } else if (error) {
         setError("OAuth failed or was denied.");
         setStep(STEP.ERROR);
@@ -83,10 +97,12 @@ export default function OnboardingPage() {
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isSignUp, router]);
+  }, [isSignUp, router, login]);
 
   // Entry screen: Sign Up or Sign In
   if (step === STEP.ENTRY) {
+    // Read the env variable (must be NEXT_PUBLIC_ for client-side)
+    const allowSignup = process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== 'false';
     return (
       <div className="min-h-screen flex flex-col justify-center items-center relative">
         {/* Wave Background - Main background that spans all sections */}
@@ -105,17 +121,26 @@ export default function OnboardingPage() {
               <CardHeader className="flex flex-col items-center gap-2 pb-2">
                 <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Onboarding</Badge>
                 <CardTitle className="text-center text-3xl font-bold text-white mb-2">
-                  Welcome back — or welcome aboard!
+                  Welcome back, or welcome aboard!
                 </CardTitle>
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Lance helps you track unpaid invoices and follow up with clients — automatically or with your review.
+                  Lance helps you track unpaid invoices and follow up with clients, automatically or with your review.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-8 pb-8 pt-2">
                 <div className="flex flex-col gap-4 w-full mt-4">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
-                    → I’m New — Sign Up
-                  </Button>
+                  {allowSignup ? (
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
+                      → I’m New — Sign Up
+                    </Button>
+                  ) : (
+                    <div className="flex flex-col gap-4 items-center">
+                      <div className="text-blue-200 text-center text-base font-semibold">
+                        Lance is currently in Beta. Get access by joining the waitlist below:
+                      </div>
+                      <WaitlistForm showDemoButton={false} />
+                    </div>
+                  )}
                   <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
                     → I Already Have an Account — Sign In
                   </Button>
