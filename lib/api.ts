@@ -57,8 +57,13 @@ export async function scanInvoices(query?: string, maxResults: number = 50) {
   return res.data; // { invoices, total_found, overdue_count }
 }
 
-// Fetch overdue invoices for the current user
-export async function getOverdueInvoices() {
-  const res = await api.get('/overdue');
-  return res.data; // Array of overdue invoices
+// Fetch all invoices for the current user, with optional status/client filters
+export async function getInvoices({ status = 'all', client }: { status?: string; client?: string } = {}) {
+  const res = await api.get('/invoices/', {
+    params: {
+      status,
+      ...(client ? { client } : {}),
+    },
+  });
+  return res.data; // Array of invoices
 }

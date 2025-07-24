@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { useEffect, useCallback } from "react"
-import { getOverdueInvoices } from "@/lib/api"
+import { getInvoices } from "@/lib/api"
 
 export default function LanceDashboard() {
   // Demo mode toggle (set to true for demo/mock data)
@@ -40,137 +40,103 @@ export default function LanceDashboard() {
   const [amountFilter, setAmountFilter] = useState("all")
   const [daysFilter, setDaysFilter] = useState("all")
 
-  // Mock data for demo mode
-  const mockOverdueInvoices = [
+  // Unified mock data for demo mode (matches getInvoices structure)
+  const mockInvoices = [
+    // Overdue
     {
       id: 1,
-      client: "Acme Design Co.",
+      client_name: "Acme Design Co.",
       amount: 1200,
-      daysOverdue: 14,
-      avatar: "AD",
-      status: "overdue",
+      days_overdue: 14,
+      is_overdue: true,
+      is_paid: false,
+      detected_at: "2024-01-01T00:00:00Z",
       tone: "Polite",
     },
     {
       id: 2,
-      client: "TechStart Inc.",
+      client_name: "TechStart Inc.",
       amount: 850,
-      daysOverdue: 7,
-      avatar: "TS",
-      status: "overdue",
+      days_overdue: 7,
+      is_overdue: true,
+      is_paid: false,
+      detected_at: "2024-01-02T00:00:00Z",
       tone: "Polite",
     },
     {
       id: 3,
-      client: "Creative Studio",
+      client_name: "Creative Studio",
       amount: 400,
-      daysOverdue: 21,
-      avatar: "CS",
-      status: "overdue",
+      days_overdue: 21,
+      is_overdue: true,
+      is_paid: false,
+      detected_at: "2024-01-03T00:00:00Z",
       tone: "Firm",
     },
-  ]
-
-  const mockPastInvoices = [
+    // Paid
     {
       id: 101,
-      client: "Blue Corp",
+      client_name: "Blue Corp",
       amount: 2500,
-      avatar: "BC",
-      dateSent: "2024-01-15",
-      datePaid: "2024-01-18",
-      messageType: "Polite",
-      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
-      daysToPayment: 3,
-      status: "paid",
+      is_overdue: false,
+      is_paid: true,
+      detected_at: "2024-01-15T00:00:00Z",
+      paid_at: "2024-01-18T00:00:00Z",
+      message_type: "Polite",
+      message_sent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
+      days_to_payment: 3,
     },
     {
       id: 102,
-      client: "StartupXYZ",
+      client_name: "StartupXYZ",
       amount: 1800,
-      avatar: "SX",
-      dateSent: "2024-01-10",
-      datePaid: "2024-01-25",
-      messageType: "Professional",
-      messageSent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
-      daysToPayment: 15,
-      status: "paid",
+      is_overdue: false,
+      is_paid: true,
+      detected_at: "2024-01-10T00:00:00Z",
+      paid_at: "2024-01-25T00:00:00Z",
+      message_type: "Professional",
+      message_sent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
+      days_to_payment: 15,
     },
     {
       id: 103,
-      client: "Design Studio Pro",
+      client_name: "Design Studio Pro",
       amount: 950,
-      avatar: "DS",
-      dateSent: "2024-01-08",
-      datePaid: "2024-01-12",
-      messageType: "Polite",
-      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
-      daysToPayment: 4,
-      status: "paid",
+      is_overdue: false,
+      is_paid: true,
+      detected_at: "2024-01-08T00:00:00Z",
+      paid_at: "2024-01-12T00:00:00Z",
+      message_type: "Polite",
+      message_sent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
+      days_to_payment: 4,
     },
   ]
 
-  const [overdueInvoices, setOverdueInvoices] = useState<any[]>([])
-  const [loadingOverdue, setLoadingOverdue] = useState(true)
-  const [overdueError, setOverdueError] = useState<string | null>(null)
+  const [invoices, setInvoices] = useState<any[]>([])
+  const [loadingInvoices, setLoadingInvoices] = useState(true)
+  const [invoicesError, setInvoicesError] = useState<string | null>(null)
 
-  const fetchOverdue = useCallback(async () => {
-    setLoadingOverdue(true)
-    setOverdueError(null)
+  const fetchInvoices = useCallback(async () => {
+    setLoadingInvoices(true)
+    setInvoicesError(null)
     try {
-      const data = await getOverdueInvoices()
-      setOverdueInvoices(data)
+      const data = await getInvoices()
+      setInvoices(data)
     } catch (err: any) {
-      setOverdueError(err?.message || "Failed to fetch overdue invoices")
+      setInvoicesError(err?.message || "Failed to fetch invoices")
     } finally {
-      setLoadingOverdue(false)
+      setLoadingInvoices(false)
     }
   }, [])
 
   useEffect(() => {
     if (!demoMode) {
-      fetchOverdue()
+      fetchInvoices()
+    } else {
+      setInvoices(mockInvoices)
+      setLoadingInvoices(false)
     }
-  }, [fetchOverdue, demoMode])
-
-  const pastInvoices = demoMode ? mockPastInvoices : [
-    {
-      id: 101,
-      client: "Blue Corp",
-      amount: 2500,
-      avatar: "BC",
-      dateSent: "2024-01-15",
-      datePaid: "2024-01-18",
-      messageType: "Polite",
-      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
-      daysToPayment: 3,
-      status: "paid",
-    },
-    {
-      id: 102,
-      client: "StartupXYZ",
-      amount: 1800,
-      avatar: "SX",
-      dateSent: "2024-01-10",
-      datePaid: "2024-01-25",
-      messageType: "Professional",
-      messageSent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
-      daysToPayment: 15,
-      status: "paid",
-    },
-    {
-      id: 103,
-      client: "Design Studio Pro",
-      amount: 950,
-      avatar: "DS",
-      dateSent: "2024-01-08",
-      datePaid: "2024-01-12",
-      messageType: "Polite",
-      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
-      daysToPayment: 4,
-      status: "paid",
-    },
-  ]
+  }, [fetchInvoices, demoMode])
 
   // Activity feed data
   const activityFeed = [
@@ -216,26 +182,45 @@ export default function LanceDashboard() {
     },
   ]
 
-  // Combine all invoices with overdue first, then paid
-  // Map backend overdueInvoices to UI shape, or use mock data in demo mode
-  const mappedOverdueInvoices = demoMode
-    ? mockOverdueInvoices
-    : overdueInvoices.map((inv) => ({
-        id: inv.id,
-        client: inv.client_name,
-        amount: inv.amount,
-        daysOverdue: inv.days_overdue,
-        avatar: inv.client_name
-          ? inv.client_name
-              .split(" ")
-              .map((w: string) => w[0])
-              .join("")
-              .toUpperCase()
-          : "--",
-        status: inv.is_overdue ? "overdue" : "paid",
-        tone: inv.tone || "Polite",
-        // Add more fields as needed
-      }))
+  // Split invoices into overdue and paid, and map to UI shape
+  const mappedOverdueInvoices = invoices
+    .filter(inv => inv.is_overdue)
+    .map(inv => ({
+      id: inv.id,
+      client: inv.client_name,
+      amount: inv.amount,
+      daysOverdue: inv.days_overdue,
+      avatar: inv.client_name
+        ? inv.client_name
+            .split(" ")
+            .map((w: string) => w[0])
+            .join("")
+            .toUpperCase()
+        : "--",
+      status: "overdue",
+      tone: inv.tone || "Polite",
+    }))
+
+  const pastInvoices = invoices
+    .filter(inv => inv.is_paid)
+    .map(inv => ({
+      id: inv.id,
+      client: inv.client_name,
+      amount: inv.amount,
+      avatar: inv.client_name
+        ? inv.client_name
+            .split(" ")
+            .map((w: string) => w[0])
+            .join("")
+            .toUpperCase()
+        : "--",
+      dateSent: inv.detected_at,
+      datePaid: inv.paid_at,
+      messageType: inv.message_type,
+      messageSent: inv.message_sent,
+      daysToPayment: inv.days_to_payment,
+      status: "paid",
+    }))
 
   const allInvoices = [...mappedOverdueInvoices, ...pastInvoices]
 
@@ -716,16 +701,16 @@ export default function LanceDashboard() {
           </div>
 
           <CardContent className="space-y-4 p-6">
-            {loadingOverdue && (
+            {loadingInvoices && (
               <div className="text-center py-8">
                 <p className="text-slate-400 text-lg mb-2">Loading overdue invoices...</p>
                 <p className="text-slate-500 text-sm">Please wait a moment.</p>
               </div>
             )}
-            {overdueError && (
+            {invoicesError && (
               <div className="text-center py-8">
-                <p className="text-red-400 text-lg mb-2">Error: {overdueError}</p>
-                <p className="text-slate-500 text-sm">Failed to fetch overdue invoices. Please try again later.</p>
+                <p className="text-red-400 text-lg mb-2">Error: {invoicesError}</p>
+                <p className="text-slate-500 text-sm">Failed to fetch invoices. Please try again later.</p>
               </div>
             )}
             {filteredInvoices.length === 0 ? (
