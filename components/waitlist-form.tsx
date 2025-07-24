@@ -8,9 +8,10 @@ import { submitToHubspot, validateEmail } from "@/lib/hubspot"
 interface WaitlistFormProps {
   variant?: "hero" | "cta" | "demo" | "contact"
   className?: string
+  showDemoButton?: boolean // New prop
 }
 
-export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormProps) {
+export function WaitlistForm({ variant = "hero", className = "", showDemoButton = true }: WaitlistFormProps) {
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
@@ -69,6 +70,7 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
     : "bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap border border-white/20"
 
   const getButtonText = () => {
+    if (showDemoButton === false) return "Join Waitlist";
     switch (variant) {
       case "contact":
         return "Start Getting Paid Faster"
@@ -132,14 +134,16 @@ export function WaitlistForm({ variant = "hero", className = "" }: WaitlistFormP
               getButtonText()
             )}
           </Button>
-          <Button 
-            type="button"
-            size="lg"
-            className={secondaryButtonClasses}
-            onClick={() => window.location.href = '/dashboard?demo-mode=true'}
-          >
-            See Demo
-          </Button>
+          {showDemoButton && (
+            <Button 
+              type="button"
+              size="lg"
+              className={secondaryButtonClasses}
+              onClick={() => window.location.href = '/dashboard?demo-mode=true'}
+            >
+              See Demo
+            </Button>
+          )}
         </div>
         
         {/* Honeypot field for spam protection */}

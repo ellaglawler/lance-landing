@@ -138,7 +138,7 @@ export default function OnboardingPage() {
                       <div className="text-blue-200 text-center text-base font-semibold">
                         Lance is currently in Beta. Get access by joining the waitlist below:
                       </div>
-                      <WaitlistForm />
+                      <WaitlistForm showDemoButton={false} />
                     </div>
                   )}
                   <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
