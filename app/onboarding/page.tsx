@@ -44,6 +44,7 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
+  const userLocale = typeof navigator !== "undefined" ? navigator.language : "en-US";
 
   // Listen for OAuth callback via postMessage
   useEffect(() => {
@@ -418,7 +419,7 @@ export default function OnboardingPage() {
               )}
               {step === STEP.RESULTS && !noInvoices && (
                 <div className="flex flex-col items-center gap-6 mt-2">
-                  <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>{Number(scanResult?.total).toLocaleString("en-US", { style: "currency", currency: "USD" })}</b>.</div>
+                  <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>{Number(scanResult?.total).toLocaleString(userLocale, { style: "currency", currency: "USD" })}</b>.</div>
                   <div className="text-gray-300 text-base mb-4">Next, we’ll help you follow up with your clients, you choose if we draft them for you (Copilot) or send them automatically (Autopilot).</div>
                   <div className="flex flex-col gap-3 w-full">
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/dashboard?mode=copilot")}>→ Review Draft Follow-Ups (Copilot)</Button>
