@@ -9,6 +9,7 @@ import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-r
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode } from '@/lib/api';
 import { useAuth } from '@/components/auth-context';
+import { WaitlistForm } from '@/components/waitlist-form';
 
 const STEP = {
   ENTRY: -1,
@@ -100,6 +101,8 @@ export default function OnboardingPage() {
 
   // Entry screen: Sign Up or Sign In
   if (step === STEP.ENTRY) {
+    // Read the env variable (must be NEXT_PUBLIC_ for client-side)
+    const allowSignup = false; //process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== 'false';
     return (
       <div className="min-h-screen flex flex-col justify-center items-center relative">
         {/* Wave Background - Main background that spans all sections */}
@@ -126,9 +129,18 @@ export default function OnboardingPage() {
               </CardHeader>
               <CardContent className="px-8 pb-8 pt-2">
                 <div className="flex flex-col gap-4 w-full mt-4">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
-                    → I’m New — Sign Up
-                  </Button>
+                  {allowSignup ? (
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
+                      → I’m New — Sign Up
+                    </Button>
+                  ) : (
+                    <div className="flex flex-col gap-4 items-center">
+                      <div className="text-blue-200 text-center text-base font-semibold">
+                        Lance is currently in Beta. Get access by joining the waitlist below:
+                      </div>
+                      <WaitlistForm />
+                    </div>
+                  )}
                   <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
                     → I Already Have an Account — Sign In
                   </Button>
