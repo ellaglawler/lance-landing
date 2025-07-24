@@ -29,6 +29,15 @@ services:
         define('GRAPHQL_DEBUG', true);
         define('WP_ALLOW_REPAIR', true);
         define('WP_ENVIRONMENT_TYPE', 'development');
+        
+        // Add CORS headers
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Authorization, Content-Type");
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+          status_header(200);
+          exit();
+        }
     volumes:
       - wordpress_data:/var/www/html
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
