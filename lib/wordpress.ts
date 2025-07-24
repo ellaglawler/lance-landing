@@ -1,9 +1,26 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql, createHttpLink } from '@apollo/client';
+
+// Initialize Apollo Client with fallback URL for development
+const wordpressUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'http://localhost:8000/graphql';
+
+const link = createHttpLink({
+  uri: wordpressUrl,
+  credentials: 'same-origin',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 // Initialize Apollo Client
 export const client = new ApolloClient({
-  uri: process.env.NEXT_PUBLIC_WORDPRESS_API_URL,
+  link,
   cache: new InMemoryCache(),
+  defaultOptions: {
+    query: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+  },
 });
 
 // Define common GraphQL fragments for reuse
@@ -58,16 +75,10 @@ export const POST_FIELDS = gql`
 // Query to get all posts
 export const GET_ALL_POSTS = gql`
   ${POST_FIELDS}
-  query AllPosts($first: Int, $after: String) {
-    posts(first: $first, after: $after) {
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      edges {
-        node {
-          ...PostFields
-        }
+  query AllPosts($first: Int) {
+    posts(first: $first) {
+      nodes {
+        ...PostFields
       }
     }
   }

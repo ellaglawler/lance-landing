@@ -85,7 +85,7 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <div className="flex flex-col pt-24">
       {/* Hero Section */}
-      <section className="relative py-32 flex items-center justify-center min-h-[40vh]">
+      <section className="relative py-32 flex items-center justify-center">
         {/* Wave Background */}
         <div
           className="fixed inset-0 bg-cover bg-center bg-no-repeat wave-bg"
@@ -139,10 +139,8 @@ export default async function BlogPostPage({ params }: Props) {
               )}
             </div>
 
-            <h1 className="h1-hero text-white mb-8">
-              {post.title}
-            </h1>
-
+            {/* Title and Featured Image */}
+            <h1 className="text-4xl font-bold text-white mb-6">{post.title}</h1>
             {post.featuredImage?.node && (
               <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-8">
                 <Image
@@ -154,36 +152,17 @@ export default async function BlogPostPage({ params }: Props) {
                 />
               </div>
             )}
+
+            {/* Article Content */}
+            <article>
+              <div 
+                className="prose prose-lg prose-invert wordpress-content max-w-none"
+                dangerouslySetInnerHTML={{ 
+                  __html: post.content.replace(/<p>/g, '<p class="text-gray-300">').replace(/<h2>/g, '<h2 class="text-white mt-8 mb-4">').replace(/<h3>/g, '<h3 class="text-white mt-6 mb-3">')
+                }}
+              />
+            </article>
           </div>
-        </div>
-      </section>
-
-      {/* Content Section */}
-      <section className="relative bg-secondary-dark py-32">
-        {/* Top Curve */}
-        <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-1px)' }}>
-          <svg 
-            viewBox="0 0 1200 120" 
-            preserveAspectRatio="none" 
-            className="relative block w-full h-[60px]" 
-            style={{ transform: 'rotateX(180deg)' }}
-          >
-            <path 
-              d="M600,112C268.63,112,0,69.39,0,69.39V0H1200V69.39C1200,69.39,931.37,112,600,112Z" 
-              className="fill-[#0B0F19]"
-            ></path>
-          </svg>
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0F19] to-[#0B0F19]/95"></div>
-
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <article className="mx-auto max-w-3xl prose prose-invert prose-lg">
-            <div 
-              className="content"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          </article>
         </div>
       </section>
     </div>
