@@ -48,8 +48,12 @@ export const Header = () => {
               className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
               onClick={() => router.push('/profile')}
             >
-              <AvatarImage src="/images/ella.png" />
-              <AvatarFallback className="bg-blue-600 text-white font-bold">E</AvatarFallback>
+              {user?.previewImage && <AvatarImage src={user.previewImage} />}
+              <AvatarFallback className="bg-blue-600 text-white font-bold">
+                {user?.name
+                  ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
+                  : "U"}
+              </AvatarFallback>
             </Avatar>
           </div>
         ) : (

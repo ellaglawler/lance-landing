@@ -6,6 +6,7 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  previewImage?: string; // Optional profile image URL or data
   // Add more fields as needed
 }
 
