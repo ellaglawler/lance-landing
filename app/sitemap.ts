@@ -1,9 +1,34 @@
 import { MetadataRoute } from 'next'
+import { client, GET_ALL_POSTS } from '@/lib/wordpress'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://lanceos.ai'
   
-  return [
+  // Fetch all posts from WordPress
+  let blogPosts: MetadataRoute.Sitemap = []
+  try {
+    const { data } = await client.query({
+      query: GET_ALL_POSTS,
+      variables: {
+        first: 100 // Adjust this number based on your needs
+      }
+    })
+
+    if (data?.posts?.nodes) {
+      blogPosts = data.posts.nodes.map((post: any) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: new Date(post.modified || post.date),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching posts for sitemap:', error)
+    // Continue with static routes even if blog posts fail to load
+  }
+
+  // Static routes
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -47,4 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
   ]
+
+  // Combine static routes with blog posts
+  return [...staticRoutes, ...blogPosts]
 } 
