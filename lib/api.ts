@@ -48,7 +48,7 @@ export async function exchangeGoogleCode(code: string) {
 
 // Scan Gmail for invoices for the current user
 export async function scanInvoices(query?: string, maxResults: number = 50) {
-  const res = await api.get('/scan/', {
+  const res = await api.get('/invoices/scan/', {
     params: {
       ...(query ? { query } : {}),
       max_results: maxResults,
