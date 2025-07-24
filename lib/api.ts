@@ -45,3 +45,14 @@ export async function exchangeGoogleCode(code: string) {
   const res = await api.get('/auth/google/callback', { params: { code } });
   return res.data;
 }
+
+// Scan Gmail for invoices for the current user
+export async function scanInvoices(query?: string, maxResults: number = 50) {
+  const res = await api.get('/scan/', {
+    params: {
+      ...(query ? { query } : {}),
+      max_results: maxResults,
+    },
+  });
+  return res.data; // { invoices, total_found, overdue_count }
+}

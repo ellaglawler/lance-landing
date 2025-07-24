@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode } from '@/lib/api';
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode, scanInvoices } from '@/lib/api';
 import { useAuth } from '@/components/auth-context';
 import { WaitlistForm } from '@/components/waitlist-form';
 
@@ -58,16 +58,23 @@ export default function OnboardingPage() {
             login(data.access_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
-              setTimeout(() => {
-                const found = Math.random() > 0.3;
-                if (found) {
-                  setScanResult({ count: 3, total: 2700 });
+              // Call scanInvoices API here
+              scanInvoices()
+                .then((data) => {
+                  if (data && data.invoices && data.invoices.length > 0) {
+                    const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
+                    setScanResult({ count: data.invoices.length, total });
+                    setNoInvoices(false);
+                  } else {
+                    setNoInvoices(true);
+                  }
                   setStep(STEP.RESULTS);
-                } else {
-                  setNoInvoices(true);
-                  setStep(STEP.RESULTS);
-                }
-              }, 2000);
+                })
+                .catch(() => {
+                  setError('Failed to scan for invoices.');
+                  setStep(STEP.ERROR);
+                })
+                .finally(() => setLoading(false));
             } else {
               setStep(STEP.SCANNING);
               checkGmailToken()
@@ -411,7 +418,7 @@ export default function OnboardingPage() {
               )}
               {step === STEP.RESULTS && !noInvoices && (
                 <div className="flex flex-col items-center gap-6 mt-2">
-                  <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>${scanResult?.total}</b>.</div>
+                  <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>{Number(scanResult?.total).toLocaleString("en-US", { style: "currency", currency: "USD" })}</b>.</div>
                   <div className="text-gray-300 text-base mb-4">Next, we’ll help you follow up with your clients, you choose if we draft them for you (Copilot) or send them automatically (Autopilot).</div>
                   <div className="flex flex-col gap-3 w-full">
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/dashboard?mode=copilot")}>→ Review Draft Follow-Ups (Copilot)</Button>
