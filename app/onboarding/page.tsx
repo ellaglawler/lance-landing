@@ -119,19 +119,19 @@ export default function OnboardingPage() {
           <div className="w-full max-w-lg mx-auto">
             <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
               <CardHeader className="flex flex-col items-center gap-2 pb-2">
-                <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Onboarding</Badge>
-                <CardTitle className="text-center text-3xl font-bold text-white mb-2">
-                  Welcome back, or welcome aboard!
+                <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Get Started</Badge>
+                <CardTitle className="text-center text-3xl font-bold text-white mb-4">
+                  Welcome to Lance
                 </CardTitle>
-                <CardDescription className="text-center text-gray-300 text-lg">
-                  Lance helps you track unpaid invoices and follow up with clients, automatically or with your review.
+                <CardDescription className="text-center text-gray-300 text-lg max-w-md">
+                  Track unpaid invoices and follow up with clients automatically. Save time and get paid faster.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-8 pb-8 pt-2">
                 <div className="flex flex-col gap-4 w-full mt-4">
                   {allowSignup ? (
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
-                      → I’m New — Sign Up
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
+                      Create Account
                     </Button>
                   ) : (
                     <div className="flex flex-col gap-4 items-center">
@@ -141,8 +141,8 @@ export default function OnboardingPage() {
                       <WaitlistForm showDemoButton={false} />
                     </div>
                   )}
-                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
-                    → I Already Have an Account — Sign In
+                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700 py-6" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
+                    Sign In to Account
                   </Button>
                 </div>
               </CardContent>
@@ -198,26 +198,26 @@ export default function OnboardingPage() {
         <main className="relative z-20 w-full flex flex-col items-center justify-center min-h-screen">
           <div className="w-full max-w-lg mx-auto">
             <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
-              <CardHeader className="flex flex-col items-center gap-2 pb-2">
+              <CardHeader className="flex flex-col items-center gap-4 pb-6">
                 <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">{isSignUp ? "Sign Up" : "Sign In"}</Badge>
-                <CardTitle className="text-center text-3xl font-bold text-white mb-2">
+                <CardTitle className="text-center text-4xl font-bold text-white mb-4">
                   {isSignUp ? (
                     <>Welcome to Lance <span className="gradient-text-enhanced">your smarter way to get paid.</span></>
                   ) : (
                     <>Sign in to Lance <span className="gradient-text-enhanced">get paid faster.</span></>
                   )}
                 </CardTitle>
-                <CardDescription className="text-center text-gray-300 text-lg">
+                <CardDescription className="text-center text-gray-300 text-xl max-w-md">
                   {isSignUp
                     ? "Let us find and follow up on unpaid invoices in your inbox, so you can spend less time chasing clients and more time doing what you love."
                     : "Sign in with Google to access your dashboard and keep tracking your invoices."}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-8 pb-8 pt-2">
+              <CardContent className="px-8 pb-12 pt-4">
                 {isSignUp && (
-                  <ul className="mb-6 mt-2 space-y-3">
+                  <ul className="mb-8 mt-4 space-y-4">
                     {checklist.map((item, i) => (
-                      <li key={i} className="flex items-center text-base text-gray-200">
+                      <li key={i} className="flex items-center text-lg text-gray-200">
                         {item.icon}
                         <span>{item.label}</span>
                       </li>
@@ -225,23 +225,23 @@ export default function OnboardingPage() {
                   </ul>
                 )}
                 <Button
-                  className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="w-full py-6 px-4 text-lg mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                   onClick={handleGoogleAuth}
                   disabled={loading}
                 >
-                  <UserCheck className="mr-2" /> {loading ? 'Loading…' : isSignUp ? "Sign up with Google" : "Sign in with Google"}
+                  <UserCheck className="mr-2 h-5 w-5" /> {loading ? 'Loading…' : isSignUp ? "Sign up with Google" : "Sign in with Google"}
                 </Button>
-                <div className="text-xs text-gray-400 mt-3 text-center">
+                <div className="text-sm text-gray-400 mt-4 text-center">
                   {isSignUp
                     ? "On the next screen, Google will ask you to confirm the permissions above. You can revoke access anytime at myaccount.google.com/security."
-                    : "We’ll never access your inbox unless you give us permission."}
+                    : "We'll never access your inbox unless you give us permission."}
                 </div>
                 {isSignUp && (
-                  <div className="mt-8 p-4 bg-[#232B3A] rounded-xl border border-white/10 max-w-md mx-auto">
-                    <p className="text-sm text-blue-200 italic mb-1">
+                  <div className="mt-10 p-6 bg-[#232B3A] rounded-xl border border-white/10 max-w-md mx-auto">
+                    <p className="text-base text-blue-200 italic mb-2">
                       "Lance found 3 overdue invoices I had completely forgotten about!"
                     </p>
-                    <p className="text-xs text-blue-400">— Sarah Chen, Freelance Designer</p>
+                    <p className="text-sm text-blue-400">— Sarah Chen, Freelance Designer</p>
                   </div>
                 )}
               </CardContent>
@@ -342,7 +342,7 @@ export default function OnboardingPage() {
                 )}
                 {step === STEP.SCANNING && "Scanning your inbox…"}
                 {step === STEP.RESULTS && (noInvoices ? "No Unpaid Invoices Found" : "Here’s what we found!")}
-                {step === STEP.ERROR && "Oops, we couldn’t connect to your inbox."}
+                {step === STEP.ERROR && "Unable to connect to inbox"}
               </CardTitle>
               {step === STEP.SIGNIN && (
                 <CardDescription className="text-center text-gray-300 text-lg">
@@ -361,7 +361,8 @@ export default function OnboardingPage() {
               )}
               {step === STEP.ERROR && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Without access, we can’t find or follow up on your invoices.<br />You can try again or explore the dashboard and connect later.
+                  We can't find or follow up on your invoices without access.
+                  Try again now or connect your inbox later from the dashboard.
                 </CardDescription>
               )}
             </CardHeader>
