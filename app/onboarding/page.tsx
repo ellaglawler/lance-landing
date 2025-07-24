@@ -42,6 +42,7 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
   const { login } = useAuth();
   const userLocale = typeof navigator !== "undefined" ? navigator.language : "en-US";
@@ -106,6 +107,27 @@ export default function OnboardingPage() {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [isSignUp, router, login]);
+
+  // Animate progress bar
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (step === STEP.SCANNING) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress((old) => {
+          if (old < 95) return Math.min(old + Math.random() * 7, 95);
+          return old;
+        });
+      }, 200);
+    }
+    if (step === STEP.RESULTS || step === STEP.ERROR) {
+      setProgress(100);
+      if (interval) clearInterval(interval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [step]);
 
   // Entry screen: Sign Up or Sign In
   if (step === STEP.ENTRY) {
@@ -413,7 +435,7 @@ export default function OnboardingPage() {
               )}
               {step === STEP.SCANNING && (
                 <div className="flex flex-col items-center gap-6 mt-4">
-                  <Progress value={80} className="w-full h-3 bg-[#232B3A]" />
+                  <Progress value={progress} className="w-full h-3 bg-[#232B3A]" />
                   <div className="text-xs text-gray-400">We only scan emails related to invoices, never your personal conversations.</div>
                 </div>
               )}
