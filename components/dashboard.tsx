@@ -27,15 +27,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
+import { useEffect, useCallback } from "react"
+import { getOverdueInvoices } from "@/lib/api"
 
 export default function LanceDashboard() {
+  // Demo mode toggle (set to true for demo/mock data)
+  const demoMode = false // Set to true to enable demo mode
+
   const router = useRouter()
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [amountFilter, setAmountFilter] = useState("all")
   const [daysFilter, setDaysFilter] = useState("all")
 
-  const overdueInvoices = [
+  // Mock data for demo mode
+  const mockOverdueInvoices = [
     {
       id: 1,
       client: "Acme Design Co.",
@@ -65,7 +71,69 @@ export default function LanceDashboard() {
     },
   ]
 
-  const pastInvoices = [
+  const mockPastInvoices = [
+    {
+      id: 101,
+      client: "Blue Corp",
+      amount: 2500,
+      avatar: "BC",
+      dateSent: "2024-01-15",
+      datePaid: "2024-01-18",
+      messageType: "Polite",
+      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
+      daysToPayment: 3,
+      status: "paid",
+    },
+    {
+      id: 102,
+      client: "StartupXYZ",
+      amount: 1800,
+      avatar: "SX",
+      dateSent: "2024-01-10",
+      datePaid: "2024-01-25",
+      messageType: "Professional",
+      messageSent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
+      daysToPayment: 15,
+      status: "paid",
+    },
+    {
+      id: 103,
+      client: "Design Studio Pro",
+      amount: 950,
+      avatar: "DS",
+      dateSent: "2024-01-08",
+      datePaid: "2024-01-12",
+      messageType: "Polite",
+      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
+      daysToPayment: 4,
+      status: "paid",
+    },
+  ]
+
+  const [overdueInvoices, setOverdueInvoices] = useState<any[]>([])
+  const [loadingOverdue, setLoadingOverdue] = useState(true)
+  const [overdueError, setOverdueError] = useState<string | null>(null)
+
+  const fetchOverdue = useCallback(async () => {
+    setLoadingOverdue(true)
+    setOverdueError(null)
+    try {
+      const data = await getOverdueInvoices()
+      setOverdueInvoices(data)
+    } catch (err: any) {
+      setOverdueError(err?.message || "Failed to fetch overdue invoices")
+    } finally {
+      setLoadingOverdue(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!demoMode) {
+      fetchOverdue()
+    }
+  }, [fetchOverdue, demoMode])
+
+  const pastInvoices = demoMode ? mockPastInvoices : [
     {
       id: 101,
       client: "Blue Corp",
@@ -149,7 +217,27 @@ export default function LanceDashboard() {
   ]
 
   // Combine all invoices with overdue first, then paid
-  const allInvoices = [...overdueInvoices, ...pastInvoices]
+  // Map backend overdueInvoices to UI shape, or use mock data in demo mode
+  const mappedOverdueInvoices = demoMode
+    ? mockOverdueInvoices
+    : overdueInvoices.map((inv) => ({
+        id: inv.id,
+        client: inv.client_name,
+        amount: inv.amount,
+        daysOverdue: inv.days_overdue,
+        avatar: inv.client_name
+          ? inv.client_name
+              .split(" ")
+              .map((w: string) => w[0])
+              .join("")
+              .toUpperCase()
+          : "--",
+        status: inv.is_overdue ? "overdue" : "paid",
+        tone: inv.tone || "Polite",
+        // Add more fields as needed
+      }))
+
+  const allInvoices = [...mappedOverdueInvoices, ...pastInvoices]
 
   const getFilteredInvoices = () => {
     let filtered = allInvoices
@@ -223,7 +311,7 @@ export default function LanceDashboard() {
                 <div>
                   <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
                   <div className="text-white text-xl font-bold">
-                    ${overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+                    ${mappedOverdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -284,12 +372,11 @@ export default function LanceDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {overdueInvoices
-                      .filter(inv => inv.daysOverdue >= 14) // High risk: 14+ days overdue
+                    {mappedOverdueInvoices
+                      .filter(inv => inv.daysOverdue >= 14)
                       .slice(0, 2)
                       .map(inv => (
                         <tr key={inv.id} className="hover:bg-slate-700 cursor-pointer transition" onClick={() => {
-                          // Scroll to invoice in list
                           const el = document.getElementById(`invoice-${inv.id}`)
                           if (el) {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -307,7 +394,7 @@ export default function LanceDashboard() {
                           </td>
                         </tr>
                       ))}
-                    {overdueInvoices.filter(inv => inv.daysOverdue >= 14).length === 0 && (
+                    {mappedOverdueInvoices.filter(inv => inv.daysOverdue >= 14).length === 0 && (
                       <tr><td colSpan={4} className="text-slate-500 py-2">No high-risk clients this week.</td></tr>
                     )}
                   </tbody>
@@ -322,7 +409,7 @@ export default function LanceDashboard() {
                 <span className="text-white font-semibold">Next Steps</span>
               </div>
               <ul className="space-y-2">
-                {overdueInvoices.filter(inv => inv.daysOverdue >= 21).map(inv => (
+                {mappedOverdueInvoices.filter(inv => inv.daysOverdue >= 21).map(inv => (
                   <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Approve escalated reminder to <span className="font-semibold text-white">{inv.client}</span></span>
@@ -341,7 +428,7 @@ export default function LanceDashboard() {
                   </li>
                 ))}
                 {/* Example: View action for a client with 7-20 days overdue */}
-                {overdueInvoices.filter(inv => inv.daysOverdue >= 8 && inv.daysOverdue < 21).map(inv => (
+                {mappedOverdueInvoices.filter(inv => inv.daysOverdue >= 8 && inv.daysOverdue < 21).map(inv => (
                   <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
@@ -363,7 +450,7 @@ export default function LanceDashboard() {
                   </li>
                 ))}
                 {/* If no next steps */}
-                {overdueInvoices.filter(inv => inv.daysOverdue >= 8).length === 0 && (
+                {mappedOverdueInvoices.filter(inv => inv.daysOverdue >= 8).length === 0 && (
                   <li className="text-slate-500 py-2">No urgent actions needed this week.</li>
                 )}
               </ul>
@@ -382,7 +469,7 @@ export default function LanceDashboard() {
                 <div>
                   <CardTitle className="text-white text-lg">Lance Activity</CardTitle>
                   <CardDescription className="text-slate-400">
-                    Your AI agent is actively working on {overdueInvoices.length} overdue invoices
+                    Your AI agent is actively working on {mappedOverdueInvoices.length} overdue invoices
                   </CardDescription>
                 </div>
               </div>
@@ -523,7 +610,7 @@ export default function LanceDashboard() {
                   Invoice List
                 </CardTitle>
                 <CardDescription className="text-slate-100">
-                  {overdueInvoices.length} overdue • {pastInvoices.length} completed
+                  {mappedOverdueInvoices.length} overdue • {pastInvoices.length} completed
                 </CardDescription>
               </div>
               <Button className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
@@ -629,6 +716,18 @@ export default function LanceDashboard() {
           </div>
 
           <CardContent className="space-y-4 p-6">
+            {loadingOverdue && (
+              <div className="text-center py-8">
+                <p className="text-slate-400 text-lg mb-2">Loading overdue invoices...</p>
+                <p className="text-slate-500 text-sm">Please wait a moment.</p>
+              </div>
+            )}
+            {overdueError && (
+              <div className="text-center py-8">
+                <p className="text-red-400 text-lg mb-2">Error: {overdueError}</p>
+                <p className="text-slate-500 text-sm">Failed to fetch overdue invoices. Please try again later.</p>
+              </div>
+            )}
             {filteredInvoices.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-slate-400 text-lg mb-2">No invoices in this category</div>
