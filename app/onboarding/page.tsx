@@ -102,7 +102,7 @@ export default function OnboardingPage() {
   // Entry screen: Sign Up or Sign In
   if (step === STEP.ENTRY) {
     // Read the env variable (must be NEXT_PUBLIC_ for client-side)
-    const allowSignup = false; //process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== 'false';
+    const allowSignup = process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== 'false';
     return (
       <div className="min-h-screen flex flex-col justify-center items-center relative">
         {/* Wave Background - Main background that spans all sections */}
