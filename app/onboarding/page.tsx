@@ -73,7 +73,7 @@ export default function OnboardingPage() {
                 .then((tokensValid) => {
                   if (tokensValid) {
                     // Redirect to dashboard
-                    router.push("/app/dashboard");
+                    router.push("/dashboard");
                   } else {
                     setStep(STEP.RECONNECT);
                   }
