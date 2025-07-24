@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { GoogleAnalyticsComponent } from '@/components/google-analytics'
+import { AuthProvider } from '@/components/auth-context'
 
 export const metadata: Metadata = {
   title: 'Lance - AI Collections Agent for Freelancers | Stop Chasing, Start Collecting',
@@ -29,18 +30,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <div className="flex-1">
-            <Header />
-            {children}
-          </div>
-          <Footer />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <div className="flex-1">
+              <Header />
+              {children}
+            </div>
+            <Footer />
+          </ThemeProvider>
+        </AuthProvider>
         <GoogleAnalyticsComponent gaId={gaId || ''} />
       </body>
     </html>

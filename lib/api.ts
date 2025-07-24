@@ -6,6 +6,18 @@ const api = axios.create({
   withCredentials: true, // send cookies for auth if needed
 });
 
+// Attach JWT to all requests if present
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
   const res = await api.get('/auth/google/signup');
@@ -18,8 +30,18 @@ export async function getGoogleSigninUrl() {
   return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
-// Check if Gmail tokens are valid for the current user
+// Check Gmail connection and token validity for the current user
 export async function checkGmailToken() {
   const res = await api.get('/auth/google/check-gmail-token');
-  return res.data.gmail_token_valid as boolean; // Note: backend returns {gmail_token_valid}
+  // Return both fields
+  return {
+    gmail_connected: res.data.gmail_connected,
+    gmail_token_valid: res.data.gmail_token_valid,
+  };
+}
+
+// Exchange Google OAuth code for tokens (GET /google/callback?code=...)
+export async function exchangeGoogleCode(code: string) {
+  const res = await api.get('/auth/google/callback', { params: { code } });
+  return res.data;
 }

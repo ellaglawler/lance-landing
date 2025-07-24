@@ -123,15 +123,6 @@ export default function LanceLanding() {
           }}
         ></div>
 
-        {/* Subtle Product Background */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-          style={{
-            backgroundImage: "url('/images/invoice-detection.png')",
-            zIndex: -1
-          }}
-        ></div>
-
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="mx-auto max-w-6xl text-center">
             {/* Beta Badge */}
