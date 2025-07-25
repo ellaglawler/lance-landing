@@ -991,6 +991,7 @@ export default function LanceDashboard() {
                 </div>
 
                 <div className="space-y-6">
+                  {/* Invoice Details Card */}
                   <div className="bg-slate-700 p-5 rounded-xl border border-slate-600">
                     <div className="text-sm text-slate-300 mb-2 font-medium">To: {selectedInvoice.client}</div>
                     <div className="text-sm text-slate-300 mb-2 font-medium">
@@ -1024,156 +1025,328 @@ export default function LanceDashboard() {
                     )}
                   </div>
 
-                  {!selectedInvoice.isPastInvoice && (
+                  {/* Email Thread Section */}
+                  {selectedInvoice.emailThread && !isEditingMessage && (
                     <div className="space-y-4">
-                      <div className="text-sm font-medium text-slate-300 mb-3">Select Tone:</div>
-                      <div className="flex gap-3">
-                        <Button
-                          variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Polite" })}
-                          className={
-                            selectedInvoice.tone === "Polite"
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                          }
-                        >
-                          Polite
-                        </Button>
-                        <Button
-                          variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Professional" })}
-                          className={
-                            selectedInvoice.tone === "Professional"
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                          }
-                        >
-                          Professional
-                        </Button>
-                        <Button
-                          variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Firm" })}
-                          className={
-                            selectedInvoice.tone === "Firm"
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                          }
-                        >
-                          Firm
-                        </Button>
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEmailThread(!showEmailThread)}
+                        className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            <span className="font-medium">
+                              {selectedInvoice.isPastInvoice ? "Communication History" : "Previous Communications"} ({selectedInvoice.emailThread.length})
+                            </span>
+                          </div>
+                          {showEmailThread ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </div>
+                      </Button>
+                      
+                      {showEmailThread && (
+                        <div className="space-y-4 animate-in slide-in-from-top duration-300">
+                          {selectedInvoice.emailThread.map((email) => (
+                            <div 
+                              key={email.id} 
+                              className="bg-slate-700/50 rounded-lg p-4 space-y-2 transition-all duration-300 hover:bg-slate-700"
+                            >
+                              <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-3">
+                                  <Badge variant="outline" className="bg-slate-600 text-slate-300">
+                                    {email.tone}
+                                  </Badge>
+                                  <span className="text-slate-400">{formatDate(email.date)}</span>
+                                </div>
+                                <span className="text-slate-400">{email.subject}</span>
+                              </div>
+                              <div className="text-sm text-slate-300 whitespace-pre-wrap font-mono bg-slate-700 rounded p-3">
+                                {email.content}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
-                    <div className="text-sm leading-relaxed text-slate-300">
-                      {selectedInvoice.isPastInvoice ? (
-                        <div>
-                          <div className="text-slate-400 text-xs mb-2">Message that was sent:</div>
-                          <p>{selectedInvoice.messageSent}</p>
+                  {/* Message Preview or Edit Section */}
+                  {!selectedInvoice.isPastInvoice && (
+                    <>
+                      {isEditingMessage ? (
+                        // Edit Message View
+                        <div className="space-y-6">
+                          <div className="space-y-4">
+                            <div className="text-sm font-medium text-slate-300 mb-3">Select Tone:</div>
+                            <div className="flex gap-3">
+                              <Button
+                                variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Polite" })}
+                                className={
+                                  selectedInvoice.tone === "Polite"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                                }
+                              >
+                                Polite
+                              </Button>
+                              <Button
+                                variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Professional" })}
+                                className={
+                                  selectedInvoice.tone === "Professional"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                                }
+                              >
+                                Professional
+                              </Button>
+                              <Button
+                                variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Firm" })}
+                                className={
+                                  selectedInvoice.tone === "Firm"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                                }
+                              >
+                                Firm
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
+                            <div className="text-sm leading-relaxed text-slate-300">
+                              {selectedInvoice.tone === "Polite" && (
+                                <>
+                                  <p>Hi there!</p>
+                                  <br />
+                                  <p>
+                                    I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
+                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                    days ago.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    I know things can get busy, so I wanted to send a gentle reminder. If you have any
+                                    questions about the invoice or need any additional information, please don't hesitate to
+                                    reach out!
+                                  </p>
+                                  <br />
+                                  <p>Thanks for your time, and I look forward to hearing from you soon!</p>
+                                  <br />
+                                  <p>Best regards</p>
+                                </>
+                              )}
+                              {selectedInvoice.tone === "Professional" && (
+                                <>
+                                  <p>Hello,</p>
+                                  <br />
+                                  <p>
+                                    I'm writing to follow up on invoice #{selectedInvoice.id} for $
+                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                    days ago.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    Please let me know when I can expect payment, or if there are any issues that need to be
+                                    addressed. I'm happy to discuss payment arrangements if needed.
+                                  </p>
+                                  <br />
+                                  <p>Thank you for your prompt attention to this matter.</p>
+                                  <br />
+                                  <p>Best regards</p>
+                                </>
+                              )}
+                              {selectedInvoice.tone === "Firm" && (
+                                <>
+                                  <p>Dear {selectedInvoice.client},</p>
+                                  <br />
+                                  <p>
+                                    This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
+                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                    days ago.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    Immediate payment is required to avoid any disruption to our business relationship.
+                                    Please remit payment within 5 business days of receiving this notice.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    If payment has already been sent, please disregard this notice and provide payment
+                                    confirmation.
+                                  </p>
+                                  <br />
+                                  <p>Regards</p>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                            <Button
+                              variant="outline"
+                              className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                              onClick={() => setIsEditingMessage(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                              onClick={() => setIsEditingMessage(false)}
+                            >
+                              Save Changes
+                            </Button>
+                          </div>
                         </div>
                       ) : (
+                        // Preview View
+                        <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
+                          <div className="text-sm leading-relaxed text-slate-300">
+                            {selectedInvoice.tone === "Polite" && (
+                              <>
+                                <p>Hi there!</p>
+                                <br />
+                                <p>
+                                  I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
+                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                  days ago.
+                                </p>
+                                <br />
+                                <p>
+                                  I know things can get busy, so I wanted to send a gentle reminder. If you have any
+                                  questions about the invoice or need any additional information, please don't hesitate to
+                                  reach out!
+                                </p>
+                                <br />
+                                <p>Thanks for your time, and I look forward to hearing from you soon!</p>
+                                <br />
+                                <p>Best regards</p>
+                              </>
+                            )}
+                            {selectedInvoice.tone === "Professional" && (
+                              <>
+                                <p>Hello,</p>
+                                <br />
+                                <p>
+                                  I'm writing to follow up on invoice #{selectedInvoice.id} for $
+                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                  days ago.
+                                </p>
+                                <br />
+                                <p>
+                                  Please let me know when I can expect payment, or if there are any issues that need to be
+                                  addressed. I'm happy to discuss payment arrangements if needed.
+                                </p>
+                                <br />
+                                <p>Thank you for your prompt attention to this matter.</p>
+                                <br />
+                                <p>Best regards</p>
+                              </>
+                            )}
+                            {selectedInvoice.tone === "Firm" && (
+                              <>
+                                <p>Dear {selectedInvoice.client},</p>
+                                <br />
+                                <p>
+                                  This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
+                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                  days ago.
+                                </p>
+                                <br />
+                                <p>
+                                  Immediate payment is required to avoid any disruption to our business relationship.
+                                  Please remit payment within 5 business days of receiving this notice.
+                                </p>
+                                <br />
+                                <p>
+                                  If payment has already been sent, please disregard this notice and provide payment
+                                  confirmation.
+                                </p>
+                                <br />
+                                <p>Regards</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Action Buttons */}
+                  {!isEditingMessage && (
+                    <div className="flex gap-4 pt-4">
+                      {selectedInvoice.isPastInvoice ? (
+                        <Button
+                          className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                          onClick={() => setSelectedInvoice(null)}
+                        >
+                          Close
+                        </Button>
+                      ) : selectedInvoice.status === "pending_response" ? (
                         <>
-                          {selectedInvoice.tone === "Polite" && (
-                            <>
-                              <p>Hi there!</p>
-                              <br />
-                              <p>
-                                I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
-                                {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                days ago.
-                              </p>
-                              <br />
-                              <p>
-                                I know things can get busy, so I wanted to send a gentle reminder. If you have any
-                                questions about the invoice or need any additional information, please don't hesitate to
-                                reach out!
-                              </p>
-                              <br />
-                              <p>Thanks for your time, and I look forward to hearing from you soon!</p>
-                              <br />
-                              <p>Best regards</p>
-                            </>
-                          )}
-                          {selectedInvoice.tone === "Professional" && (
-                            <>
-                              <p>Hello,</p>
-                              <br />
-                              <p>
-                                I'm writing to follow up on invoice #{selectedInvoice.id} for $
-                                {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                days ago.
-                              </p>
-                              <br />
-                              <p>
-                                Please let me know when I can expect payment, or if there are any issues that need to be
-                                addressed. I'm happy to discuss payment arrangements if needed.
-                              </p>
-                              <br />
-                              <p>Thank you for your prompt attention to this matter.</p>
-                              <br />
-                              <p>Best regards</p>
-                            </>
-                          )}
-                          {selectedInvoice.tone === "Firm" && (
-                            <>
-                              <p>Dear {selectedInvoice.client},</p>
-                              <br />
-                              <p>
-                                This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
-                                {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                days ago.
-                              </p>
-                              <br />
-                              <p>
-                                Immediate payment is required to avoid any disruption to our business relationship.
-                                Please remit payment within 5 business days of receiving this notice.
-                              </p>
-                              <br />
-                              <p>
-                                If payment has already been sent, please disregard this notice and provide payment
-                                confirmation.
-                              </p>
-                              <br />
-                              <p>Regards</p>
-                            </>
-                          )}
+                          <div className="flex-1 flex items-center justify-center gap-3 px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                            <div className="text-sm">
+                              <span className="text-blue-400 font-medium">Lance is monitoring</span>
+                              <span className="text-slate-400"> • Next follow-up in {(() => {
+                                if (!selectedInvoice?.nextFollowUpDate) return '...'
+                                const nextDate = new Date(selectedInvoice.nextFollowUpDate)
+                                const now = new Date()
+                                const diffDays = Math.ceil((nextDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+                                return `${diffDays} days`
+                              })()}</span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                            onClick={() => setSelectedInvoice(null)}
+                          >
+                            Close
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                            onClick={() => setIsEditingMessage(true)}
+                          >
+                            Edit Message
+                          </Button>
+                          <Button
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                            onClick={() => {
+                              if (!selectedInvoice) return
+                              
+                              // Send the reminder
+                              const updatedInvoice = sendReminder(selectedInvoice)
+                              
+                              // Update state
+                              setInvoices(currentInvoices => 
+                                currentInvoices.map(inv => inv.id === selectedInvoice.id ? updatedInvoice : inv)
+                              )
+                              
+                              // Close modal after short delay to show status change
+                              setTimeout(() => setSelectedInvoice(null), 1500)
+                            }}
+                          >
+                            Send Reminder
+                          </Button>
                         </>
                       )}
                     </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                    {selectedInvoice.isPastInvoice ? (
-                      <Button
-                        className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
-                        onClick={() => setSelectedInvoice(null)}
-                      >
-                        Close
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline"
-                          className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
-                          onClick={() => setSelectedInvoice(null)}
-                        >
-                          Edit Message
-                        </Button>
-                        <Button
-                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                          onClick={() => {
-                            setSelectedInvoice(null)
-                          }}
-                        >
-                          Send Reminder
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
