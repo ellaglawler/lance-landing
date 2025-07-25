@@ -859,43 +859,39 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   return (
                     <div
                       key={invoice.id}
-                      className="flex items-center justify-between p-5 border-l-4 border-l-green-400 bg-slate-700/50 hover:bg-slate-700 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] opacity-75"
+                      className="flex items-center justify-between p-5 bg-slate-700/30 rounded-xl shadow-md transition-all duration-300 hover:bg-slate-700 hover:shadow-lg hover:scale-[1.02]"
                     >
                       <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14 ring-4 ring-green-500/30 shadow-lg">
-                          <AvatarFallback className="bg-green-600 text-white font-bold text-lg">
+                        <Avatar className="h-14 w-14 shadow-lg">
+                          <AvatarFallback className="bg-slate-600 text-white font-bold text-lg">
                             {invoice.avatar}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="font-bold text-xl text-white">{invoice.client}</div>
                           <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
-                            {invoice.daysToPayment ? ` in ${invoice.daysToPayment} days` : ''}
+                            <span className="font-bold text-slate-400">${invoice.amount.toLocaleString()}</span> • Paid
+                            {'daysToPayment' in invoice ? ` in ${invoice.daysToPayment} days` : ''}
                           </div>
                           <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Sent: {formatDate(invoice.dateSent ?? '')}
+                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
                             </div>
                             <div className="flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
-                              Paid: {formatDate(invoice.datePaid ?? '')}
+                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid) : ''}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`font-semibold border ${invoice.messageType ? getToneColor(invoice.messageType) : ''}`}>
-                          {invoice.messageType ?? ''}
-                        </Badge>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true, status: "paid" })}
-                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-green-600 hover:border-green-600 hover:text-white transition-all duration-300 hover:scale-105"
+                          onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
+                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
                         >
-                          <MessageSquare className="h-4 w-4 mr-2" />
                           View Details
                         </Button>
                       </div>
