@@ -22,20 +22,17 @@ api.interceptors.request.use((config) => {
 function getTokens() {
   return {
     access: localStorage.getItem('jwt'),
-    refresh: localStorage.getItem('refresh_token'),
   };
 }
 
 // Helper to set tokens in localStorage
-function setTokens(access: string, refresh: string) {
+function setTokens(access: string) {
   localStorage.setItem('jwt', access);
-  localStorage.setItem('refresh_token', refresh);
 }
 
 // Helper to clear tokens
 function clearTokens() {
   localStorage.removeItem('jwt');
-  localStorage.removeItem('refresh_token');
 }
 
 // Attempt to refresh JWT if 401 is encountered
@@ -51,23 +48,16 @@ api.interceptors.response.use(
     ) {
       console.log('[API] 401 detected, attempting token refresh...');
       originalRequest._retry = true;
-      const { refresh } = getTokens();
-      if (refresh) {
-        try {
-          console.log('[API] Found refresh token, calling /auth/refresh...');
-          const res = await api.post('/auth/refresh', { refresh_token: refresh });
-          setTokens(res.data.access_token, res.data.refresh_token);
-          console.log('[API] Token refresh successful, retrying original request...');
-          // Update Authorization header and retry original request
-          originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
-          return api(originalRequest);
-        } catch (refreshError) {
-          console.error('[API] Token refresh failed:', refreshError);
-          clearTokens();
-          // Optionally, redirect to login page here
-        }
-      } else {
-        console.warn('[API] No refresh token found, clearing tokens.');
+      try {
+        console.log('[API] Calling /auth/refresh (refresh token sent via HttpOnly cookie)...');
+        const res = await api.post('/auth/refresh');
+        setTokens(res.data.access_token);
+        console.log('[API] Token refresh successful, retrying original request...');
+        // Update Authorization header and retry original request
+        originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error('[API] Token refresh failed:', refreshError);
         clearTokens();
         // Optionally, redirect to login page here
       }
