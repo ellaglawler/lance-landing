@@ -57,10 +57,10 @@ interface InvoiceUI {
   nextFollowUpDate?: string;
 }
 
-export default function LanceDashboard() {
+export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boolean }) {
   // Demo mode toggle (set to true for demo/mock data)
-  const demoMode = true // Set to true to enable demo mode
-
+  // const demoMode = true // Set to true to enable demo mode
+  const demoMode = isDemoMode;
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceUI | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [amountFilter, setAmountFilter] = useState("all")
