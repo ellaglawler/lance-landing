@@ -6,19 +6,31 @@ import { useAuth } from "@/components/auth-context"
 import LanceDashboard from "@/components/dashboard"
 
 function DashboardContent() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, loading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const isDemoMode = searchParams.get('demo-mode') === 'true'
 
+  //console.log('[Dashboard] Render', { isAuthenticated, isDemoMode, loading })
+
   useEffect(() => {
-    if (!isAuthenticated && !isDemoMode) {
+    if (!loading && !isAuthenticated && !isDemoMode) {
+      //console.log('[Dashboard] Redirecting to home because not authenticated, not in demo mode, and not loading')
       router.push('/')
     }
-  }, [isAuthenticated, isDemoMode, router])
+  }, [isAuthenticated, isDemoMode, loading, router])
 
-  // Show loading or redirect if not authenticated and not in demo mode
+  if (loading) {
+    //console.log('[Dashboard] Showing loading UI')
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    )
+  }
+
   if (!isAuthenticated && !isDemoMode) {
+    //console.log('[Dashboard] Showing redirecting UI')
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-white">Redirecting...</div>

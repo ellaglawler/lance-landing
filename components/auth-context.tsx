@@ -17,6 +17,7 @@ interface AuthContextType {
   login: (token: string, user: User) => void;
   logout: () => void;
   setUser: (user: User | null) => void;
+  loading: boolean; // Add loading state to the interface
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // On mount, load from localStorage
@@ -31,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem('user');
     if (storedToken) setToken(storedToken);
     if (storedUser) setUser(JSON.parse(storedUser));
+    setLoading(false); // Mark loading as complete
   }, []);
 
   const login = (newToken: string, newUser: User) => {
@@ -47,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user');
   };
 
+  //console.log('AuthContext.Provider rendered', { user, token, isAuthenticated: !!token });
   return (
     <AuthContext.Provider
       value={{
@@ -56,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         setUser,
+        loading, // Expose loading state
       }}
     >
       {children}

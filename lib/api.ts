@@ -18,6 +18,58 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Helper to get tokens from localStorage
+function getTokens() {
+  return {
+    access: localStorage.getItem('jwt'),
+  };
+}
+
+// Helper to set tokens in localStorage
+function setTokens(access: string) {
+  localStorage.setItem('jwt', access);
+}
+
+// Helper to clear tokens
+function clearTokens() {
+  localStorage.removeItem('jwt');
+}
+
+// Attempt to refresh JWT if 401 is encountered
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry &&
+      typeof window !== 'undefined'
+    ) {
+      console.log('[API] 401 detected, attempting token refresh...');
+      originalRequest._retry = true;
+      try {
+        console.log('[API] Calling /auth/refresh (refresh token sent via HttpOnly cookie)...');
+        const res = await api.post('/auth/refresh');
+        setTokens(res.data.access_token);
+        console.log('[API] Token refresh successful, retrying original request...');
+        // Update Authorization header and retry original request
+        originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error('[API] Token refresh failed:', refreshError);
+        clearTokens();
+        // Optionally, redirect to login page here
+      }
+    } else {
+      if (error.response && error.response.status === 401) {
+        console.warn('[API] 401 received, but refresh logic not triggered (maybe already retried or not in browser).');
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
   const res = await api.get('/auth/google/signup');
@@ -44,4 +96,26 @@ export async function checkGmailToken() {
 export async function exchangeGoogleCode(code: string) {
   const res = await api.get('/auth/google/callback', { params: { code } });
   return res.data;
+}
+
+// Scan Gmail for invoices for the current user
+export async function scanInvoices(query?: string, maxResults: number = 50) {
+  const res = await api.get('/invoices/scan/', {
+    params: {
+      ...(query ? { query } : {}),
+      max_results: maxResults,
+    },
+  });
+  return res.data; // { invoices, total_found, overdue_count }
+}
+
+// Fetch all invoices for the current user, with optional status/client filters
+export async function getInvoices({ status = 'all', client }: { status?: string; client?: string } = {}) {
+  const res = await api.get('/invoices/', {
+    params: {
+      status,
+      ...(client ? { client } : {}),
+    },
+  });
+  return res.data; // Array of invoices
 }

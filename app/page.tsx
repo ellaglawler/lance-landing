@@ -123,7 +123,6 @@ export default function LanceLanding() {
           }}
         ></div>
 
-        {/* Container starts here */}
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="mx-auto max-w-6xl text-center">
             {/* Beta Badge */}

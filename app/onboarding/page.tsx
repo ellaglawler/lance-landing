@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode } from '@/lib/api';
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode, scanInvoices } from '@/lib/api';
 import { useAuth } from '@/components/auth-context';
 import { WaitlistForm } from '@/components/waitlist-form';
 
@@ -42,8 +42,10 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
   const { login } = useAuth();
+  const userLocale = typeof navigator !== "undefined" ? navigator.language : "en-US";
 
   // Listen for OAuth callback via postMessage
   useEffect(() => {
@@ -58,16 +60,23 @@ export default function OnboardingPage() {
             login(data.access_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
-              setTimeout(() => {
-                const found = Math.random() > 0.3;
-                if (found) {
-                  setScanResult({ count: 3, total: 2700 });
+              // Call scanInvoices API here
+              scanInvoices()
+                .then((data) => {
+                  if (data && data.invoices && data.invoices.length > 0) {
+                    const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
+                    setScanResult({ count: data.invoices.length, total });
+                    setNoInvoices(false);
+                  } else {
+                    setNoInvoices(true);
+                  }
                   setStep(STEP.RESULTS);
-                } else {
-                  setNoInvoices(true);
-                  setStep(STEP.RESULTS);
-                }
-              }, 2000);
+                })
+                .catch(() => {
+                  setError('Failed to scan for invoices.');
+                  setStep(STEP.ERROR);
+                })
+                .finally(() => setLoading(false));
             } else {
               setStep(STEP.SCANNING);
               checkGmailToken()
@@ -99,6 +108,27 @@ export default function OnboardingPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, [isSignUp, router, login]);
 
+  // Animate progress bar
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (step === STEP.SCANNING) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress((old) => {
+          if (old < 95) return Math.min(old + Math.random() * 7, 95);
+          return old;
+        });
+      }, 200);
+    }
+    if (step === STEP.RESULTS || step === STEP.ERROR) {
+      setProgress(100);
+      if (interval) clearInterval(interval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [step]);
+
   // Entry screen: Sign Up or Sign In
   if (step === STEP.ENTRY) {
     // Read the env variable (must be NEXT_PUBLIC_ for client-side)
@@ -119,19 +149,19 @@ export default function OnboardingPage() {
           <div className="w-full max-w-lg mx-auto">
             <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
               <CardHeader className="flex flex-col items-center gap-2 pb-2">
-                <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Get Started</Badge>
-                <CardTitle className="text-center text-3xl font-bold text-white mb-4">
-                  Welcome to Lance
+                <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">Onboarding</Badge>
+                <CardTitle className="text-center text-3xl font-bold text-white mb-2">
+                  Welcome back, or welcome aboard!
                 </CardTitle>
-                <CardDescription className="text-center text-gray-300 text-lg max-w-md">
-                  Track unpaid invoices and follow up with clients automatically. Save time and get paid faster.
+                <CardDescription className="text-center text-gray-300 text-lg">
+                  Lance helps you track unpaid invoices and follow up with clients, automatically or with your review.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-8 pb-8 pt-2">
                 <div className="flex flex-col gap-4 w-full mt-4">
                   {allowSignup ? (
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
-                      Create Account
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => { setIsSignUp(true); setStep(STEP.SIGNIN); }}>
+                      → I’m New — Sign Up
                     </Button>
                   ) : (
                     <div className="flex flex-col gap-4 items-center">
@@ -141,8 +171,8 @@ export default function OnboardingPage() {
                       <WaitlistForm showDemoButton={false} />
                     </div>
                   )}
-                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700 py-6" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
-                    Sign In to Account
+                  <Button className="w-full bg-[#232B3A] hover:bg-[#283146] text-blue-200 font-semibold border border-blue-700" variant="secondary" onClick={() => { setIsSignUp(false); setStep(STEP.SIGNIN); }}>
+                    → I Already Have an Account — Sign In
                   </Button>
                 </div>
               </CardContent>
@@ -198,26 +228,26 @@ export default function OnboardingPage() {
         <main className="relative z-20 w-full flex flex-col items-center justify-center min-h-screen">
           <div className="w-full max-w-lg mx-auto">
             <Card className="shadow-lg bg-[#192132] border border-white/10 rounded-2xl p-0">
-              <CardHeader className="flex flex-col items-center gap-4 pb-6">
+              <CardHeader className="flex flex-col items-center gap-2 pb-2">
                 <Badge className="mb-2 bg-blue-700/80 text-white px-4 py-1 text-sm font-semibold">{isSignUp ? "Sign Up" : "Sign In"}</Badge>
-                <CardTitle className="text-center text-4xl font-bold text-white mb-4">
+                <CardTitle className="text-center text-3xl font-bold text-white mb-2">
                   {isSignUp ? (
                     <>Welcome to Lance <span className="gradient-text-enhanced">your smarter way to get paid.</span></>
                   ) : (
                     <>Sign in to Lance <span className="gradient-text-enhanced">get paid faster.</span></>
                   )}
                 </CardTitle>
-                <CardDescription className="text-center text-gray-300 text-xl max-w-md">
+                <CardDescription className="text-center text-gray-300 text-lg">
                   {isSignUp
                     ? "Let us find and follow up on unpaid invoices in your inbox, so you can spend less time chasing clients and more time doing what you love."
                     : "Sign in with Google to access your dashboard and keep tracking your invoices."}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-8 pb-12 pt-4">
+              <CardContent className="px-8 pb-8 pt-2">
                 {isSignUp && (
-                  <ul className="mb-8 mt-4 space-y-4">
+                  <ul className="mb-6 mt-2 space-y-3">
                     {checklist.map((item, i) => (
-                      <li key={i} className="flex items-center text-lg text-gray-200">
+                      <li key={i} className="flex items-center text-base text-gray-200">
                         {item.icon}
                         <span>{item.label}</span>
                       </li>
@@ -225,23 +255,23 @@ export default function OnboardingPage() {
                   </ul>
                 )}
                 <Button
-                  className="w-full py-6 px-4 text-lg mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                   onClick={handleGoogleAuth}
                   disabled={loading}
                 >
-                  <UserCheck className="mr-2 h-5 w-5" /> {loading ? 'Loading…' : isSignUp ? "Sign up with Google" : "Sign in with Google"}
+                  <UserCheck className="mr-2" /> {loading ? 'Loading…' : isSignUp ? "Sign up with Google" : "Sign in with Google"}
                 </Button>
-                <div className="text-sm text-gray-400 mt-4 text-center">
+                <div className="text-xs text-gray-400 mt-3 text-center">
                   {isSignUp
                     ? "On the next screen, Google will ask you to confirm the permissions above. You can revoke access anytime at myaccount.google.com/security."
-                    : "We'll never access your inbox unless you give us permission."}
+                    : "We’ll never access your inbox unless you give us permission."}
                 </div>
                 {isSignUp && (
-                  <div className="mt-10 p-6 bg-[#232B3A] rounded-xl border border-white/10 max-w-md mx-auto">
-                    <p className="text-base text-blue-200 italic mb-2">
+                  <div className="mt-8 p-4 bg-[#232B3A] rounded-xl border border-white/10 max-w-md mx-auto">
+                    <p className="text-sm text-blue-200 italic mb-1">
                       "Lance found 3 overdue invoices I had completely forgotten about!"
                     </p>
-                    <p className="text-sm text-blue-400">— Sarah Chen, Freelance Designer</p>
+                    <p className="text-xs text-blue-400">— Sarah Chen, Freelance Designer</p>
                   </div>
                 )}
               </CardContent>
@@ -342,7 +372,7 @@ export default function OnboardingPage() {
                 )}
                 {step === STEP.SCANNING && "Scanning your inbox…"}
                 {step === STEP.RESULTS && (noInvoices ? "No Unpaid Invoices Found" : "Here’s what we found!")}
-                {step === STEP.ERROR && "Unable to connect to inbox"}
+                {step === STEP.ERROR && "Oops, we couldn’t connect to your inbox."}
               </CardTitle>
               {step === STEP.SIGNIN && (
                 <CardDescription className="text-center text-gray-300 text-lg">
@@ -361,8 +391,7 @@ export default function OnboardingPage() {
               )}
               {step === STEP.ERROR && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  We can't find or follow up on your invoices without access.
-                  Try again now or connect your inbox later from the dashboard.
+                  Without access, we can’t find or follow up on your invoices.<br />You can try again or explore the dashboard and connect later.
                 </CardDescription>
               )}
             </CardHeader>
@@ -406,13 +435,13 @@ export default function OnboardingPage() {
               )}
               {step === STEP.SCANNING && (
                 <div className="flex flex-col items-center gap-6 mt-4">
-                  <Progress value={80} className="w-full h-3 bg-[#232B3A]" />
+                  <Progress value={progress} className="w-full h-3 bg-[#232B3A]" />
                   <div className="text-xs text-gray-400">We only scan emails related to invoices, never your personal conversations.</div>
                 </div>
               )}
               {step === STEP.RESULTS && !noInvoices && (
                 <div className="flex flex-col items-center gap-6 mt-2">
-                  <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>${scanResult?.total}</b>.</div>
+                  <div className="text-2xl font-semibold text-green-400 mb-2">🎉 We found <b>{scanResult?.count} unpaid invoices</b> worth <b>{Number(scanResult?.total).toLocaleString(userLocale, { style: "currency", currency: "USD" })}</b>.</div>
                   <div className="text-gray-300 text-base mb-4">Next, we’ll help you follow up with your clients, you choose if we draft them for you (Copilot) or send them automatically (Autopilot).</div>
                   <div className="flex flex-col gap-3 w-full">
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={() => router.push("/dashboard?mode=copilot")}>→ Review Draft Follow-Ups (Copilot)</Button>
