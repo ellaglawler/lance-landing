@@ -12,10 +12,8 @@ import {
   Bot,
   Mail,
   AlertTriangle,
-  Settings,
   BarChart2,
   BadgeDollarSign,
-  Check,
   Hourglass,
   AlertCircle,
   Pin,
@@ -28,7 +26,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useRouter } from "next/navigation"
 import { useEffect, useCallback } from "react"
 import { getInvoices } from "@/lib/api"
 
@@ -64,7 +61,6 @@ export default function LanceDashboard() {
   // Demo mode toggle (set to true for demo/mock data)
   const demoMode = true // Set to true to enable demo mode
 
-  const router = useRouter()
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceUI | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [amountFilter, setAmountFilter] = useState("all")
