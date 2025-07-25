@@ -29,10 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
-import { useEffect, useCallback } from "react"
-import { getInvoices } from "@/lib/api"
 
-// Email and Invoice types for type safety
 interface Email {
   id: string;
   date: string;
@@ -41,7 +38,7 @@ interface Email {
   content: string;
 }
 
-interface InvoiceUI {
+interface Invoice {
   id: number;
   client: string;
   amount: number;
@@ -60,29 +57,102 @@ interface InvoiceUI {
   nextFollowUpDate?: string;
 }
 
-export default function LanceDashboard() {
-  // Demo mode toggle (set to true for demo/mock data)
-  const demoMode = true // Set to true to enable demo mode
+const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+}
 
+// Add a function to handle sending a single reminder
+const sendReminder = (invoice: Invoice): Invoice => {
+  const now = new Date()
+  const nextFollowUp = new Date()
+  const daysToAdd = invoice.daysOverdue && invoice.daysOverdue > 14 ? 3 : 7
+  nextFollowUp.setDate(now.getDate() + daysToAdd)
+
+  // Create the new email
+  const newEmail: Email = {
+    id: `e${invoice.emailThread?.length ?? 0 + 1}`,
+    date: now.toISOString(),
+    subject: `Invoice #${invoice.id} - Payment Reminder`,
+    tone: invoice.tone ?? "Polite",
+    content: generateEmailContent(invoice)
+  }
+
+  // Return updated invoice
+  return {
+    ...invoice,
+    status: "pending_response",
+    lastReminderSent: now.toISOString(),
+    nextFollowUpDate: nextFollowUp.toISOString(),
+    emailThread: [...(invoice.emailThread ?? []), newEmail]
+  }
+}
+
+// Add helper function to generate email content based on tone
+const generateEmailContent = (invoice: Invoice): string => {
+  const tone = invoice.tone ?? "Polite"
+  const amount = invoice.amount.toLocaleString()
+  const daysOverdue = invoice.daysOverdue ?? 0
+  
+  if (tone === "Polite") {
+    return `Hi there!
+
+I hope you're doing well! I wanted to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.
+
+I know things can get busy, so I wanted to send a gentle reminder. If you have any questions about the invoice or need any additional information, please don't hesitate to reach out!
+
+Thanks for your time, and I look forward to hearing from you soon!
+
+Best regards`
+  }
+  
+  if (tone === "Professional") {
+    return `Hello,
+
+I'm writing to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.
+
+Please let me know when I can expect payment, or if there are any issues that need to be addressed. I'm happy to discuss payment arrangements if needed.
+
+Thank you for your prompt attention to this matter.
+
+Best regards`
+  }
+  
+  return `Dear ${invoice.client},
+
+This is a formal notice regarding overdue invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.
+
+Immediate payment is required to avoid any disruption to our business relationship. Please remit payment within 5 business days of receiving this notice.
+
+If payment has already been sent, please disregard this notice and provide payment confirmation.
+
+Regards`
+}
+
+export default function LanceDashboard() {
   const router = useRouter()
-  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceUI | null>(null)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [amountFilter, setAmountFilter] = useState("all")
   const [daysFilter, setDaysFilter] = useState("all")
+  // Add state for email thread visibility
   const [showEmailThread, setShowEmailThread] = useState(false)
+  // Add state for edit mode
   const [isEditingMessage, setIsEditingMessage] = useState(false)
 
-  // Unified mock data for demo mode (matches getInvoices structure)
-  const mockInvoices = [
-    // Overdue
+  // First, add the email thread data to the unpaid invoices
+  const overdueInvoices: Invoice[] = [
     {
       id: 1,
-      client_name: "Acme Design Co.",
+      client: "Acme Design Co.",
       amount: 1200,
-      days_overdue: 14,
-      is_overdue: true,
-      is_paid: false,
-      detected_at: "2024-01-01T00:00:00Z",
+      daysOverdue: 14,
+      avatar: "AD",
+      status: "overdue",
       tone: "Polite",
       emailThread: [
         {
@@ -103,12 +173,11 @@ export default function LanceDashboard() {
     },
     {
       id: 2,
-      client_name: "TechStart Inc.",
+      client: "TechStart Inc.",
       amount: 850,
-      days_overdue: 7,
-      is_overdue: true,
-      is_paid: false,
-      detected_at: "2024-01-02T00:00:00Z",
+      daysOverdue: 7,
+      avatar: "TS",
+      status: "overdue",
       tone: "Polite",
       emailThread: [
         {
@@ -122,12 +191,11 @@ export default function LanceDashboard() {
     },
     {
       id: 3,
-      client_name: "Creative Studio",
+      client: "Creative Studio",
       amount: 400,
-      days_overdue: 21,
-      is_overdue: true,
-      is_paid: false,
-      detected_at: "2024-01-03T00:00:00Z",
+      daysOverdue: 21,
+      avatar: "CS",
+      status: "overdue",
       tone: "Firm",
       emailThread: [
         {
@@ -152,106 +220,110 @@ export default function LanceDashboard() {
           content: "Hello,\n\nThis is another reminder about invoice #3 which is now overdue by two weeks. Please process the payment as soon as possible.\n\nThank you for your attention to this matter.\n\nBest regards"
         }
       ]
-    },
-    // Paid
+    }
+  ]
+
+  // Update the pastInvoices data to include email threads
+  const pastInvoices: Invoice[] = [
     {
       id: 101,
-      client_name: "Blue Corp",
+      client: "Blue Corp",
       amount: 2500,
-      is_overdue: false,
-      is_paid: true,
-      detected_at: "2024-01-15T00:00:00Z",
-      paid_at: "2024-01-18T00:00:00Z",
-      message_type: "Polite",
-      message_sent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
-      days_to_payment: 3,
+      avatar: "BC",
+      status: "paid",
+      dateSent: "2024-01-15",
+      datePaid: "2024-01-18",
+      messageType: "Polite",
+      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
+      daysToPayment: 3,
+      emailThread: [
+        {
+          id: "e1",
+          date: "2024-01-15",
+          subject: "Invoice #101 - Due",
+          tone: "Polite",
+          content: "Hi there!\n\nI hope this email finds you well. I wanted to send over invoice #101 for our recent project. The total amount is $2,500, due within 30 days.\n\nPlease let me know if you have any questions!\n\nBest regards"
+        },
+        {
+          id: "e2",
+          date: "2024-01-17",
+          subject: "Re: Invoice #101 - Due",
+          tone: "Polite",
+          content: "Thanks for the invoice! Processing the payment now.\n\nBest,\nBlue Corp Team"
+        },
+        {
+          id: "e3",
+          date: "2024-01-18",
+          subject: "Invoice #101 - Payment Confirmation",
+          tone: "Polite",
+          content: "Payment sent! You should receive it within 24 hours.\n\nThanks for your work!\n\nBest,\nBlue Corp Team"
+        }
+      ]
     },
     {
       id: 102,
-      client_name: "StartupXYZ",
+      client: "StartupXYZ",
       amount: 1800,
-      is_overdue: false,
-      is_paid: true,
-      detected_at: "2024-01-10T00:00:00Z",
-      paid_at: "2024-01-25T00:00:00Z",
-      message_type: "Professional",
-      message_sent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
-      days_to_payment: 15,
+      avatar: "SX",
+      status: "paid",
+      dateSent: "2024-01-10",
+      datePaid: "2024-01-25",
+      messageType: "Professional",
+      messageSent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
+      daysToPayment: 15,
+      emailThread: [
+        {
+          id: "e1",
+          date: "2024-01-10",
+          subject: "Invoice #102 - Due",
+          tone: "Polite",
+          content: "Hi StartupXYZ team,\n\nPlease find attached invoice #102 for our recent work. The total amount is $1,800, due within 30 days.\n\nBest regards"
+        },
+        {
+          id: "e2",
+          date: "2024-01-20",
+          subject: "Invoice #102 - Reminder",
+          tone: "Professional",
+          content: "Hello,\n\nI'm following up on invoice #102 which was due last week. Please let me know if you have any questions about the payment.\n\nBest regards"
+        },
+        {
+          id: "e3",
+          date: "2024-01-25",
+          subject: "Re: Invoice #102 - Reminder",
+          tone: "Professional",
+          content: "Payment has been processed. Sorry for the delay!\n\nRegards,\nStartupXYZ Finance"
+        }
+      ]
     },
     {
       id: 103,
-      client_name: "Design Studio Pro",
+      client: "Design Studio Pro",
       amount: 950,
-      is_overdue: false,
-      is_paid: true,
-      detected_at: "2024-01-08T00:00:00Z",
-      paid_at: "2024-01-12T00:00:00Z",
-      message_type: "Polite",
-      message_sent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
-      days_to_payment: 4,
+      avatar: "DS",
+      status: "paid",
+      dateSent: "2024-01-08",
+      datePaid: "2024-01-12",
+      messageType: "Polite",
+      messageSent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
+      daysToPayment: 4,
+      emailThread: [
+        {
+          id: "e1",
+          date: "2024-01-08",
+          subject: "Invoice #103 - Due",
+          tone: "Polite",
+          content: "Hi Design Studio team,\n\nHere's invoice #103 for the recent project. The total amount is $950, due within 30 days.\n\nThanks for your business!\n\nBest regards"
+        },
+        {
+          id: "e2",
+          date: "2024-01-12",
+          subject: "Re: Invoice #103 - Due",
+          tone: "Polite",
+          content: "Payment sent! Thanks for the great work.\n\nBest,\nDesign Studio Pro Team"
+        }
+      ]
     },
   ]
-
-  const [invoices, setInvoices] = useState<any[]>([])
-  const [loadingInvoices, setLoadingInvoices] = useState(true)
-  const [invoicesError, setInvoicesError] = useState<string | null>(null)
-
-  const fetchInvoices = useCallback(async () => {
-    setLoadingInvoices(true)
-    setInvoicesError(null)
-    try {
-      const data = await getInvoices()
-      setInvoices(data)
-    } catch (err: any) {
-      setInvoicesError(err?.message || "Failed to fetch invoices")
-    } finally {
-      setLoadingInvoices(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!demoMode) {
-      fetchInvoices()
-    } else {
-      setInvoices(mockInvoices)
-      setLoadingInvoices(false)
-    }
-  }, [fetchInvoices, demoMode])
-
-  // --- UX: Send Reminder Logic ---
-  function generateEmailContent(invoice: InvoiceUI): string {
-    const tone = invoice.tone ?? "Polite"
-    const amount = invoice.amount.toLocaleString()
-    const daysOverdue = invoice.daysOverdue ?? 0
-    if (tone === "Polite") {
-      return `Hi there!\n\nI hope you're doing well! I wanted to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nI know things can get busy, so I wanted to send a gentle reminder. If you have any questions about the invoice or need any additional information, please don't hesitate to reach out!\n\nThanks for your time, and I look forward to hearing from you soon!\n\nBest regards`
-    }
-    if (tone === "Professional") {
-      return `Hello,\n\nI'm writing to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nPlease let me know when I can expect payment, or if there are any issues that need to be addressed. I'm happy to discuss payment arrangements if needed.\n\nThank you for your prompt attention to this matter.\n\nBest regards`
-    }
-    return `Dear ${invoice.client},\n\nThis is a formal notice regarding overdue invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nImmediate payment is required to avoid any disruption to our business relationship. Please remit payment within 5 business days of receiving this notice.\n\nIf payment has already been sent, please disregard this notice and provide payment confirmation.\n\nRegards`
-  }
-
-  function sendReminder(invoice: InvoiceUI): InvoiceUI {
-    const now = new Date()
-    const nextFollowUp = new Date()
-    const daysToAdd = invoice.daysOverdue && invoice.daysOverdue > 14 ? 3 : 7
-    nextFollowUp.setDate(now.getDate() + daysToAdd)
-    const newEmail: Email = {
-      id: `e${invoice.emailThread?.length ?? 0 + 1}`,
-      date: now.toISOString(),
-      subject: `Invoice #${invoice.id} - Payment Reminder`,
-      tone: invoice.tone ?? "Polite",
-      content: generateEmailContent(invoice)
-    }
-    return {
-      ...invoice,
-      status: "pending_response",
-      lastReminderSent: now.toISOString(),
-      nextFollowUpDate: nextFollowUp.toISOString(),
-      emailThread: [...(invoice.emailThread ?? []), newEmail]
-    }
-  }
 
   // Activity feed data
   const activityFeed = [
@@ -280,14 +352,6 @@ export default function LanceDashboard() {
       color: "text-green-400",
     },
     {
-      id: 4,
-      type: "follow_up_scheduled",
-      message: "Scheduled follow-up for TechStart Inc. in 2 days",
-      time: "5 hours ago",
-      icon: Clock,
-      color: "text-purple-400",
-    },
-    {
       id: 5,
       type: "tone_adjusted",
       message: "Switched to firm tone for Creative Studio (21+ days overdue)",
@@ -297,54 +361,15 @@ export default function LanceDashboard() {
     },
   ]
 
-  // Split invoices into overdue and paid, and map to UI shape
-  const mappedOverdueInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.is_overdue)
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      daysOverdue: inv.days_overdue,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      status: "overdue" as const,
-      tone: inv.tone || "Polite",
-      emailThread: inv.emailThread,
-      lastReminderSent: inv.lastReminderSent,
-      nextFollowUpDate: inv.nextFollowUpDate,
-    }))
+  // Combine all invoices with overdue first, then paid
+  const allInvoices = [...overdueInvoices, ...pastInvoices]
 
-  const pastInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.is_paid)
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      dateSent: inv.detected_at,
-      datePaid: inv.paid_at,
-      messageType: inv.message_type,
-      messageSent: inv.message_sent,
-      daysToPayment: inv.days_to_payment,
-      status: "paid" as const,
-      emailThread: inv.emailThread,
-    }))
+  // Add state for filtered invoices
+  const [invoices, setInvoices] = useState<Invoice[]>(allInvoices)
 
-  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...pastInvoices]
-
+  // Update the getFilteredInvoices function to use the invoices state
   const getFilteredInvoices = () => {
-    let filtered = allInvoices
+    let filtered = invoices
 
     // Filter by amount
     if (amountFilter !== "all") {
@@ -361,11 +386,11 @@ export default function LanceDashboard() {
     if (daysFilter !== "all") {
       filtered = filtered.filter((invoice) => {
         if (invoice.status === "paid") return true // Always show paid invoices
-        const days = invoice.daysOverdue ?? 0;
-        if (daysFilter === "1-7") return days >= 1 && days <= 7
-        if (daysFilter === "8-14") return days >= 8 && days <= 14
-        if (daysFilter === "15-30") return days >= 15 && days <= 30
-        if (daysFilter === "30+") return days > 30
+        if (!invoice.daysOverdue) return false
+        if (daysFilter === "1-7") return invoice.daysOverdue >= 1 && invoice.daysOverdue <= 7
+        if (daysFilter === "8-14") return invoice.daysOverdue >= 8 && invoice.daysOverdue <= 14
+        if (daysFilter === "15-30") return invoice.daysOverdue >= 15 && invoice.daysOverdue <= 30
+        if (daysFilter === "30+") return invoice.daysOverdue > 30
         return true
       })
     }
@@ -374,15 +399,6 @@ export default function LanceDashboard() {
   }
 
   const filteredInvoices = getFilteredInvoices()
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })
-  }
 
   const getToneColor = (tone: string) => {
     if (tone === "Polite") return "bg-green-100 text-green-800 border-green-200"
@@ -417,7 +433,7 @@ export default function LanceDashboard() {
                 <div>
                   <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
                   <div className="text-white text-xl font-bold">
-                    ${mappedOverdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+                    ${overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -428,7 +444,7 @@ export default function LanceDashboard() {
                   <div className="text-slate-400 text-xs font-medium">Collected This Week</div>
                   <div className="text-white text-xl font-bold">
                     ${pastInvoices.filter(inv => {
-                      const paid = inv.datePaid ? new Date(inv.datePaid) : new Date()
+                      const paid = new Date(inv.datePaid)
                       const now = new Date()
                       const diff = (now.getTime() - paid.getTime()) / (1000 * 60 * 60 * 24)
                       return diff <= 7
@@ -478,12 +494,12 @@ export default function LanceDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mappedOverdueInvoices
-                      .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
-                      .filter(inv => inv.days >= 14)
+                    {overdueInvoices
+                      .filter(inv => inv.daysOverdue >= 14) // High risk: 14+ days overdue
                       .slice(0, 2)
                       .map(inv => (
                         <tr key={inv.id} className="hover:bg-slate-700 cursor-pointer transition" onClick={() => {
+                          // Scroll to invoice in list
                           const el = document.getElementById(`invoice-${inv.id}`)
                           if (el) {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -493,7 +509,7 @@ export default function LanceDashboard() {
                         }}>
                           <td className="px-2 py-1 text-blue-400 underline">{inv.client}</td>
                           <td className="px-2 py-1">${inv.amount.toLocaleString()}</td>
-                          <td className="px-2 py-1">{inv.days}</td>
+                          <td className="px-2 py-1">{inv.daysOverdue}</td>
                           <td className="px-2 py-1">
                             <span className="inline-flex items-center gap-1 font-semibold text-red-400">
                               <CircleDot className="h-4 w-4 text-red-400" /> High
@@ -501,7 +517,7 @@ export default function LanceDashboard() {
                           </td>
                         </tr>
                       ))}
-                    {mappedOverdueInvoices.filter(inv => (inv.daysOverdue ?? 0) >= 14).length === 0 && (
+                    {overdueInvoices.filter(inv => inv.daysOverdue >= 14).length === 0 && (
                       <tr><td colSpan={4} className="text-slate-500 py-2">No high-risk clients this week.</td></tr>
                     )}
                   </tbody>
@@ -516,7 +532,7 @@ export default function LanceDashboard() {
                 <span className="text-white font-semibold">Next Steps</span>
               </div>
               <ul className="space-y-2">
-                {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 21).map(inv => (
+                {overdueInvoices.filter(inv => inv.daysOverdue >= 21).map(inv => (
                   <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Approve escalated reminder to <span className="font-semibold text-white">{inv.client}</span></span>
@@ -535,7 +551,7 @@ export default function LanceDashboard() {
                   </li>
                 ))}
                 {/* Example: View action for a client with 7-20 days overdue */}
-                {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 8 && inv.days < 21).map(inv => (
+                {overdueInvoices.filter(inv => inv.daysOverdue >= 8 && inv.daysOverdue < 21).map(inv => (
                   <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
@@ -557,7 +573,7 @@ export default function LanceDashboard() {
                   </li>
                 ))}
                 {/* If no next steps */}
-                {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 8).length === 0 && (
+                {overdueInvoices.filter(inv => inv.daysOverdue >= 8).length === 0 && (
                   <li className="text-slate-500 py-2">No urgent actions needed this week.</li>
                 )}
               </ul>
@@ -576,7 +592,7 @@ export default function LanceDashboard() {
                 <div>
                   <CardTitle className="text-white text-lg">Lance Activity</CardTitle>
                   <CardDescription className="text-slate-400">
-                    Your AI agent is actively working on {mappedOverdueInvoices.length} overdue invoices
+                    Your AI agent is actively working on {overdueInvoices.length} overdue invoices
                   </CardDescription>
                 </div>
               </div>
@@ -673,10 +689,6 @@ export default function LanceDashboard() {
                     <span className="text-slate-400">Payments</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-slate-400">Scheduling</span>
-                  </div>
-                  <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                     <span className="text-slate-400">Adjustments</span>
                   </div>
@@ -717,27 +729,36 @@ export default function LanceDashboard() {
                   Invoice List
                 </CardTitle>
                 <CardDescription className="text-slate-100">
-                  {mappedOverdueInvoices.length} overdue • {pastInvoices.length} completed
+                  {overdueInvoices.length} overdue • {pastInvoices.length} completed
                 </CardDescription>
               </div>
               <Button 
                 className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 onClick={() => {
                   // Get all unpaid invoices that aren't already being monitored
-                  const unpaidInvoices = allInvoices.filter(inv => inv.status === "overdue")
-                  if (unpaidInvoices.length === 0) return
+                  const unpaidInvoices = invoices.filter(inv => inv.status === "overdue")
+
+                  if (unpaidInvoices.length === 0) {
+                    // Could add a toast notification here
+                    return
+                  }
+
                   // Send reminders for all unpaid invoices
-                  const updatedInvoices = allInvoices.map(invoice => {
+                  const updatedInvoices = invoices.map(invoice => {
                     if (invoice.status === "overdue") {
                       return sendReminder(invoice)
                     }
                     return invoice
                   })
+
+                  // Update state
                   setInvoices(updatedInvoices)
+
+                  // Could add a success toast notification here
                 }}
               >
                 <Zap className="h-4 w-4 mr-2" />
-                Send All Reminders ({allInvoices.filter(inv => inv.status === "overdue").length})
+                Send All Reminders ({invoices.filter(inv => inv.status === "overdue").length})
               </Button>
             </div>
           </CardHeader>
@@ -838,18 +859,6 @@ export default function LanceDashboard() {
           </div>
 
           <CardContent className="space-y-4 p-6">
-            {loadingInvoices && (
-              <div className="text-center py-8">
-                <p className="text-slate-400 text-lg mb-2">Loading overdue invoices...</p>
-                <p className="text-slate-500 text-sm">Please wait a moment.</p>
-              </div>
-            )}
-            {invoicesError && (
-              <div className="text-center py-8">
-                <p className="text-red-400 text-lg mb-2">Error: {invoicesError}</p>
-                <p className="text-slate-500 text-sm">Failed to fetch invoices. Please try again later.</p>
-              </div>
-            )}
             {filteredInvoices.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-slate-400 text-lg mb-2">No invoices in this category</div>
@@ -857,49 +866,91 @@ export default function LanceDashboard() {
               </div>
             ) : (
               filteredInvoices.map((invoice) => {
-                const days = invoice.daysOverdue ?? 0;
                 if (invoice.status === "paid") {
                   // Render paid invoice
                   return (
                     <div
                       key={invoice.id}
-                      className="flex items-center justify-between p-5 border-l-4 border-l-green-400 bg-slate-700/50 hover:bg-slate-700 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] opacity-75"
+                      className="flex items-center justify-between p-5 bg-slate-700/30 rounded-xl shadow-md transition-all duration-300 hover:bg-slate-700 hover:shadow-lg hover:scale-[1.02]"
                     >
                       <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14 ring-4 ring-green-500/30 shadow-lg">
-                          <AvatarFallback className="bg-green-600 text-white font-bold text-lg">
+                        <Avatar className="h-14 w-14 shadow-lg">
+                          <AvatarFallback className="bg-slate-600 text-white font-bold text-lg">
                             {invoice.avatar}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="font-bold text-xl text-white">{invoice.client}</div>
                           <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
-                            {invoice.daysToPayment ? ` in ${invoice.daysToPayment} days` : ''}
+                            <span className="font-bold text-slate-400">${invoice.amount.toLocaleString()}</span> • Paid
+                            {'daysToPayment' in invoice ? ` in ${invoice.daysToPayment} days` : ''}
                           </div>
                           <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Sent: {formatDate(invoice.dateSent ?? '')}
+                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
                             </div>
                             <div className="flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
-                              Paid: {formatDate(invoice.datePaid ?? '')}
+                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid) : ''}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge className={`font-semibold border ${invoice.messageType ? getToneColor(invoice.messageType) : ''}`}>
-                          {invoice.messageType ?? ''}
-                        </Badge>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true, status: "paid" })}
-                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-green-600 hover:border-green-600 hover:text-white transition-all duration-300 hover:scale-105"
+                          onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
+                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
                         >
-                          <MessageSquare className="h-4 w-4 mr-2" />
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                } else if (invoice.status === "pending_response") {
+                  return (
+                    <div
+                      key={invoice.id}
+                      id={`invoice-${invoice.id}`}
+                      className="flex items-center justify-between p-5 bg-slate-700/30 rounded-xl shadow-md transition-all duration-300 hover:bg-slate-700 hover:shadow-lg hover:scale-[1.02] border border-blue-500/20"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-14 w-14 shadow-lg">
+                          <AvatarFallback className="bg-slate-600 text-white font-bold text-lg">
+                            {invoice.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-bold text-xl text-white">{invoice.client}</div>
+                          <div className="text-sm text-slate-300 font-medium">
+                            <span className="font-bold text-slate-400">${invoice.amount.toLocaleString()}</span> •{" "}
+                            {invoice.daysOverdue} days overdue
+                          </div>
+                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              Last reminder: {formatDate(invoice.lastReminderSent)}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Next follow-up: {formatDate(invoice.nextFollowUpDate)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-md border border-blue-500/20">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                          <span className="text-sm text-blue-400 font-medium">Monitoring</span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedInvoice(invoice)}
+                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
+                        >
                           View Details
                         </Button>
                       </div>
@@ -929,7 +980,7 @@ export default function LanceDashboard() {
                     <div
                       key={invoice.id}
                       id={`invoice-${invoice.id}`}
-                      className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getStatusColor(days)}`}
+                      className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${'daysOverdue' in invoice ? getStatusColor(invoice.daysOverdue) : ''}`}
                     >
                       <div className="flex items-center gap-4">
                         <Avatar className="h-14 w-14 ring-4 ring-slate-600 shadow-lg">
@@ -940,24 +991,25 @@ export default function LanceDashboard() {
                         <div>
                           <div className="font-bold text-xl text-white">{invoice.client}</div>
                           <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
+                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> •{" "}
+                            {'daysOverdue' in invoice ? `${invoice.daysOverdue} days overdue` : ''}
                           </div>
-                          <div className={`text-xs mt-1 font-medium ${getStatusTextColor(days)}`}>
-                            {getStatusText(days)}
+                          <div className={`text-xs mt-1 font-medium ${'daysOverdue' in invoice ? getStatusTextColor(invoice.daysOverdue) : ''}`}>
+                            {'daysOverdue' in invoice ? getStatusText(invoice.daysOverdue) : ''}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge
-                          variant={invoice.tone === "Polite" ? "secondary" : "outline"}
+                          variant={'tone' in invoice && invoice.tone === "Polite" ? "secondary" : "outline"}
                           className="font-semibold bg-slate-700 text-slate-300 border-slate-600"
                         >
-                          {invoice.tone ? `${invoice.tone} Tone` : ''}
+                          {'tone' in invoice ? `${invoice.tone} Tone` : ''}
                         </Badge>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setSelectedInvoice({ ...invoice, status: "overdue" })}
+                          onClick={() => setSelectedInvoice(invoice)}
                           className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-all duration-300 hover:scale-105"
                         >
                           Send
@@ -978,12 +1030,19 @@ export default function LanceDashboard() {
               <div className="p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-bold text-white">
-                    {selectedInvoice.isPastInvoice ? "Invoice Details" : "Preview Reminder"}
+                    {selectedInvoice.isPastInvoice 
+                      ? "Invoice Details" 
+                      : isEditingMessage 
+                        ? "Edit Message" 
+                        : "Preview Reminder"}
                   </h3>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setSelectedInvoice(null)}
+                    onClick={() => {
+                      setIsEditingMessage(false)
+                      setSelectedInvoice(null)
+                    }}
                     className="hover:bg-red-500/20 hover:text-red-400 text-slate-400 transition-all duration-300"
                   >
                     ✕
@@ -991,6 +1050,7 @@ export default function LanceDashboard() {
                 </div>
 
                 <div className="space-y-6">
+                  {/* Invoice Details Card */}
                   <div className="bg-slate-700 p-5 rounded-xl border border-slate-600">
                     <div className="text-sm text-slate-300 mb-2 font-medium">To: {selectedInvoice.client}</div>
                     <div className="text-sm text-slate-300 mb-2 font-medium">
@@ -1005,11 +1065,11 @@ export default function LanceDashboard() {
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="text-slate-400">Date Sent:</span>
-                            <div className="text-slate-300 font-medium">{formatDate(selectedInvoice.dateSent ?? '')}</div>
+                            <div className="text-slate-300 font-medium">{formatDate(selectedInvoice.dateSent)}</div>
                           </div>
                           <div>
                             <span className="text-slate-400">Date Paid:</span>
-                            <div className="text-green-400 font-medium">{formatDate(selectedInvoice.datePaid ?? '')}</div>
+                            <div className="text-green-400 font-medium">{formatDate(selectedInvoice.datePaid)}</div>
                           </div>
                           <div>
                             <span className="text-slate-400">Message Type:</span>
@@ -1024,156 +1084,328 @@ export default function LanceDashboard() {
                     )}
                   </div>
 
-                  {!selectedInvoice.isPastInvoice && (
+                  {/* Email Thread Section */}
+                  {selectedInvoice.emailThread && !isEditingMessage && (
                     <div className="space-y-4">
-                      <div className="text-sm font-medium text-slate-300 mb-3">Select Tone:</div>
-                      <div className="flex gap-3">
-                        <Button
-                          variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Polite" })}
-                          className={
-                            selectedInvoice.tone === "Polite"
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                          }
-                        >
-                          Polite
-                        </Button>
-                        <Button
-                          variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Professional" })}
-                          className={
-                            selectedInvoice.tone === "Professional"
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                          }
-                        >
-                          Professional
-                        </Button>
-                        <Button
-                          variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Firm" })}
-                          className={
-                            selectedInvoice.tone === "Firm"
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                          }
-                        >
-                          Firm
-                        </Button>
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEmailThread(!showEmailThread)}
+                        className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            <span className="font-medium">
+                              {selectedInvoice.isPastInvoice ? "Communication History" : "Previous Communications"} ({selectedInvoice.emailThread.length})
+                            </span>
+                          </div>
+                          {showEmailThread ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </div>
+                      </Button>
+                      
+                      {showEmailThread && (
+                        <div className="space-y-4 animate-in slide-in-from-top duration-300">
+                          {selectedInvoice.emailThread.map((email) => (
+                            <div 
+                              key={email.id} 
+                              className="bg-slate-700/50 rounded-lg p-4 space-y-2 transition-all duration-300 hover:bg-slate-700"
+                            >
+                              <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-3">
+                                  <Badge variant="outline" className="bg-slate-600 text-slate-300">
+                                    {email.tone}
+                                  </Badge>
+                                  <span className="text-slate-400">{formatDate(email.date)}</span>
+                                </div>
+                                <span className="text-slate-400">{email.subject}</span>
+                              </div>
+                              <div className="text-sm text-slate-300 whitespace-pre-wrap font-mono bg-slate-700 rounded p-3">
+                                {email.content}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
-                    <div className="text-sm leading-relaxed text-slate-300">
-                      {selectedInvoice.isPastInvoice ? (
-                        <div>
-                          <div className="text-slate-400 text-xs mb-2">Message that was sent:</div>
-                          <p>{selectedInvoice.messageSent}</p>
+                  {/* Message Preview or Edit Section */}
+                  {!selectedInvoice.isPastInvoice && (
+                    <>
+                      {isEditingMessage ? (
+                        // Edit Message View
+                        <div className="space-y-6">
+                          <div className="space-y-4">
+                            <div className="text-sm font-medium text-slate-300 mb-3">Select Tone:</div>
+                            <div className="flex gap-3">
+                              <Button
+                                variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Polite" })}
+                                className={
+                                  selectedInvoice.tone === "Polite"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                                }
+                              >
+                                Polite
+                              </Button>
+                              <Button
+                                variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Professional" })}
+                                className={
+                                  selectedInvoice.tone === "Professional"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                                }
+                              >
+                                Professional
+                              </Button>
+                              <Button
+                                variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Firm" })}
+                                className={
+                                  selectedInvoice.tone === "Firm"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                                }
+                              >
+                                Firm
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
+                            <div className="text-sm leading-relaxed text-slate-300">
+                              {selectedInvoice.tone === "Polite" && (
+                                <>
+                                  <p>Hi there!</p>
+                                  <br />
+                                  <p>
+                                    I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
+                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                    days ago.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    I know things can get busy, so I wanted to send a gentle reminder. If you have any
+                                    questions about the invoice or need any additional information, please don't hesitate to
+                                    reach out!
+                                  </p>
+                                  <br />
+                                  <p>Thanks for your time, and I look forward to hearing from you soon!</p>
+                                  <br />
+                                  <p>Best regards</p>
+                                </>
+                              )}
+                              {selectedInvoice.tone === "Professional" && (
+                                <>
+                                  <p>Hello,</p>
+                                  <br />
+                                  <p>
+                                    I'm writing to follow up on invoice #{selectedInvoice.id} for $
+                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                    days ago.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    Please let me know when I can expect payment, or if there are any issues that need to be
+                                    addressed. I'm happy to discuss payment arrangements if needed.
+                                  </p>
+                                  <br />
+                                  <p>Thank you for your prompt attention to this matter.</p>
+                                  <br />
+                                  <p>Best regards</p>
+                                </>
+                              )}
+                              {selectedInvoice.tone === "Firm" && (
+                                <>
+                                  <p>Dear {selectedInvoice.client},</p>
+                                  <br />
+                                  <p>
+                                    This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
+                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                    days ago.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    Immediate payment is required to avoid any disruption to our business relationship.
+                                    Please remit payment within 5 business days of receiving this notice.
+                                  </p>
+                                  <br />
+                                  <p>
+                                    If payment has already been sent, please disregard this notice and provide payment
+                                    confirmation.
+                                  </p>
+                                  <br />
+                                  <p>Regards</p>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                            <Button
+                              variant="outline"
+                              className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                              onClick={() => setIsEditingMessage(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                              onClick={() => setIsEditingMessage(false)}
+                            >
+                              Save Changes
+                            </Button>
+                          </div>
                         </div>
                       ) : (
+                        // Preview View
+                        <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
+                          <div className="text-sm leading-relaxed text-slate-300">
+                            {selectedInvoice.tone === "Polite" && (
+                              <>
+                                <p>Hi there!</p>
+                                <br />
+                                <p>
+                                  I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
+                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                  days ago.
+                                </p>
+                                <br />
+                                <p>
+                                  I know things can get busy, so I wanted to send a gentle reminder. If you have any
+                                  questions about the invoice or need any additional information, please don't hesitate to
+                                  reach out!
+                                </p>
+                                <br />
+                                <p>Thanks for your time, and I look forward to hearing from you soon!</p>
+                                <br />
+                                <p>Best regards</p>
+                              </>
+                            )}
+                            {selectedInvoice.tone === "Professional" && (
+                              <>
+                                <p>Hello,</p>
+                                <br />
+                                <p>
+                                  I'm writing to follow up on invoice #{selectedInvoice.id} for $
+                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                  days ago.
+                                </p>
+                                <br />
+                                <p>
+                                  Please let me know when I can expect payment, or if there are any issues that need to be
+                                  addressed. I'm happy to discuss payment arrangements if needed.
+                                </p>
+                                <br />
+                                <p>Thank you for your prompt attention to this matter.</p>
+                                <br />
+                                <p>Best regards</p>
+                              </>
+                            )}
+                            {selectedInvoice.tone === "Firm" && (
+                              <>
+                                <p>Dear {selectedInvoice.client},</p>
+                                <br />
+                                <p>
+                                  This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
+                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
+                                  days ago.
+                                </p>
+                                <br />
+                                <p>
+                                  Immediate payment is required to avoid any disruption to our business relationship.
+                                  Please remit payment within 5 business days of receiving this notice.
+                                </p>
+                                <br />
+                                <p>
+                                  If payment has already been sent, please disregard this notice and provide payment
+                                  confirmation.
+                                </p>
+                                <br />
+                                <p>Regards</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Action Buttons */}
+                  {!isEditingMessage && (
+                    <div className="flex gap-4 pt-4">
+                      {selectedInvoice.isPastInvoice ? (
+                        <Button
+                          className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                          onClick={() => setSelectedInvoice(null)}
+                        >
+                          Close
+                        </Button>
+                      ) : selectedInvoice.status === "pending_response" ? (
                         <>
-                          {selectedInvoice.tone === "Polite" && (
-                            <>
-                              <p>Hi there!</p>
-                              <br />
-                              <p>
-                                I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
-                                {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                days ago.
-                              </p>
-                              <br />
-                              <p>
-                                I know things can get busy, so I wanted to send a gentle reminder. If you have any
-                                questions about the invoice or need any additional information, please don't hesitate to
-                                reach out!
-                              </p>
-                              <br />
-                              <p>Thanks for your time, and I look forward to hearing from you soon!</p>
-                              <br />
-                              <p>Best regards</p>
-                            </>
-                          )}
-                          {selectedInvoice.tone === "Professional" && (
-                            <>
-                              <p>Hello,</p>
-                              <br />
-                              <p>
-                                I'm writing to follow up on invoice #{selectedInvoice.id} for $
-                                {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                days ago.
-                              </p>
-                              <br />
-                              <p>
-                                Please let me know when I can expect payment, or if there are any issues that need to be
-                                addressed. I'm happy to discuss payment arrangements if needed.
-                              </p>
-                              <br />
-                              <p>Thank you for your prompt attention to this matter.</p>
-                              <br />
-                              <p>Best regards</p>
-                            </>
-                          )}
-                          {selectedInvoice.tone === "Firm" && (
-                            <>
-                              <p>Dear {selectedInvoice.client},</p>
-                              <br />
-                              <p>
-                                This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
-                                {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                days ago.
-                              </p>
-                              <br />
-                              <p>
-                                Immediate payment is required to avoid any disruption to our business relationship.
-                                Please remit payment within 5 business days of receiving this notice.
-                              </p>
-                              <br />
-                              <p>
-                                If payment has already been sent, please disregard this notice and provide payment
-                                confirmation.
-                              </p>
-                              <br />
-                              <p>Regards</p>
-                            </>
-                          )}
+                          <div className="flex-1 flex items-center justify-center gap-3 px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                            <div className="text-sm">
+                              <span className="text-blue-400 font-medium">Lance is monitoring</span>
+                              <span className="text-slate-400"> • Next follow-up in {(() => {
+                                if (!selectedInvoice?.nextFollowUpDate) return '...'
+                                const nextDate = new Date(selectedInvoice.nextFollowUpDate)
+                                const now = new Date()
+                                const diffDays = Math.ceil((nextDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+                                return `${diffDays} days`
+                              })()}</span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                            onClick={() => setSelectedInvoice(null)}
+                          >
+                            Close
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                            onClick={() => setIsEditingMessage(true)}
+                          >
+                            Edit Message
+                          </Button>
+                          <Button
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                            onClick={() => {
+                              if (!selectedInvoice) return
+                              
+                              // Send the reminder
+                              const updatedInvoice = sendReminder(selectedInvoice)
+                              
+                              // Update state
+                              setInvoices(currentInvoices => 
+                                currentInvoices.map(inv => inv.id === selectedInvoice.id ? updatedInvoice : inv)
+                              )
+                              
+                              // Close modal after short delay to show status change
+                              setTimeout(() => setSelectedInvoice(null), 1500)
+                            }}
+                          >
+                            Send Reminder
+                          </Button>
                         </>
                       )}
                     </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                    {selectedInvoice.isPastInvoice ? (
-                      <Button
-                        className="w-full bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
-                        onClick={() => setSelectedInvoice(null)}
-                      >
-                        Close
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline"
-                          className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
-                          onClick={() => setSelectedInvoice(null)}
-                        >
-                          Edit Message
-                        </Button>
-                        <Button
-                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                          onClick={() => {
-                            setSelectedInvoice(null)
-                          }}
-                        >
-                          Send Reminder
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
