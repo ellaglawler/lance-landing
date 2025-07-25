@@ -38,7 +38,7 @@ function DashboardContent() {
     )
   }
 
-  return <LanceDashboard />
+  return <LanceDashboard isDemoMode={isDemoMode} />
 }
 
 export default function DashboardPage() {

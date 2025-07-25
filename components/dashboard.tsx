@@ -30,9 +30,38 @@ import { useRouter } from "next/navigation"
 import { useEffect, useCallback } from "react"
 import { getInvoices } from "@/lib/api"
 
-export default function LanceDashboard() {
+// Email and Invoice types for type safety
+interface Email {
+  id: string;
+  date: string;
+  subject: string;
+  tone: string;
+  content: string;
+}
+
+interface InvoiceUI {
+  id: number;
+  client: string;
+  amount: number;
+  avatar: string;
+  status: "overdue" | "paid" | "pending_response";
+  tone?: string;
+  daysOverdue?: number;
+  emailThread?: Email[];
+  dateSent?: string;
+  datePaid?: string;
+  messageType?: string;
+  daysToPayment?: number;
+  messageSent?: string;
+  isPastInvoice?: boolean;
+  lastReminderSent?: string;
+  nextFollowUpDate?: string;
+}
+
+export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boolean }) {
   // Demo mode toggle (set to true for demo/mock data)
-  const demoMode = false // Set to true to enable demo mode
+  // const demoMode = true // Set to true to enable demo mode
+  const demoMode = isDemoMode;
 
   const router = useRouter()
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null)
