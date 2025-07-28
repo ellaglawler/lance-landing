@@ -70,35 +70,29 @@ api.interceptors.response.use(
   }
 );
 
-// Get Google OAuth URL for both sign up (full SSO + Gmail) and sign in
+// Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
-  const res = await api.get('/auth/google/login');
-  return res.data.authorization_url as string;
+  const res = await api.get('/auth/google/signup');
+  return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
-// Use the same endpoint for sign in
+// Get Google OAuth URL for sign in (SSO only)
 export async function getGoogleSigninUrl() {
-  const res = await api.get('/auth/google/login');
-  return res.data.authorization_url as string;
+  const res = await api.get('/auth/google/signin');
+  return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
 // Check Gmail connection and token validity for the current user
 export async function checkGmailToken() {
-  try {
-    const res = await api.get('/me');
-    return {
-      gmail_connected: true,
-      gmail_token_valid: true
-    };
-  } catch (error) {
-    return {
-      gmail_connected: false,
-      gmail_token_valid: false
-    };
-  }
+  const res = await api.get('/auth/google/check-gmail-token');
+  // Return both fields
+  return {
+    gmail_connected: res.data.gmail_connected,
+    gmail_token_valid: res.data.gmail_token_valid,
+  };
 }
 
-// Exchange Google OAuth code for tokens
+// Exchange Google OAuth code for tokens (GET /google/callback?code=...)
 export async function exchangeGoogleCode(code: string) {
   const res = await api.get('/auth/google/callback', { params: { code } });
   return res.data;
