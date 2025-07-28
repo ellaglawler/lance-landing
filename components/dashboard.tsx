@@ -21,6 +21,7 @@ import {
   Circle,
   ChevronUp,
   ChevronDown,
+  FileText,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -332,19 +333,59 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     },
     {
       id: 4,
-      type: "follow_up_scheduled",
-      message: "Scheduled follow-up for TechStart Inc. in 2 days",
+      type: "follow_up_sent",
+      message: "Sent follow-up for TechStart Inc. (2 days overdue)",
       time: "5 hours ago",
       icon: Clock,
       color: "text-purple-400",
     },
     {
       id: 5,
-      type: "tone_adjusted",
-      message: "Switched to firm tone for Creative Studio (21+ days overdue)",
+      type: "follow_up_sent",
+      message: "Sent follow-up for Creative Studio (21+ days overdue)",
       time: "1 day ago",
       icon: Bot,
       color: "text-yellow-400",
+    },
+    {
+      id: 6,
+      type: "invoice_processed",
+      message: "Processed new invoice from Digital Solutions - $1,800",
+      time: "2 days ago",
+      icon: FileText,
+      color: "text-indigo-400",
+    },
+    {
+      id: 7,
+      type: "payment_received",
+      message: "Payment received from GreenTech LLC - $3,200",
+      time: "3 days ago",
+      icon: CheckCircle,
+      color: "text-green-400",
+    },
+    {
+      id: 8,
+      type: "overdue_detected",
+      message: "Detected Marketing Pro invoice is now 15 days overdue",
+      time: "4 days ago",
+      icon: AlertTriangle,
+      color: "text-orange-400",
+    },
+    {
+      id: 9,
+      type: "follow_up_sent",
+      message: "Sent reminder for WebDev Partners (7 days overdue)",
+      time: "5 days ago",
+      icon: Mail,
+      color: "text-blue-400",
+    },
+    {
+      id: 10,
+      type: "invoice_processed",
+      message: "Processed new invoice from Data Analytics Co. - $4,500",
+      time: "1 week ago",
+      icon: FileText,
+      color: "text-indigo-400",
     },
   ]
 
@@ -468,7 +509,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                 <div>
                   <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
                   <div className="text-white text-xl font-bold">
-                    ${mappedOverdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+                    ${(isDemoMode ? 2450 : mappedOverdueInvoices.reduce((sum, inv) => sum + inv.amount, 0)).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -478,12 +519,12 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                 <div>
                   <div className="text-slate-400 text-xs font-medium">Collected This Week</div>
                   <div className="text-white text-xl font-bold">
-                    ${pastInvoices.filter(inv => {
+                    ${(isDemoMode ? 1980 : pastInvoices.filter(inv => {
                       const paid = inv.datePaid ? new Date(inv.datePaid) : new Date()
                       const now = new Date()
                       const diff = (now.getTime() - paid.getTime()) / (1000 * 60 * 60 * 24)
                       return diff <= 7
-                    }).reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+                    }).reduce((sum, inv) => sum + inv.amount, 0)).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -493,8 +534,8 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                 <div>
                   <div className="text-slate-400 text-xs font-medium">Hours Saved</div>
                   <div className="text-white text-xl font-bold">
-                    ~{(() => {
-                      // Assume each follow-up sent saves 10min (0.1667h)
+                    ~{isDemoMode ? 6.5 : (() => {
+                      // Assume each follow-up sent saves 30min (0.1667h * 3)
                       const followUpsThisWeek = activityFeed.filter(a => {
                         if (a.type !== 'follow_up_sent') return false
                         // Parse time string (e.g., '2 minutes ago', '1 hour ago', '1 day ago')
@@ -504,7 +545,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                         if (t.includes('day')) return parseInt(t) <= 7
                         return false
                       }).length
-                      const hours = followUpsThisWeek * 0.1667
+                      const hours = followUpsThisWeek * 0.1667 * 3
                       return hours.toFixed(1)
                     })()} hours
                   </div>
