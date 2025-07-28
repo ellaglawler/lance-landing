@@ -601,11 +601,11 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
               </div>
             </div>
 
-            {/* Next Steps */}
+            {/* Lance Recommendations */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Pin className="text-blue-400 h-5 w-5" />
-                <span className="text-white font-semibold">Next Steps</span>
+                <span className="text-white font-semibold">Lance Recommendations</span>
               </div>
               <ul className="space-y-2">
                 {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 21).map(inv => (
