@@ -836,13 +836,25 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
                   .filter(inv => inv.days >= 21 && !actedRecommendations.has(inv.id))
                   .map(inv => (
-                  <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
+                  <li 
+                    key={inv.id} 
+                    className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
+                    onClick={() => {
+                      const el = document.getElementById(`invoice-${inv.id}`)
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        el.classList.add('ring-4', 'ring-red-500')
+                        setTimeout(() => el.classList.remove('ring-4', 'ring-red-500'), 2000)
+                      }
+                    }}
+                  >
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Approve escalated reminder to <span className="font-semibold text-white">{inv.client}</span></span>
                     <Button
                       size="sm"
                       className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
-                      onClick={async () => {
+                      onClick={async (e) => {
+                        e.stopPropagation() // Prevent row click when button is clicked
                         try {
                           // Send escalated email immediately (using "firm" tone for 21+ days overdue)
                           await sendEmailViaAPI(inv, 'firm')
@@ -882,14 +894,26 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
                   .filter(inv => inv.days >= 8 && inv.days < 21 && !actedRecommendations.has(inv.id))
                   .map(inv => (
-                  <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
+                  <li 
+                    key={inv.id} 
+                    className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
+                    onClick={() => {
+                      const el = document.getElementById(`invoice-${inv.id}`)
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        el.classList.add('ring-4', 'ring-blue-500')
+                        setTimeout(() => el.classList.remove('ring-4', 'ring-blue-500'), 2000)
+                      }
+                    }}
+                  >
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
                     <Button
                       size="sm"
                       variant="outline"
                       className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white font-semibold px-4 py-1"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation() // Prevent row click when button is clicked
                         const el = document.getElementById(`invoice-${inv.id}`)
                         if (el) {
                           el.scrollIntoView({ behavior: 'smooth', block: 'center' })
