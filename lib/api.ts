@@ -172,8 +172,9 @@ export async function sendBulkEmails(invoiceIds: number[], tone: string = 'polit
   failed_count: number;
   total_invoices: number;
 }> {
-  const res = await api.post('/email-threads/send-bulk', null, {
-    params: { invoice_ids: invoiceIds, tone }
+  const res = await api.post('/email-threads/send-bulk', {
+    invoice_ids: invoiceIds,
+    tone
   });
   return res.data;
 }
@@ -197,7 +198,7 @@ export async function getPendingFollowups(): Promise<{
 export interface Activity {
   id: number;
   user_id: number;
-  activity_type: 'FOLLOW_UP_SENT' | 'OVERDUE_DETECTED' | 'PAYMENT_RECEIVED' | 'INVOICE_PROCESSED' | 'TONE_ADJUSTED' | 'BULK_EMAIL_SENT' | 'GMAIL_SCAN_COMPLETED' | 'FOLLOW_UP_SCHEDULED' | 'PAYMENT_DETECTED' | 'INVOICE_ESCALATED';
+  activity_type: 'follow_up_sent' | 'overdue_detected' | 'payment_received' | 'invoice_processed' | 'tone_adjusted' | 'bulk_email_sent' | 'gmail_scan_completed' | 'follow_up_scheduled' | 'payment_detected' | 'invoice_escalated';
   message: string;
   created_at: string;
   invoice_id?: number;
