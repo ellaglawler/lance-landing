@@ -271,3 +271,52 @@ export async function getActivityTimeline(days: number = 7): Promise<ActivityTim
   const res = await api.get('/activities/timeline', { params: { days } });
   return res.data;
 }
+
+// Stripe Subscription API functions
+export interface StripeCheckoutSession {
+  id: string;
+  url: string;
+}
+
+export interface StripePortalSession {
+  url: string;
+}
+
+export interface SubscriptionStatus {
+  is_subscribed: boolean;
+  subscription_id?: string;
+  plan_name?: string;
+  status?: string;
+  current_period_end?: string;
+  cancel_at_period_end?: boolean;
+}
+
+// Create a Stripe Checkout session for subscription
+export async function createCheckoutSession(priceId: string): Promise<StripeCheckoutSession> {
+  const res = await api.post('/stripe/create-checkout-session', {
+    price_id: priceId,
+    success_url: `${window.location.origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${window.location.origin}/dashboard?canceled=true`,
+  });
+  return res.data;
+}
+
+// Create a Customer Portal session
+export async function createPortalSession(): Promise<StripePortalSession> {
+  const res = await api.post('/stripe/create-portal-session', {
+    return_url: `${window.location.origin}/dashboard`,
+  });
+  return res.data;
+}
+
+// Get subscription status for current user
+export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
+  const res = await api.get('/stripe/subscription-status');
+  return res.data;
+}
+
+// Get checkout session details
+export async function getCheckoutSession(sessionId: string): Promise<any> {
+  const res = await api.get(`/stripe/checkout-session/${sessionId}`);
+  return res.data;
+}
