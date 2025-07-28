@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useCallback } from "react"
 import { getInvoices } from "@/lib/api"
+import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
 
 // Email and Invoice types for type safety
 interface Email {
@@ -68,6 +69,8 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const [daysFilter, setDaysFilter] = useState("all")
   const [showEmailThread, setShowEmailThread] = useState(false)
   const [isEditingMessage, setIsEditingMessage] = useState(false)
+  const [emailThreads, setEmailThreads] = useState<EmailThread[]>([])
+  const [loadingEmailThreads, setLoadingEmailThreads] = useState(false)
 
   // Unified mock data for demo mode (matches getInvoices structure)
   const mockInvoices = [
@@ -261,6 +264,22 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }
   }, [])
 
+  // Fetch email threads for selected invoice
+  const fetchEmailThreads = useCallback(async (invoiceId: number) => {
+    if (demoMode) return;
+    
+    setLoadingEmailThreads(true)
+    try {
+      const response = await getEmailThreadsForInvoice(invoiceId)
+      setEmailThreads(response.email_threads)
+    } catch (err: any) {
+      console.error('Failed to fetch email threads:', err)
+      setEmailThreads([])
+    } finally {
+      setLoadingEmailThreads(false)
+    }
+  }, [demoMode])
+
   useEffect(() => {
     if (!demoMode) {
       fetchInvoices()
@@ -269,6 +288,52 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       setLoadingInvoices(false)
     }
   }, [fetchInvoices, demoMode])
+
+  // Split invoices into overdue and paid, and map to UI shape
+  const mappedOverdueInvoices: InvoiceUI[] = invoices
+    .filter(inv => inv.is_overdue)
+    .map(inv => ({
+      id: inv.id,
+      client: inv.client_name,
+      amount: inv.amount,
+      daysOverdue: inv.days_overdue,
+      avatar: inv.client_name
+        ? inv.client_name
+            .split(" ")
+            .map((w: string) => w[0])
+            .join("")
+            .toUpperCase()
+        : "--",
+      status: "overdue" as const,
+      tone: inv.tone || "Polite",
+      emailThread: inv.emailThread,
+      lastReminderSent: inv.lastReminderSent,
+      nextFollowUpDate: inv.nextFollowUpDate,
+    }))
+
+  const pastInvoices: InvoiceUI[] = invoices
+    .filter(inv => inv.is_paid)
+    .map(inv => ({
+      id: inv.id,
+      client: inv.client_name,
+      amount: inv.amount,
+      avatar: inv.client_name
+        ? inv.client_name
+            .split(" ")
+            .map((w: string) => w[0])
+            .join("")
+            .toUpperCase()
+        : "--",
+      dateSent: inv.detected_at,
+      datePaid: inv.paid_at,
+      messageType: inv.message_type,
+      messageSent: inv.message_sent,
+      daysToPayment: inv.days_to_payment,
+      status: "paid" as const,
+      emailThread: inv.emailThread,
+    }))
+
+  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...pastInvoices]
 
   // --- UX: Send Reminder Logic ---
   function generateEmailContent(invoice: InvoiceUI): string {
@@ -304,6 +369,100 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       emailThread: [...(invoice.emailThread ?? []), newEmail]
     }
   }
+
+  // Send email via backend API
+  const sendEmailViaAPI = useCallback(async (invoice: InvoiceUI, tone: string) => {
+    if (demoMode) {
+      // In demo mode, just update local state
+      const updatedInvoice = sendReminder(invoice)
+      setInvoices(currentInvoices => 
+        currentInvoices.map(inv => inv.id === invoice.id ? updatedInvoice : inv)
+      )
+      return updatedInvoice
+    }
+
+    try {
+      const content = generateEmailContent(invoice)
+      const subject = `Payment Reminder - Invoice #${invoice.id}`
+      
+      // Calculate next follow-up date
+      const nextFollowUp = new Date()
+      const daysToAdd = invoice.daysOverdue && invoice.daysOverdue > 14 ? 3 : 7
+      nextFollowUp.setDate(nextFollowUp.getDate() + daysToAdd)
+
+      const emailRequest = {
+        invoice_id: invoice.id,
+        tone: tone.toLowerCase(),
+        subject,
+        content,
+        is_automated: false,
+        next_follow_up_date: nextFollowUp.toISOString()
+      }
+
+      const sentEmail = await sendEmail(emailRequest)
+      
+      // Update local state with the sent email
+      const updatedInvoice = {
+        ...invoice,
+        status: "pending_response" as const,
+        lastReminderSent: sentEmail.sent_at || new Date().toISOString(),
+        nextFollowUpDate: sentEmail.next_follow_up_date || nextFollowUp.toISOString(),
+        emailThread: [
+          ...(invoice.emailThread || []),
+          {
+            id: sentEmail.id.toString(),
+            date: sentEmail.created_at,
+            subject: sentEmail.subject,
+            tone: sentEmail.tone,
+            content: sentEmail.content
+          }
+        ]
+      }
+
+      setInvoices(currentInvoices => 
+        currentInvoices.map(inv => inv.id === invoice.id ? updatedInvoice : inv)
+      )
+
+      return updatedInvoice
+    } catch (error) {
+      console.error('Failed to send email:', error)
+      throw error
+    }
+  }, [demoMode])
+
+  // Send bulk emails via backend API
+  const sendBulkEmailsViaAPI = useCallback(async (invoiceIds: number[], tone: string = 'polite') => {
+    if (demoMode) {
+      // In demo mode, just update local state for all invoices
+      const updatedInvoices = allInvoices.map(invoice => {
+        if (invoice.status === "overdue") {
+          return sendReminder(invoice)
+        }
+        return invoice
+      })
+      setInvoices(updatedInvoices)
+      return { sent_count: updatedInvoices.filter(inv => inv.status === "pending_response").length, failed_count: 0 }
+    }
+
+    try {
+      const result = await sendBulkEmails(invoiceIds, tone)
+      
+      // Refresh invoices to get updated status
+      await fetchInvoices()
+      
+      return result
+    } catch (error) {
+      console.error('Failed to send bulk emails:', error)
+      throw error
+    }
+  }, [demoMode, allInvoices, fetchInvoices])
+
+  // Load email threads when invoice is selected
+  useEffect(() => {
+    if (selectedInvoice && !demoMode) {
+      fetchEmailThreads(selectedInvoice.id)
+    }
+  }, [selectedInvoice, demoMode, fetchEmailThreads])
 
   // Activity feed data
   const activityFeed = [
@@ -388,52 +547,6 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       color: "text-indigo-400",
     },
   ]
-
-  // Split invoices into overdue and paid, and map to UI shape
-  const mappedOverdueInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.is_overdue)
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      daysOverdue: inv.days_overdue,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      status: "overdue" as const,
-      tone: inv.tone || "Polite",
-      emailThread: inv.emailThread,
-      lastReminderSent: inv.lastReminderSent,
-      nextFollowUpDate: inv.nextFollowUpDate,
-    }))
-
-  const pastInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.is_paid)
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      dateSent: inv.detected_at,
-      datePaid: inv.paid_at,
-      messageType: inv.message_type,
-      messageSent: inv.message_sent,
-      daysToPayment: inv.days_to_payment,
-      status: "paid" as const,
-      emailThread: inv.emailThread,
-    }))
-
-  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...pastInvoices]
 
   const getFilteredInvoices = () => {
     let filtered = allInvoices
@@ -817,17 +930,21 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
               <Button 
                 className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 onClick={() => {
-                  // Get all unpaid invoices that aren't already being monitored
-                  const unpaidInvoices = allInvoices.filter(inv => inv.status === "overdue")
-                  if (unpaidInvoices.length === 0) return
-                  // Send reminders for all unpaid invoices
-                  const updatedInvoices = allInvoices.map(invoice => {
-                    if (invoice.status === "overdue") {
-                      return sendReminder(invoice)
-                    }
-                    return invoice
-                  })
-                  setInvoices(updatedInvoices)
+                  // Get all overdue invoice IDs
+                  const overdueInvoiceIds = allInvoices
+                    .filter(inv => inv.status === "overdue")
+                    .map(inv => inv.id)
+                  
+                  if (overdueInvoiceIds.length === 0) return
+                  
+                  // Send bulk emails
+                  sendBulkEmailsViaAPI(overdueInvoiceIds, 'polite')
+                    .then(result => {
+                      console.log(`Bulk email sent: ${result.sent_count} successful, ${result.failed_count} failed`)
+                    })
+                    .catch(error => {
+                      console.error('Bulk email failed:', error)
+                    })
                 }}
               >
                 <Zap className="h-4 w-4 mr-2" />
@@ -1061,12 +1178,19 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
               <div className="p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-bold text-white">
-                    {selectedInvoice.isPastInvoice ? "Invoice Details" : "Preview Reminder"}
+                    {selectedInvoice.isPastInvoice 
+                      ? "Invoice Details" 
+                      : isEditingMessage 
+                        ? "Edit Message" 
+                        : "Preview Reminder"}
                   </h3>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setSelectedInvoice(null)}
+                    onClick={() => {
+                      setIsEditingMessage(false)
+                      setSelectedInvoice(null)
+                    }}
                     className="hover:bg-red-500/20 hover:text-red-400 text-slate-400 transition-all duration-300"
                   >
                     ✕
@@ -1109,7 +1233,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   </div>
 
                   {/* Email Thread Section */}
-                  {selectedInvoice.emailThread && !isEditingMessage && (
+                  {(selectedInvoice.emailThread || emailThreads.length > 0) && !isEditingMessage && (
                     <div className="space-y-4">
                       <Button
                         variant="outline"
@@ -1121,7 +1245,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                           <div className="flex items-center gap-2">
                             <MessageSquare className="h-4 w-4" />
                             <span className="font-medium">
-                              {selectedInvoice.isPastInvoice ? "Communication History" : "Previous Communications"} ({selectedInvoice.emailThread.length})
+                              {selectedInvoice.isPastInvoice ? "Communication History" : "Previous Communications"} ({demoMode ? selectedInvoice.emailThread?.length || 0 : emailThreads.length})
                             </span>
                           </div>
                           {showEmailThread ? (
@@ -1134,7 +1258,13 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                       
                       {showEmailThread && (
                         <div className="space-y-4 animate-in slide-in-from-top duration-300">
-                          {selectedInvoice.emailThread.map((email) => (
+                          {(demoMode ? selectedInvoice.emailThread ?? [] : emailThreads.map(thread => ({
+                            id: thread.id.toString(),
+                            date: thread.created_at,
+                            subject: thread.subject,
+                            tone: thread.tone,
+                            content: thread.content
+                          }))).map((email) => (
                             <div 
                               key={email.id} 
                               className="bg-slate-700/50 rounded-lg p-4 space-y-2 transition-all duration-300 hover:bg-slate-700"
@@ -1412,16 +1542,16 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                             onClick={() => {
                               if (!selectedInvoice) return
                               
-                              // Send the reminder
-                              const updatedInvoice = sendReminder(selectedInvoice)
-                              
-                              // Update state
-                              setInvoices(currentInvoices => 
-                                currentInvoices.map(inv => inv.id === selectedInvoice.id ? updatedInvoice : inv)
-                              )
-                              
-                              // Close modal after short delay to show status change
-                              setTimeout(() => setSelectedInvoice(null), 1500)
+                              // Send email via API
+                              sendEmailViaAPI(selectedInvoice, selectedInvoice.tone || 'polite')
+                                .then(() => {
+                                  // Close modal after short delay to show status change
+                                  setTimeout(() => setSelectedInvoice(null), 1500)
+                                })
+                                .catch(error => {
+                                  console.error('Failed to send email:', error)
+                                  // Could show a toast notification here
+                                })
                             }}
                           >
                             Send Reminder
