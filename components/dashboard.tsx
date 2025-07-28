@@ -161,6 +161,22 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       message_type: "Polite",
       message_sent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #101...",
       days_to_payment: 3,
+      emailThread: [
+        {
+          id: "e1",
+          date: "2024-01-15",
+          subject: "Invoice #101 - Due",
+          tone: "Polite",
+          content: "Hi there!\n\nI hope this email finds you well. I wanted to send over invoice #101 for our recent project. The total amount is $2,500, due within 30 days.\n\nPlease let me know if you have any questions!\n\nBest regards"
+        },
+        {
+          id: "e2",
+          date: "2024-01-17",
+          subject: "Invoice #101 - Payment Received",
+          tone: "Polite",
+          content: "Hi there!\n\nThank you so much for the prompt payment! I've received confirmation that invoice #101 has been paid in full.\n\nIt's always a pleasure working with you, and I look forward to our next collaboration.\n\nBest regards"
+        }
+      ]
     },
     {
       id: 102,
@@ -173,6 +189,29 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       message_type: "Professional",
       message_sent: "Hello, I'm writing to follow up on invoice #102 for $1,800...",
       days_to_payment: 15,
+      emailThread: [
+        {
+          id: "e1",
+          date: "2024-01-10",
+          subject: "Invoice #102 - Due",
+          tone: "Professional",
+          content: "Hello,\n\nPlease find attached invoice #102 for our recent collaboration. The total amount is $1,800, due within 30 days.\n\nThank you for your business!\n\nBest regards"
+        },
+        {
+          id: "e2",
+          date: "2024-01-20",
+          subject: "Invoice #102 - Follow Up",
+          tone: "Professional",
+          content: "Hello,\n\nI'm following up on invoice #102 which was due last week. Please let me know if you have any questions about the payment.\n\nBest regards"
+        },
+        {
+          id: "e3",
+          date: "2024-01-25",
+          subject: "Invoice #102 - Payment Confirmation",
+          tone: "Professional",
+          content: "Hello,\n\nThank you for the payment! I've received confirmation that invoice #102 has been paid in full.\n\nBest regards"
+        }
+      ]
     },
     {
       id: 103,
@@ -185,6 +224,22 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       message_type: "Polite",
       message_sent: "Hi there! I hope you're doing well! I wanted to follow up on invoice #103...",
       days_to_payment: 4,
+      emailThread: [
+        {
+          id: "e1",
+          date: "2024-01-08",
+          subject: "Invoice #103 - Due",
+          tone: "Polite",
+          content: "Hi there!\n\nI hope this email finds you well. I wanted to send over invoice #103 for our recent work. The total amount is $950, due within 30 days.\n\nPlease let me know if you have any questions!\n\nBest regards"
+        },
+        {
+          id: "e2",
+          date: "2024-01-12",
+          subject: "Invoice #103 - Payment Received",
+          tone: "Polite",
+          content: "Hi there!\n\nThank you for the quick payment! I've received confirmation that invoice #103 has been paid in full.\n\nIt was great working with you on this project!\n\nBest regards"
+        }
+      ]
     },
   ]
 
@@ -709,7 +764,9 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-xl">
-                  <DollarSign className="h-6 w-6" />
+                  <div className="p-2 bg-green-600 rounded-lg">
+                    <DollarSign className="text-white h-5 w-5" />
+                  </div>
                   Invoice List
                 </CardTitle>
                 <CardDescription className="text-slate-100">
@@ -940,19 +997,12 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge
-                          variant={invoice.tone === "Polite" ? "secondary" : "outline"}
-                          className="font-semibold bg-slate-700 text-slate-300 border-slate-600"
-                        >
-                          {invoice.tone ? `${invoice.tone} Tone` : ''}
-                        </Badge>
                         <Button
-                          variant="outline"
                           size="sm"
                           onClick={() => setSelectedInvoice({ ...invoice, status: "overdue" })}
-                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-all duration-300 hover:scale-105"
+                          className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
                         >
-                          Send
+                          Approve
                         </Button>
                       </div>
                     </div>
