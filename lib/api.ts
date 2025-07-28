@@ -192,3 +192,81 @@ export async function getPendingFollowups(): Promise<{
   const res = await api.get('/email-threads/pending-followups');
   return res.data;
 }
+
+// Activity API functions
+export interface Activity {
+  id: number;
+  user_id: number;
+  activity_type: 'FOLLOW_UP_SENT' | 'OVERDUE_DETECTED' | 'PAYMENT_RECEIVED' | 'INVOICE_PROCESSED' | 'TONE_ADJUSTED' | 'BULK_EMAIL_SENT' | 'GMAIL_SCAN_COMPLETED' | 'FOLLOW_UP_SCHEDULED' | 'PAYMENT_DETECTED' | 'INVOICE_ESCALATED';
+  message: string;
+  created_at: string;
+  invoice_id?: number;
+  email_thread_id?: number;
+  follow_up_id?: number;
+  metadata?: Record<string, any>;
+}
+
+export interface ActivityListResponse {
+  activities: Activity[];
+  total_count: number;
+}
+
+export interface ActivityStats {
+  total_activities: number;
+  follow_ups_sent: number;
+  payments_received: number;
+  invoices_processed: number;
+  overdue_detected: number;
+  bulk_emails_sent: number;
+  gmail_scans_completed: number;
+  activity_by_type: Record<string, number>;
+}
+
+export interface ActivityTimeline {
+  timeline: Array<{
+    date: string;
+    activities: Array<{
+      id: number;
+      type: string;
+      message: string;
+      created_at: string;
+    }>;
+    counts: Record<string, number>;
+  }>;
+  total_days: number;
+}
+
+// Get activities for the current user
+export async function getActivities(params?: {
+  limit?: number;
+  activity_type?: string;
+  days?: number;
+}): Promise<ActivityListResponse> {
+  const res = await api.get('/activities/', { params });
+  return res.data;
+}
+
+// Create a new activity
+export async function createActivity(activity: {
+  activity_type: Activity['activity_type'];
+  message: string;
+  invoice_id?: number;
+  email_thread_id?: number;
+  follow_up_id?: number;
+  metadata?: Record<string, any>;
+}): Promise<Activity> {
+  const res = await api.post('/activities/', activity);
+  return res.data;
+}
+
+// Get activity statistics
+export async function getActivityStats(days: number = 7): Promise<ActivityStats> {
+  const res = await api.get('/activities/stats', { params: { days } });
+  return res.data;
+}
+
+// Get activity timeline data
+export async function getActivityTimeline(days: number = 7): Promise<ActivityTimeline> {
+  const res = await api.get('/activities/timeline', { params: { days } });
+  return res.data;
+}
