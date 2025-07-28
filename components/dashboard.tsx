@@ -30,6 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useCallback } from "react"
 import { getInvoices } from "@/lib/api"
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
+import { getActivities, createActivity, Activity as ActivityType } from "@/lib/api"
 
 // Email and Invoice types for type safety
 interface Email {
@@ -59,6 +60,15 @@ interface InvoiceUI {
   nextFollowUpDate?: string;
 }
 
+interface ActivityFeedItem {
+  id: number;
+  type: string;
+  message: string;
+  time: string;
+  icon: any;
+  color: string;
+}
+
 export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boolean }) {
   // Demo mode toggle (set to true for demo/mock data)
   // const demoMode = true // Set to true to enable demo mode
@@ -71,6 +81,9 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const [isEditingMessage, setIsEditingMessage] = useState(false)
   const [emailThreads, setEmailThreads] = useState<EmailThread[]>([])
   const [loadingEmailThreads, setLoadingEmailThreads] = useState(false)
+  const [activities, setActivities] = useState<ActivityType[]>([])
+  const [loadingActivities, setLoadingActivities] = useState(false)
+  const [actedRecommendations, setActedRecommendations] = useState<Set<number>>(new Set())
 
   // Unified mock data for demo mode (matches getInvoices structure)
   const mockInvoices = [
@@ -280,14 +293,31 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }
   }, [demoMode])
 
+  // Fetch activities for the current user
+  const fetchActivities = useCallback(async () => {
+    if (demoMode) return;
+    
+    setLoadingActivities(true)
+    try {
+      const response = await getActivities({ limit: 50, days: 7 })
+      setActivities(response.activities)
+    } catch (err: any) {
+      console.error('Failed to fetch activities:', err)
+      setActivities([])
+    } finally {
+      setLoadingActivities(false)
+    }
+  }, [demoMode])
+
   useEffect(() => {
     if (!demoMode) {
       fetchInvoices()
+      fetchActivities()
     } else {
       setInvoices(mockInvoices)
       setLoadingInvoices(false)
     }
-  }, [fetchInvoices, demoMode])
+  }, [fetchInvoices, fetchActivities, demoMode])
 
   // Split invoices into overdue and paid, and map to UI shape
   const mappedOverdueInvoices: InvoiceUI[] = invoices
@@ -423,6 +453,23 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
         currentInvoices.map(inv => inv.id === invoice.id ? updatedInvoice : inv)
       )
 
+      // Create activity record for the sent email
+      try {
+        await createActivity({
+          activity_type: 'follow_up_sent',
+          message: `Sent ${tone.toLowerCase()} follow-up to ${invoice.client}`,
+          invoice_id: invoice.id,
+          email_thread_id: sentEmail.id,
+          metadata: {
+            tone,
+            amount: invoice.amount,
+            days_overdue: invoice.daysOverdue
+          }
+        })
+      } catch (error) {
+        console.error('Failed to create activity record:', error)
+      }
+
       return updatedInvoice
     } catch (error) {
       console.error('Failed to send email:', error)
@@ -450,6 +497,21 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       // Refresh invoices to get updated status
       await fetchInvoices()
       
+      // Create activity record for bulk email
+      try {
+        await createActivity({
+          activity_type: 'bulk_email_sent',
+          message: `Sent bulk ${tone} reminders to ${result.sent_count} clients`,
+          metadata: {
+            sent_count: result.sent_count,
+            failed_count: result.failed_count,
+            tone
+          }
+        })
+      } catch (error) {
+        console.error('Failed to create activity record:', error)
+      }
+      
       return result
     } catch (error) {
       console.error('Failed to send bulk emails:', error)
@@ -464,8 +526,52 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }
   }, [selectedInvoice, demoMode, fetchEmailThreads])
 
+  // Helper function to format relative time
+  const formatRelativeTime = (dateString: string): string => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+    return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`
+  }
+
+  // Helper function to get icon and color for activity type
+  const getActivityIconAndColor = (activityType: string): { icon: any; color: string } => {
+    switch (activityType) {
+      case 'follow_up_sent':
+        return { icon: Mail, color: 'text-blue-400' }
+      case 'overdue_detected':
+        return { icon: AlertTriangle, color: 'text-orange-400' }
+      case 'payment_received':
+        return { icon: CheckCircle, color: 'text-green-400' }
+      case 'invoice_processed':
+        return { icon: FileText, color: 'text-indigo-400' }
+      case 'bulk_email_sent':
+        return { icon: Zap, color: 'text-purple-400' }
+      case 'gmail_scan_completed':
+        return { icon: Bot, color: 'text-yellow-400' }
+      case 'tone_adjusted':
+        return { icon: Bot, color: 'text-yellow-400' }
+      case 'follow_up_scheduled':
+        return { icon: Clock, color: 'text-purple-400' }
+      case 'payment_detected':
+        return { icon: CheckCircle, color: 'text-green-400' }
+      case 'invoice_escalated':
+        return { icon: AlertTriangle, color: 'text-red-400' }
+      default:
+        return { icon: Bot, color: 'text-slate-400' }
+    }
+  }
+
   // Activity feed data
-  const activityFeed = [
+  const activityFeed: ActivityFeedItem[] = demoMode ? [
     {
       id: 1,
       type: "follow_up_sent",
@@ -546,7 +652,17 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       icon: FileText,
       color: "text-indigo-400",
     },
-  ]
+  ] : activities.map(activity => {
+    const { icon, color } = getActivityIconAndColor(activity.activity_type)
+    return {
+      id: activity.id,
+      type: activity.activity_type,
+      message: activity.message,
+      time: formatRelativeTime(activity.created_at),
+      icon,
+      color,
+    }
+  })
 
   const getFilteredInvoices = () => {
     let filtered = allInvoices
@@ -649,15 +765,10 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   <div className="text-white text-xl font-bold">
                     ~{isDemoMode ? 6.5 : (() => {
                       // Assume each follow-up sent saves 30min (0.1667h * 3)
-                      const followUpsThisWeek = activityFeed.filter(a => {
-                        if (a.type !== 'follow_up_sent') return false
-                        // Parse time string (e.g., '2 minutes ago', '1 hour ago', '1 day ago')
-                        const t = a.time
-                        if (t.includes('minute')) return true
-                        if (t.includes('hour')) return true
-                        if (t.includes('day')) return parseInt(t) <= 7
-                        return false
-                      }).length
+                      const followUpsThisWeek = activities.filter(a => 
+                        a.activity_type === 'follow_up_sent' && 
+                        new Date(a.created_at) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                      ).length
                       const hours = followUpsThisWeek * 0.1667 * 3
                       return hours.toFixed(1)
                     })()} hours
@@ -721,17 +832,56 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                 <span className="text-white font-semibold">Lance Recommendations</span>
               </div>
               <ul className="space-y-2">
-                {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 21).map(inv => (
-                  <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
+                {mappedOverdueInvoices
+                  .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
+                  .filter(inv => inv.days >= 21 && !actedRecommendations.has(inv.id))
+                  .map(inv => (
+                  <li 
+                    key={inv.id} 
+                    className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
+                    onClick={() => {
+                      const el = document.getElementById(`invoice-${inv.id}`)
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        el.classList.add('ring-4', 'ring-red-500')
+                        setTimeout(() => el.classList.remove('ring-4', 'ring-red-500'), 2000)
+                      }
+                    }}
+                  >
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Approve escalated reminder to <span className="font-semibold text-white">{inv.client}</span></span>
                     <Button
                       size="sm"
                       className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
-                      onClick={() => {
-                        // Simulate escalation action
-                        if (typeof window !== 'undefined') {
-                          window.dispatchEvent(new CustomEvent('toast', { detail: { message: `Escalated reminder approved for ${inv.client}` } }))
+                      onClick={async (e) => {
+                        e.stopPropagation() // Prevent row click when button is clicked
+                        try {
+                          // Send escalated email immediately (using "firm" tone for 21+ days overdue)
+                          await sendEmailViaAPI(inv, 'firm')
+                          
+                          // Mark this recommendation as acted upon
+                          setActedRecommendations(prev => new Set([...prev, inv.id]))
+                          
+                          // Show success notification
+                          if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('toast', { 
+                              detail: { 
+                                message: `Escalated reminder sent to ${inv.client}`,
+                                type: 'success'
+                              } 
+                            }))
+                          }
+                        } catch (error) {
+                          console.error('Failed to send escalated reminder:', error)
+                          // Show error notification
+                          if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('toast', { 
+                              detail: { 
+                                message: `Failed to send reminder to ${inv.client}`,
+                                type: 'error'
+                              } 
+                            }))
+                          }
                         }
                       }}
                     >
@@ -740,15 +890,30 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   </li>
                 ))}
                 {/* Example: View action for a client with 7-20 days overdue */}
-                {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 8 && inv.days < 21).map(inv => (
-                  <li key={inv.id} className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3">
+                {mappedOverdueInvoices
+                  .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
+                  .filter(inv => inv.days >= 8 && inv.days < 21 && !actedRecommendations.has(inv.id))
+                  .map(inv => (
+                  <li 
+                    key={inv.id} 
+                    className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
+                    onClick={() => {
+                      const el = document.getElementById(`invoice-${inv.id}`)
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        el.classList.add('ring-4', 'ring-blue-500')
+                        setTimeout(() => el.classList.remove('ring-4', 'ring-blue-500'), 2000)
+                      }
+                    }}
+                  >
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
                     <Button
                       size="sm"
                       variant="outline"
                       className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white font-semibold px-4 py-1"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation() // Prevent row click when button is clicked
                         const el = document.getElementById(`invoice-${inv.id}`)
                         if (el) {
                           el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -762,7 +927,10 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   </li>
                 ))}
                 {/* If no next steps */}
-                {mappedOverdueInvoices.map(inv => ({...inv, days: inv.daysOverdue ?? 0})).filter(inv => inv.days >= 8).length === 0 && (
+                {mappedOverdueInvoices
+                  .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
+                  .filter(inv => inv.days >= 8 && !actedRecommendations.has(inv.id))
+                  .length === 0 && (
                   <li className="text-slate-500 py-2">No urgent actions needed this week.</li>
                 )}
               </ul>
@@ -804,63 +972,148 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
 
                 {/* Timeline points */}
                 <div className="relative flex justify-between items-center h-8">
-                  {/* Recent activity points */}
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-blue-400 rounded-full border-2 border-slate-800 animate-pulse"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      2m
-                    </div>
-                  </div>
+                  {demoMode ? (
+                    // Demo timeline points
+                    <>
+                      <div className="relative">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full border-2 border-slate-800 animate-pulse"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                          2m
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      1h
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                          1h
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-green-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      3h
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-3 h-3 bg-green-400 rounded-full border-2 border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                          3h
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      5h
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full border-2 border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                          5h
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="w-2.5 h-2.5 bg-yellow-400 rounded-full border-2 border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                      1d
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-2.5 h-2.5 bg-yellow-400 rounded-full border-2 border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                          1d
+                        </div>
+                      </div>
 
-                  {/* Additional smaller points for more activity */}
-                  <div className="relative">
-                    <div className="w-1.5 h-1.5 bg-blue-300 rounded-full border border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
-                      2d
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-1.5 h-1.5 bg-blue-300 rounded-full border border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
+                          2d
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="w-2 h-2 bg-green-300 rounded-full border border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
-                      3d
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-2 h-2 bg-green-300 rounded-full border border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
+                          3d
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="w-1.5 h-1.5 bg-orange-300 rounded-full border border-slate-800"></div>
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
-                      4d
-                    </div>
-                  </div>
+                      <div className="relative">
+                        <div className="w-1.5 h-1.5 bg-orange-300 rounded-full border border-slate-800"></div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap">
+                          4d
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    // Real timeline points based on actual activities
+                    (() => {
+                      const now = new Date()
+                      const last24Hours = activities
+                        .filter(activity => {
+                          const activityDate = new Date(activity.created_at)
+                          const diffHours = (now.getTime() - activityDate.getTime()) / (1000 * 60 * 60)
+                          return diffHours <= 24
+                        })
+                        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                        .slice(0, 8) // Show up to 8 most recent activities
+
+                      if (last24Hours.length === 0) {
+                        return (
+                          <div className="w-full text-center text-slate-500 text-sm py-4">
+                            No recent activity
+                          </div>
+                        )
+                      }
+
+                      return last24Hours.map((activity, index) => {
+                        const activityDate = new Date(activity.created_at)
+                        const diffHours = (now.getTime() - activityDate.getTime()) / (1000 * 60 * 60)
+                        const diffMins = Math.floor((now.getTime() - activityDate.getTime()) / (1000 * 60))
+                        
+                        // Determine time label
+                        let timeLabel = ''
+                        if (diffMins < 60) {
+                          timeLabel = `${diffMins}m`
+                        } else if (diffHours < 24) {
+                          timeLabel = `${Math.floor(diffHours)}h`
+                        } else {
+                          timeLabel = `${Math.floor(diffHours / 24)}d`
+                        }
+
+                        // Determine color based on activity type
+                        let color = 'bg-slate-400'
+                        let size = 'w-2 h-2'
+                        let animate = ''
+                        
+                        switch (activity.activity_type) {
+                          case 'follow_up_sent':
+                            color = 'bg-blue-400'
+                            size = diffMins < 30 ? 'w-3 h-3' : 'w-2.5 h-2.5'
+                            animate = diffMins < 30 ? 'animate-pulse' : ''
+                            break
+                          case 'payment_received':
+                            color = 'bg-green-400'
+                            size = 'w-3 h-3'
+                            break
+                          case 'overdue_detected':
+                            color = 'bg-orange-400'
+                            size = 'w-2.5 h-2.5'
+                            break
+                          case 'invoice_processed':
+                            color = 'bg-indigo-400'
+                            size = 'w-2 h-2'
+                            break
+                          case 'bulk_email_sent':
+                            color = 'bg-purple-400'
+                            size = 'w-2.5 h-2.5'
+                            break
+                          case 'gmail_scan_completed':
+                            color = 'bg-yellow-400'
+                            size = 'w-2 h-2'
+                            break
+                          default:
+                            color = 'bg-slate-400'
+                            size = 'w-1.5 h-1.5'
+                        }
+
+                        return (
+                          <div key={activity.id} className="relative">
+                            <div className={`${size} ${color} rounded-full border-2 border-slate-800 ${animate}`}></div>
+                            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
+                              {timeLabel}
+                            </div>
+                          </div>
+                        )
+                      })
+                    })()
+                  )}
                 </div>
 
                 {/* Activity summary */}
@@ -891,7 +1144,17 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
 
             {/* Activity Timeline Text Feed */}
             <div className="space-y-3 max-h-48 overflow-y-auto">
-              {activityFeed.map((activity, index) => {
+              {(demoMode ? activityFeed : activities.slice(0, 10).map(activity => {
+                const { icon, color } = getActivityIconAndColor(activity.activity_type)
+                return {
+                  id: activity.id,
+                  type: activity.activity_type,
+                  message: activity.message,
+                  time: formatRelativeTime(activity.created_at),
+                  icon,
+                  color,
+                }
+              })).map((activity, index) => {
                 const IconComponent = activity.icon
                 return (
                   <div
@@ -908,6 +1171,11 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                   </div>
                 )
               })}
+              {!demoMode && activities.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-slate-400 text-sm">No recent activity</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -948,7 +1216,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                 }}
               >
                 <Zap className="h-4 w-4 mr-2" />
-                Send All Reminders ({allInvoices.filter(inv => inv.status === "overdue").length})
+                Approve All Reminders ({allInvoices.filter(inv => inv.status === "overdue").length})
               </Button>
             </div>
           </CardHeader>
