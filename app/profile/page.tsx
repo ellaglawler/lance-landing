@@ -11,6 +11,7 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useAuth } from "@/components/auth-context"
+import Subscription from "@/components/subscription"
 
 interface ProfileData {
   // Empty interface as we no longer need notifications
@@ -262,6 +263,9 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Subscription Card */}
+        <Subscription className="bg-slate-800 border-slate-700 shadow-xl" />
 
         {/* Logout Section */}
         <div className="border-t border-slate-700 pt-6">

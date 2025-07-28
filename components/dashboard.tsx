@@ -31,7 +31,6 @@ import { useEffect, useCallback } from "react"
 import { getInvoices } from "@/lib/api"
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
 import { getActivities, createActivity, Activity as ActivityType } from "@/lib/api"
-import Subscription from "@/components/subscription"
 
 // Email and Invoice types for type safety
 interface Email {
@@ -939,8 +938,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
           </CardContent>
         </Card>
 
-        {/* Subscription Card */}
-        <Subscription />
+
 
         {/* Lance Activity Bar */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
