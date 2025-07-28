@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useCallback } from "react"
 import { getInvoices } from "@/lib/api"
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
@@ -48,6 +49,7 @@ interface InvoiceUI {
   avatar: string;
   status: "overdue" | "paid" | "pending_response";
   tone?: string;
+  customMessage?: string;
   daysOverdue?: number;
   emailThread?: Email[];
   dateSent?: string;
@@ -379,6 +381,43 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     return `Dear ${invoice.client},\n\nThis is a formal notice regarding overdue invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nImmediate payment is required to avoid any disruption to our business relationship. Please remit payment within 5 business days of receiving this notice.\n\nIf payment has already been sent, please disregard this notice and provide payment confirmation.\n\nRegards`
   }
 
+  function generateDefaultMessage(invoice: InvoiceUI, tone: string): string {
+    const amount = invoice.amount.toLocaleString()
+    const daysOverdue = invoice.daysOverdue ?? 0
+    if (tone === "Polite") {
+      return `Hi there!
+
+I hope you're doing well! I wanted to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.
+
+I know things can get busy, so I wanted to send a gentle reminder. If you have any questions about the invoice or need any additional information, please don't hesitate to reach out!
+
+Thanks for your time, and I look forward to hearing from you soon!
+
+Best regards`
+    } else if (tone === "Professional") {
+      return `Hello,
+
+I'm writing to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.
+
+Please let me know when I can expect payment, or if there are any issues that need to be addressed. I'm happy to discuss payment arrangements if needed.
+
+Thank you for your prompt attention to this matter.
+
+Best regards`
+    } else if (tone === "Firm") {
+      return `Dear ${invoice.client},
+
+This is a formal notice regarding overdue invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.
+
+Immediate payment is required to avoid any disruption to our business relationship. Please remit payment within 5 business days of receiving this notice.
+
+If payment has already been sent, please disregard this notice and provide payment confirmation.
+
+Regards`
+    }
+    return ""
+  }
+
   function sendReminder(invoice: InvoiceUI): InvoiceUI {
     const now = new Date()
     const nextFollowUp = new Date()
@@ -389,7 +428,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       date: now.toISOString(),
       subject: `Invoice #${invoice.id} - Payment Reminder`,
       tone: invoice.tone ?? "Polite",
-      content: generateEmailContent(invoice)
+      content: invoice.customMessage || generateEmailContent(invoice)
     }
     return {
       ...invoice,
@@ -412,7 +451,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }
 
     try {
-      const content = generateEmailContent(invoice)
+      const content = invoice.customMessage || generateEmailContent(invoice)
       const subject = `Payment Reminder - Invoice #${invoice.id}`
       
       // Calculate next follow-up date
@@ -1568,7 +1607,15 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                               <Button
                                 variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
                                 size="sm"
-                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Polite" })}
+                                onClick={() => {
+                                  const newTone = "Polite"
+                                  const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
+                                  setSelectedInvoice({ 
+                                    ...selectedInvoice, 
+                                    tone: newTone,
+                                    customMessage: selectedInvoice.customMessage || defaultMessage
+                                  })
+                                }}
                                 className={
                                   selectedInvoice.tone === "Polite"
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -1580,7 +1627,15 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                               <Button
                                 variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
                                 size="sm"
-                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Professional" })}
+                                onClick={() => {
+                                  const newTone = "Professional"
+                                  const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
+                                  setSelectedInvoice({ 
+                                    ...selectedInvoice, 
+                                    tone: newTone,
+                                    customMessage: selectedInvoice.customMessage || defaultMessage
+                                  })
+                                }}
                                 className={
                                   selectedInvoice.tone === "Professional"
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -1592,7 +1647,15 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                               <Button
                                 variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
                                 size="sm"
-                                onClick={() => setSelectedInvoice({ ...selectedInvoice, tone: "Firm" })}
+                                onClick={() => {
+                                  const newTone = "Firm"
+                                  const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
+                                  setSelectedInvoice({ 
+                                    ...selectedInvoice, 
+                                    tone: newTone,
+                                    customMessage: selectedInvoice.customMessage || defaultMessage
+                                  })
+                                }}
                                 className={
                                   selectedInvoice.tone === "Firm"
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -1604,72 +1667,35 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                             </div>
                           </div>
 
-                          <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
-                            <div className="text-sm leading-relaxed text-slate-300">
-                              {selectedInvoice.tone === "Polite" && (
-                                <>
-                                  <p>Hi there!</p>
-                                  <br />
-                                  <p>
-                                    I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
-                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                    days ago.
-                                  </p>
-                                  <br />
-                                  <p>
-                                    I know things can get busy, so I wanted to send a gentle reminder. If you have any
-                                    questions about the invoice or need any additional information, please don't hesitate to
-                                    reach out!
-                                  </p>
-                                  <br />
-                                  <p>Thanks for your time, and I look forward to hearing from you soon!</p>
-                                  <br />
-                                  <p>Best regards</p>
-                                </>
-                              )}
-                              {selectedInvoice.tone === "Professional" && (
-                                <>
-                                  <p>Hello,</p>
-                                  <br />
-                                  <p>
-                                    I'm writing to follow up on invoice #{selectedInvoice.id} for $
-                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                    days ago.
-                                  </p>
-                                  <br />
-                                  <p>
-                                    Please let me know when I can expect payment, or if there are any issues that need to be
-                                    addressed. I'm happy to discuss payment arrangements if needed.
-                                  </p>
-                                  <br />
-                                  <p>Thank you for your prompt attention to this matter.</p>
-                                  <br />
-                                  <p>Best regards</p>
-                                </>
-                              )}
-                              {selectedInvoice.tone === "Firm" && (
-                                <>
-                                  <p>Dear {selectedInvoice.client},</p>
-                                  <br />
-                                  <p>
-                                    This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
-                                    {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                    days ago.
-                                  </p>
-                                  <br />
-                                  <p>
-                                    Immediate payment is required to avoid any disruption to our business relationship.
-                                    Please remit payment within 5 business days of receiving this notice.
-                                  </p>
-                                  <br />
-                                  <p>
-                                    If payment has already been sent, please disregard this notice and provide payment
-                                    confirmation.
-                                  </p>
-                                  <br />
-                                  <p>Regards</p>
-                                </>
-                              )}
+                          <div className="space-y-4">
+                            <div className="text-sm font-medium text-slate-300 mb-3">Edit Message Content:</div>
+                            <Textarea
+                              value={selectedInvoice.customMessage || generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")}
+                              onChange={(e) => setSelectedInvoice({ 
+                                ...selectedInvoice, 
+                                customMessage: e.target.value 
+                              })}
+                              className="min-h-[200px] bg-slate-700 border-slate-600 text-slate-300 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
+                              placeholder="Edit your message content here..."
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const defaultMessage = generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")
+                                  setSelectedInvoice({ 
+                                    ...selectedInvoice, 
+                                    customMessage: defaultMessage
+                                  })
+                                }}
+                                className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 text-xs"
+                              >
+                                Reset to Default
+                              </Button>
+                              <div className="text-xs text-slate-400 flex items-center">
+                                You can customize the message while keeping the selected tone
+                              </div>
                             </div>
                           </div>
 
@@ -1692,71 +1718,8 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                       ) : (
                         // Preview View
                         <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
-                          <div className="text-sm leading-relaxed text-slate-300">
-                            {selectedInvoice.tone === "Polite" && (
-                              <>
-                                <p>Hi there!</p>
-                                <br />
-                                <p>
-                                  I hope you're doing well! I wanted to follow up on invoice #{selectedInvoice.id} for $
-                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                  days ago.
-                                </p>
-                                <br />
-                                <p>
-                                  I know things can get busy, so I wanted to send a gentle reminder. If you have any
-                                  questions about the invoice or need any additional information, please don't hesitate to
-                                  reach out!
-                                </p>
-                                <br />
-                                <p>Thanks for your time, and I look forward to hearing from you soon!</p>
-                                <br />
-                                <p>Best regards</p>
-                              </>
-                            )}
-                            {selectedInvoice.tone === "Professional" && (
-                              <>
-                                <p>Hello,</p>
-                                <br />
-                                <p>
-                                  I'm writing to follow up on invoice #{selectedInvoice.id} for $
-                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                  days ago.
-                                </p>
-                                <br />
-                                <p>
-                                  Please let me know when I can expect payment, or if there are any issues that need to be
-                                  addressed. I'm happy to discuss payment arrangements if needed.
-                                </p>
-                                <br />
-                                <p>Thank you for your prompt attention to this matter.</p>
-                                <br />
-                                <p>Best regards</p>
-                              </>
-                            )}
-                            {selectedInvoice.tone === "Firm" && (
-                              <>
-                                <p>Dear {selectedInvoice.client},</p>
-                                <br />
-                                <p>
-                                  This is a formal notice regarding overdue invoice #{selectedInvoice.id} for $
-                                  {selectedInvoice.amount.toLocaleString()}, which was due {selectedInvoice.daysOverdue}{" "}
-                                  days ago.
-                                </p>
-                                <br />
-                                <p>
-                                  Immediate payment is required to avoid any disruption to our business relationship.
-                                  Please remit payment within 5 business days of receiving this notice.
-                                </p>
-                                <br />
-                                <p>
-                                  If payment has already been sent, please disregard this notice and provide payment
-                                  confirmation.
-                                </p>
-                                <br />
-                                <p>Regards</p>
-                              </>
-                            )}
+                          <div className="text-sm leading-relaxed text-slate-300 whitespace-pre-wrap">
+                            {selectedInvoice.customMessage || generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")}
                           </div>
                         </div>
                       )}
@@ -1801,7 +1764,17 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
                           <Button
                             variant="outline"
                             className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
-                            onClick={() => setIsEditingMessage(true)}
+                            onClick={() => {
+                              // Initialize custom message if not already set
+                              if (!selectedInvoice.customMessage) {
+                                const defaultMessage = generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")
+                                setSelectedInvoice({ 
+                                  ...selectedInvoice, 
+                                  customMessage: defaultMessage
+                                })
+                              }
+                              setIsEditingMessage(true)
+                            }}
                           >
                             Edit Message
                           </Button>
