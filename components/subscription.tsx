@@ -50,18 +50,20 @@ export default function Subscription({ className }: SubscriptionProps) {
   const handleSubscribe = async () => {
     try {
       setCheckoutLoading(true)
-      
-      // Replace with your actual Stripe price ID
-      const priceId = 'price_1OqXxXxXxXxXxXxXxXxXxXx' // You'll need to replace this
-      
+
+      // Use the price ID from environment variable
+      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_1OqXxXxXxXxXxXxXxXxXxXx'
+      console.log('🔍 Frontend Debug: Using price ID:', priceId)
+
       const { id: sessionId } = await createCheckoutSession(priceId)
+      console.log('🔍 Frontend Debug: Received session ID from backend:', sessionId)
+      
       await redirectToCheckout(sessionId)
     } catch (error) {
-      console.error('Checkout error:', error)
-      const errorMessage = handleCheckoutError(error)
+      console.error('🔍 Frontend Debug: Error in handleSubscribe:', error)
       toast({
-        title: "Checkout Error",
-        description: errorMessage,
+        title: "Error",
+        description: handleCheckoutError(error),
         variant: "destructive",
       })
     } finally {

@@ -17,8 +17,8 @@ export default function PricingPage() {
     try {
       setLoading(true)
       
-      // Replace with your actual Stripe price ID
-      const priceId = 'price_1OqXxXxXxXxXxXxXxXxXxXx' // You'll need to replace this
+      // Use the price ID from environment variable
+      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_1OqXxXxXxXxXxXxXxXxXxXx'
       
       const { id: sessionId } = await createCheckoutSession(priceId)
       await redirectToCheckout(sessionId)

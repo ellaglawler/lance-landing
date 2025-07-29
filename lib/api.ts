@@ -293,11 +293,16 @@ export interface SubscriptionStatus {
 
 // Create a Stripe Checkout session for subscription
 export async function createCheckoutSession(priceId: string): Promise<StripeCheckoutSession> {
+  console.log('🔍 Frontend Debug: Making API call to create checkout session with price ID:', priceId);
+  
   const res = await api.post('/stripe/create-checkout-session', {
     price_id: priceId,
     success_url: `${window.location.origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${window.location.origin}/dashboard?canceled=true`,
+    _t: Date.now(), // Cache busting parameter
   });
+  
+  console.log('🔍 Frontend Debug: API response received:', res.data);
   return res.data;
 }
 
