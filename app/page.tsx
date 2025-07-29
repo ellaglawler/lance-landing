@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import {
   CheckCircle,
   AlertCircle,
@@ -158,6 +159,13 @@ export default function LanceLanding() {
 
             {/* CTA Buttons */}
             <WaitlistForm variant="hero" />
+            
+            {/* Secondary CTA */}
+            <div className="mt-6">
+              <Link href="/pricing" className="text-blue-400 hover:text-blue-300 transition-colors text-sm">
+                View Pricing →
+              </Link>
+            </div>
 
             {/* Social Proof Testimonial */}
             <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 max-w-md mx-auto social-proof">
