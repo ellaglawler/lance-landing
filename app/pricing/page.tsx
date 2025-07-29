@@ -83,7 +83,7 @@ export default function PricingPage() {
               <span className="text-blue-400">Start collecting cash.</span>
             </h1>
             <p className="text-xl sm:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto">
-              <strong className="text-green-400">Lance recovers $500–$1,000/month</strong> in lost payments — automatically.
+              <strong className="text-green-400">Lance recovers $500–$1,000/month</strong> in lost payments, automatically.
               <br />
               For less than the price of one missed invoice, get peace of mind, time back, and your income on autopilot.
             </p>
@@ -114,7 +114,7 @@ export default function PricingPage() {
               <h2 className="text-3xl font-bold">🚀 Founders Plan: $29/month for life</h2>
             </div>
             <p className="text-xl mb-6">
-              For our first 500 users only — lock in this rate forever.
+              For our first 500 users only, lock in this rate forever.
             </p>
             <div className="flex items-center justify-center gap-8 mb-6">
               <div className="flex items-center">
@@ -522,7 +522,7 @@ export default function PricingPage() {
                   <Quote className="w-8 h-8 text-blue-400 mt-1" />
                   <div>
                     <p className="text-slate-300 mb-4">
-                      "Lance recovered $1,600 for me in my first month. I just let it run — no stress, no chasing."
+                      "Lance recovered $1,600 for me in my first month. I just let it run, no stress, no chasing."
                     </p>
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
@@ -544,7 +544,7 @@ export default function PricingPage() {
                   <Quote className="w-8 h-8 text-blue-400 mt-1" />
                   <div>
                     <p className="text-slate-300 mb-4">
-                      "Feels like having a polite pitbull in my inbox. Clients pay faster — and respect me more."
+                      "Feels like having a polite pitbull in my inbox. Clients pay faster, and respect me more."
                     </p>
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
@@ -598,7 +598,7 @@ export default function PricingPage() {
                 How is this different from invoicing tools?
               </AccordionTrigger>
               <AccordionContent className="text-slate-300">
-                Invoicing tools send invoices. Lance <strong>chases</strong> them for you — automatically, politely, and relentlessly. We don't just send reminders; we analyze payment patterns, personalize follow-ups, and escalate strategically to get you paid.
+                Invoicing tools send invoices. Lance <strong>chases</strong> them for you, automatically, politely, and relentlessly. We don't just send reminders; we analyze payment patterns, personalize follow-ups, and escalate strategically to get you paid.
               </AccordionContent>
             </AccordionItem>
 
@@ -625,7 +625,7 @@ export default function PricingPage() {
                 Can I cancel anytime?
               </AccordionTrigger>
               <AccordionContent className="text-slate-300">
-                Yes — no contracts, no hassle. You can cancel your subscription at any time from your dashboard. We believe you should only pay for Lance if it's delivering real value to your business.
+                Yes, no contracts, no hassle. You can cancel your subscription at any time from your dashboard. We believe you should only pay for Lance if it's delivering real value to your business.
               </AccordionContent>
             </AccordionItem>
 
@@ -657,7 +657,7 @@ export default function PricingPage() {
             Start collecting what you're owed.
           </h2>
           <p className="text-xl text-slate-300 mb-8">
-            Lance gets you paid faster — with zero awkward emails, and zero effort.
+            Lance gets you paid faster, with zero awkward emails, and zero effort.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
