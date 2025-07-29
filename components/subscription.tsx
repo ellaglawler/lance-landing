@@ -18,6 +18,17 @@ interface SubscriptionProps {
   className?: string
 }
 
+// Price formatting utility
+const formatPrice = (amount: number, currency: string, interval: string) => {
+  if (!amount || !currency || !interval) return null;
+  
+  const dollars = amount / 100;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+  }).format(dollars) + `/${interval}`;
+};
+
 export default function Subscription({ className }: SubscriptionProps) {
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null)
   const [loading, setLoading] = useState(true)
@@ -134,11 +145,20 @@ export default function Subscription({ className }: SubscriptionProps) {
                 <CheckCircle className="h-5 w-5 text-green-600" />
                 <div>
                   <p className="font-medium text-green-900 dark:text-green-100">
-                    {subscription.plan_name || 'Pro Plan'}
+                    {subscription.plan_name || 'Core Plan'}
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-300">
                     Active Subscription
                   </p>
+                  {subscription.price && (
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      {formatPrice(
+                        subscription.price.amount,
+                        subscription.price.currency,
+                        subscription.price.interval
+                      )}
+                    </p>
+                  )}
                 </div>
               </div>
               <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">

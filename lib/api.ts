@@ -289,6 +289,11 @@ export interface SubscriptionStatus {
   status?: string;
   current_period_end?: string;
   cancel_at_period_end?: boolean;
+  price?: {
+    amount: number;
+    currency: string;
+    interval: string;
+  };
 }
 
 // Create a Stripe Checkout session for subscription
