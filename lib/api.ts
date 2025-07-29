@@ -94,7 +94,7 @@ export async function checkGmailToken() {
 
 // Exchange Google OAuth code for tokens (GET /google/callback?code=...)
 export async function exchangeGoogleCode(code: string) {
-  const res = await api.get('/auth/google/callback', { params: { code } });
+  const res = await api.get('/auth/google/callback-signup', { params: { code } });
   return res.data;
 }
 
