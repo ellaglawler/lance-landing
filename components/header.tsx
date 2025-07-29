@@ -33,7 +33,13 @@ export const Header = () => {
             {greeting}{firstName ? ` ${firstName}` : ''}
           </div>
         )}
-        <div>
+        <div className="flex items-center gap-8">
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center">
+            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
+              Pricing
+            </Link>
+          </nav>
           {isAuthenticated ? (
           <div className="flex items-center gap-4">
             <Button
