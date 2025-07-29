@@ -6,12 +6,13 @@ import { CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { submitToHubspot, validateEmail } from "@/lib/hubspot"
 
 interface WaitlistFormProps {
-  variant?: "hero" | "cta" | "demo" | "contact"
+  variant?: "hero" | "cta" | "demo" | "contact" | "pricing"
   className?: string
   showDemoButton?: boolean // New prop
+  plan?: "starter" | "core" | "pro" | "studio"
 }
 
-export function WaitlistForm({ variant = "hero", className = "", showDemoButton = true }: WaitlistFormProps) {
+export function WaitlistForm({ variant = "hero", className = "", showDemoButton = true, plan }: WaitlistFormProps) {
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
@@ -76,6 +77,8 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
         return "Start Getting Paid Faster"
       case "demo":
         return "Get Early Access"
+      case "pricing":
+        return plan === "starter" ? "Start Free" : plan === "core" ? "Start Core Trial" : plan === "pro" ? "Start Pro Trial" : "Contact Sales"
       case "hero":
       case "cta":
       default:
@@ -87,6 +90,7 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
     switch (variant) {
       case "contact":
       case "demo":
+      case "pricing":
       case "hero":
       case "cta":
       default:
@@ -98,6 +102,8 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
     switch (variant) {
       case "demo":
         return "demo"
+      case "pricing":
+        return `pricing-${plan || "core"}`
       case "hero":
         return "waitlist"
       case "cta":
@@ -110,7 +116,7 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
   return (
     <div className={className}>
       <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 w-full max-w-3xl mx-auto">
+        <div className={`flex ${variant === "pricing" ? "flex-col" : "flex-col sm:flex-row"} justify-center items-center gap-3 w-full max-w-3xl mx-auto`}>
           <input 
             type="email" 
             placeholder="Enter your email" 
@@ -134,7 +140,7 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
               getButtonText()
             )}
           </Button>
-          {showDemoButton && (
+          {showDemoButton && variant !== "pricing" && (
             <Button 
               type="button"
               size="lg"
