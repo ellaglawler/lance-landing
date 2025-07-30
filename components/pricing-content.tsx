@@ -312,7 +312,7 @@ export function PricingContent() {
             <TabsContent value="yearly" className="space-y-6">
               <div className="grid md:grid-cols-3 gap-8">
                 {/* Lance Core Yearly */}
-                <Card className="relative border-slate-700 bg-slate-800/50">
+                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                 <div className="absolute top-4 right-4">
                     <Badge className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-2 py-1 text-xs">
                       Coming Sept 1
@@ -324,6 +324,9 @@ export function PricingContent() {
                       $39<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <div className="text-sm text-slate-400">$468 billed annually</div>
+                    <div className="text-sm text-blue-300 font-medium mt-1">
+                      Launching September 1
+                    </div>
                     <CardDescription className="text-slate-400">
                       Solo freelancers
                     </CardDescription>
@@ -331,8 +334,8 @@ export function PricingContent() {
                       Essential tools to get you paid, fast.
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
                         <span className="text-slate-300">Invoice chasing</span>
