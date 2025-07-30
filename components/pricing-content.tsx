@@ -159,7 +159,7 @@ export function PricingContent() {
             <TabsContent value="monthly" className="space-y-6">
               <div className="grid md:grid-cols-3 gap-8">
                 {/* Lance Beta */}
-                <Card className="relative border-slate-700 bg-slate-800/50">
+                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <BetaCountdown />
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Beta, Free for Early Users</CardTitle>
@@ -170,15 +170,15 @@ export function PricingContent() {
                       Early access freelancers
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      Full access while we're in early launch mode. No credit card needed. Limited time.
+                      Recover your first $500+ with Lance, free during our limited-time beta. No credit card. Full access.
                     </p>
                     <p className="text-xs text-orange-400 font-semibold mt-1">
                       Beta ends August 31, 2025
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Beta features */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
                         <span className="text-slate-300">Invoice chasing</span>
@@ -196,14 +196,14 @@ export function PricingContent() {
                         <span className="text-slate-300">Smart follow-ups</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white">
+                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
                       Start Free Trial
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Lance Pro - Most Popular */}
-                <Card className="relative border-blue-500 bg-slate-800/50 scale-105">
+                <Card className="relative border-blue-500 bg-slate-800/50 scale-105 flex flex-col h-full">
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-600 text-white px-4 py-1">
                       <Star className="w-4 h-4 mr-1" />
@@ -222,9 +222,9 @@ export function PricingContent() {
                       Automate follow-ups and protect your cash flow.
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Pro features */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
                         <span className="text-slate-300">Everything in Beta</span>
@@ -242,14 +242,14 @@ export function PricingContent() {
                         <span className="text-slate-300">Analytics dashboard</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white mt-auto">
                       Start Free Trial
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Lance Studio */}
-                <Card className="relative border-slate-700 bg-slate-800/50">
+                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Studio</CardTitle>
                     <div className="text-3xl font-bold text-white">
@@ -262,9 +262,9 @@ export function PricingContent() {
                       Built for teams that want to scale with confidence.
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Studio features */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
                         <span className="text-slate-300">Everything in Pro</span>
@@ -282,7 +282,7 @@ export function PricingContent() {
                         <span className="text-slate-300">Studio insights & ROI</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white">
+                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
                       Contact Sales
                     </Button>
                   </CardContent>
@@ -595,6 +595,41 @@ export function PricingContent() {
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1" className="border-slate-700">
               <AccordionTrigger className="text-left text-white hover:text-blue-400">
+                <span className="flex items-center">
+                  <Badge className="bg-orange-600 text-white mr-3 text-xs">Beta</Badge>
+                  Why Beta? What's in it for me?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="text-slate-300">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">What you get:</h4>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      <li>Full access to all Lance features — completely free</li>
+                      <li>Priority support and direct feedback to our team</li>
+                      <li>Early access to new features before public release</li>
+                      <li>Lock-in opportunity for our Founders Plan ($29/month for life)</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">What we're looking for:</h4>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      <li>Real feedback to make Lance better for all freelancers</li>
+                      <li>Success stories and testimonials (with your permission)</li>
+                      <li>Usage data to understand how to optimize the product</li>
+                      <li>Early adopters who believe in our mission</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">Our roadmap:</h4>
+                    <p className="text-sm">We're building the future of freelancer payment recovery. Beta users help us shape features like AI-powered client risk assessment, advanced automation workflows, and seamless integrations with your existing tools.</p>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="border-slate-700">
+              <AccordionTrigger className="text-left text-white hover:text-blue-400">
                 How is this different from invoicing tools?
               </AccordionTrigger>
               <AccordionContent className="text-slate-300">
@@ -602,7 +637,7 @@ export function PricingContent() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-2" className="border-slate-700">
+            <AccordionItem value="item-3" className="border-slate-700">
               <AccordionTrigger className="text-left text-white hover:text-blue-400">
                 Do I need to change my workflow?
               </AccordionTrigger>
@@ -611,7 +646,7 @@ export function PricingContent() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3" className="border-slate-700">
+            <AccordionItem value="item-4" className="border-slate-700">
               <AccordionTrigger className="text-left text-white hover:text-blue-400">
                 What if Lance doesn't help me recover anything?
               </AccordionTrigger>
@@ -620,7 +655,7 @@ export function PricingContent() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-4" className="border-slate-700">
+            <AccordionItem value="item-5" className="border-slate-700">
               <AccordionTrigger className="text-left text-white hover:text-blue-400">
                 Can I cancel anytime?
               </AccordionTrigger>
@@ -629,7 +664,7 @@ export function PricingContent() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-5" className="border-slate-700">
+            <AccordionItem value="item-6" className="border-slate-700">
               <AccordionTrigger className="text-left text-white hover:text-blue-400">
                 How does the free trial work?
               </AccordionTrigger>
@@ -638,7 +673,7 @@ export function PricingContent() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-6" className="border-slate-700">
+            <AccordionItem value="item-7" className="border-slate-700">
               <AccordionTrigger className="text-left text-white hover:text-blue-400">
                 What payment methods do you accept?
               </AccordionTrigger>
