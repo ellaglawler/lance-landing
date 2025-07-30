@@ -984,6 +984,8 @@ Regards`
           </CardContent>
         </Card>
 
+
+
         {/* Lance Activity Bar */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
           <CardHeader className="pb-4">

@@ -94,7 +94,7 @@ export async function checkGmailToken() {
 
 // Exchange Google OAuth code for tokens (GET /google/callback?code=...)
 export async function exchangeGoogleCode(code: string) {
-  const res = await api.get('/auth/google/callback', { params: { code } });
+  const res = await api.get('/auth/google/callback-signup', { params: { code } });
   return res.data;
 }
 
@@ -269,5 +269,64 @@ export async function getActivityStats(days: number = 7): Promise<ActivityStats>
 // Get activity timeline data
 export async function getActivityTimeline(days: number = 7): Promise<ActivityTimeline> {
   const res = await api.get('/activities/timeline', { params: { days } });
+  return res.data;
+}
+
+// Stripe Subscription API functions
+export interface StripeCheckoutSession {
+  id: string;
+  url: string;
+}
+
+export interface StripePortalSession {
+  url: string;
+}
+
+export interface SubscriptionStatus {
+  is_subscribed: boolean;
+  subscription_id?: string;
+  plan_name?: string;
+  status?: string;
+  current_period_end?: string;
+  cancel_at_period_end?: boolean;
+  price?: {
+    amount: number;
+    currency: string;
+    interval: string;
+  };
+}
+
+// Create a Stripe Checkout session for subscription
+export async function createCheckoutSession(priceId: string): Promise<StripeCheckoutSession> {
+  console.log('🔍 Frontend Debug: Making API call to create checkout session with price ID:', priceId);
+  
+  const res = await api.post('/stripe/create-checkout-session', {
+    price_id: priceId,
+    success_url: `${window.location.origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${window.location.origin}/dashboard?canceled=true`,
+    _t: Date.now(), // Cache busting parameter
+  });
+  
+  console.log('🔍 Frontend Debug: API response received:', res.data);
+  return res.data;
+}
+
+// Create a Customer Portal session
+export async function createPortalSession(): Promise<StripePortalSession> {
+  const res = await api.post('/stripe/create-portal-session', {
+    return_url: `${window.location.origin}/dashboard`,
+  });
+  return res.data;
+}
+
+// Get subscription status for current user
+export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
+  const res = await api.get('/stripe/subscription-status');
+  return res.data;
+}
+
+// Get checkout session details
+export async function getCheckoutSession(sessionId: string): Promise<any> {
+  const res = await api.get(`/stripe/checkout-session/${sessionId}`);
   return res.data;
 }
