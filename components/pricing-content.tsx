@@ -199,15 +199,23 @@ export function PricingContent() {
                     <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
                       Start Free Trial
                     </Button>
+                    <p className="text-xs text-slate-400 text-center mt-2">
+                      Want more power? Lance Pro launches Sept 1, join now and be first in line.
+                    </p>
                   </CardContent>
                 </Card>
 
                 {/* Lance Pro - Most Popular */}
                 <Card className="relative border-blue-500 bg-slate-800/50 scale-105 flex flex-col h-full">
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  {/* <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-600 text-white px-4 py-1">
                       <Star className="w-4 h-4 mr-1" />
                       Most Popular
+                    </Badge>
+                  </div> */}
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
+                      Coming Sept 1
                     </Badge>
                   </div>
                   <CardHeader className="text-center">
@@ -215,11 +223,14 @@ export function PricingContent() {
                     <div className="text-3xl font-bold text-white">
                       $99<span className="text-lg text-slate-400">/month</span>
                     </div>
+                    <div className="text-sm text-purple-300 font-medium mt-1">
+                      Launching September 1
+                    </div>
                     <CardDescription className="text-slate-400">
                       High-earning freelancers
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      Automate follow-ups and protect your cash flow.
+                      For high-earning freelancers ready to automate their revenue.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -242,24 +253,32 @@ export function PricingContent() {
                         <span className="text-slate-300">Analytics dashboard</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white mt-auto">
-                      Start Free Trial
+                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
+                      Coming September 1
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Lance Studio */}
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-slate-600/20 text-slate-300 border border-slate-500/30 px-2 py-1 text-xs">
+                      Coming Soon
+                    </Badge>
+                  </div>
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Studio</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       From $199<span className="text-lg text-slate-400">/month</span>
                     </div>
+                    <div className="text-sm text-slate-300 font-medium mt-1">
+                      Coming soon
+                    </div>
                     <CardDescription className="text-slate-400">
                       Agencies, small studios
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      Built for teams that want to scale with confidence.
+                      For agencies and studios scaling their client ops.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -282,8 +301,8 @@ export function PricingContent() {
                         <span className="text-slate-300">Studio insights & ROI</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
-                      Contact Sales
+                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
+                      Coming Soon
                     </Button>
                   </CardContent>
                 </Card>
@@ -330,20 +349,20 @@ export function PricingContent() {
                         <span className="text-slate-300">Basic templates</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white">
-                      Start Free Trial
+                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
+                      Coming September 1
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Lance Pro Yearly - Most Popular */}
                 <Card className="relative border-blue-500 bg-slate-800/50 scale-105">
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  {/* <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-600 text-white px-4 py-1">
                       <Star className="w-4 h-4 mr-1" />
-                      Most Popular
+                      Most Popular 
                     </Badge>
-                  </div>
+                  </div> */}
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Pro</CardTitle>
                     <div className="text-3xl font-bold text-white">
@@ -384,8 +403,8 @@ export function PricingContent() {
                         <span className="text-slate-300">Analytics dashboard</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                      Start Free Trial
+                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
+                      Coming September 1
                     </Button>
                   </CardContent>
                 </Card>
@@ -432,8 +451,8 @@ export function PricingContent() {
                         <span className="text-slate-300">Studio insights & ROI</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white">
-                      Contact Sales
+                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
+                      Coming Soon
                     </Button>
                   </CardContent>
                 </Card>
