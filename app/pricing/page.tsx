@@ -173,6 +173,9 @@ export default function PricingPage() {
                     <CardDescription className="text-slate-400">
                       Solo freelancers
                     </CardDescription>
+                    <p className="text-sm text-blue-400 font-medium mt-2">
+                      Essential tools to get you paid, fast.
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -219,6 +222,9 @@ export default function PricingPage() {
                     <CardDescription className="text-slate-400">
                       High-earning freelancers
                     </CardDescription>
+                    <p className="text-sm text-blue-400 font-medium mt-2">
+                      Automate follow-ups and protect your cash flow.
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -236,7 +242,7 @@ export default function PricingPage() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Advanced templates</span>
+                        <span className="text-slate-300">Advanced AI personalized templates</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -263,6 +269,9 @@ export default function PricingPage() {
                     <CardDescription className="text-slate-400">
                       Agencies, small studios
                     </CardDescription>
+                    <p className="text-sm text-blue-400 font-medium mt-2">
+                      Built for teams that want to scale with confidence.
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -312,6 +321,9 @@ export default function PricingPage() {
                     <CardDescription className="text-slate-400">
                       Solo freelancers
                     </CardDescription>
+                    <p className="text-sm text-blue-400 font-medium mt-2">
+                      Essential tools to get you paid — fast.
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -359,6 +371,9 @@ export default function PricingPage() {
                     <CardDescription className="text-slate-400">
                       High-earning freelancers
                     </CardDescription>
+                    <p className="text-sm text-blue-400 font-medium mt-2">
+                      Automate follow-ups and protect your cash flow.
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -376,7 +391,7 @@ export default function PricingPage() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Advanced templates</span>
+                        <span className="text-slate-300">Advanced AI personalized templates</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -404,6 +419,9 @@ export default function PricingPage() {
                     <CardDescription className="text-slate-400">
                       Agencies, small studios
                     </CardDescription>
+                    <p className="text-sm text-blue-400 font-medium mt-2">
+                      Built for teams that want to scale with confidence.
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
