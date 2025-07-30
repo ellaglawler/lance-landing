@@ -62,8 +62,51 @@ function BetaCountdown() {
 }
 
 export function PricingContent() {
+  const [showStickyCTA, setShowStickyCTA] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowStickyCTA(scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Sticky Pricing CTA - Appears on scroll */}
+      <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 hidden md:block transition-all duration-300 ${showStickyCTA ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full px-6 py-3 shadow-2xl border border-orange-400/30">
+          <div className="flex items-center gap-4">
+            <div className="text-white font-semibold">
+              🔹 Founders Deal: $29/month
+            </div>
+            <div className="text-orange-100 text-sm">
+              322 spots left
+            </div>
+            <Button 
+              size="sm"
+              className="bg-white text-orange-600 hover:bg-orange-50 font-semibold"
+              onClick={() => document.getElementById('founders-cta')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Claim Now
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Floating Action Button */}
+      <div className={`fixed bottom-4 right-4 z-50 md:hidden transition-all duration-300 ${showStickyCTA ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <Button 
+          size="lg"
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-full shadow-2xl border border-orange-400/30 w-14 h-14 p-0"
+          onClick={() => document.getElementById('founders-cta')?.scrollIntoView({ behavior: 'smooth' })}
+        >
+          <span className="text-lg">🔹</span>
+        </Button>
+      </div>
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
@@ -82,6 +125,18 @@ export function PricingContent() {
               <br />
               For less than the price of one missed invoice, get peace of mind, time back, and your income on autopilot.
             </p>
+            
+            {/* Urgency Banner */}
+            <div className="mb-8 p-4 bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-xl border border-orange-500/30">
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                  <span className="text-orange-300 font-semibold">Limited Time:</span>
+                </div>
+                <span className="text-white font-medium">Founders Deal: $29/month for life</span>
+                <span className="text-orange-300 text-sm">322 spots remaining</span>
+              </div>
+            </div>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -101,7 +156,7 @@ export function PricingContent() {
       </section>
 
       {/* Early Adopter Offer */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-600/20 to-red-600/20 border-y border-orange-500/30">
+      <section id="founders-cta" className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-600/20 to-red-600/20 border-y border-orange-500/30">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-8 text-white">
             <div className="flex items-center justify-center mb-4">
@@ -175,6 +230,11 @@ export function PricingContent() {
                     <p className="text-xs text-orange-400 font-semibold mt-1">
                       Beta ends August 31, 2025
                     </p>
+                    <div className="mt-3 p-2 bg-orange-600/20 rounded-lg border border-orange-500/30">
+                      <p className="text-orange-300 text-xs font-medium">
+                        🔹 Upgrade to Founders Plan ($29/mo) to lock in lifetime pricing
+                      </p>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Beta features */}
@@ -198,6 +258,12 @@ export function PricingContent() {
                     </div>
                     <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
                       Start Free Trial
+                    </Button>
+                    <Button 
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white mt-2 font-semibold"
+                      onClick={() => document.getElementById('founders-cta')?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                      🔹 Lock in Founders Deal
                     </Button>
                     <p className="text-xs text-slate-400 text-center mt-2">
                       Want more power? Lance Pro launches Sept 1, join now and be first in line.

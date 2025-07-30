@@ -57,12 +57,22 @@ export const Header = () => {
             </Avatar>
           </div>
         ) : (
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10 hover:border-orange-400 transition-all"
+              onClick={() => router.push('/pricing')}
+            >
+              🔹 View Plans
+            </Button>
             <Button
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow"
               onClick={() => router.push('/onboarding/')}
             >
               Sign In / Sign Up
             </Button>
+          </div>
           )}
         </div>
       </div>

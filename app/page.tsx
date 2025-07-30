@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
 import {
-  CheckCircle,
   AlertCircle,
   Target,
   Clock,
@@ -15,7 +14,6 @@ import {
   Zap,
   Star,
   Cpu,
-  Receipt,
   DollarSign,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -28,6 +26,9 @@ import {
 import { WaitlistForm } from "@/components/waitlist-form"
 import type { Metadata } from 'next'
 import { HeroStats } from "../components/hero-stats"
+import { PricingPreviewSection } from "../components/pricing-preview-section"
+import { PainSectionCTA } from "../components/pain-section-cta"
+import { FinalCTASection } from "../components/final-cta-section"
 
 export const metadata: Metadata = {
   title: 'Lance - AI Collections Agent for Freelancers | Stop Chasing, Start Collecting',
@@ -246,18 +247,7 @@ export default function LanceLanding() {
         </div>
 
         {/* Pain Section Bottom CTA */}
-        <div className="container mx-auto px-4 md:px-6 relative mt-16">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="p-6 bg-red-600/10 rounded-2xl border border-red-500/20">
-              <p className="text-red-300 text-lg font-semibold mb-2">
-                Freelancers lose $9-12K per year to unpaid invoices
-              </p>
-              <p className="text-red-400 text-sm">
-                Don't let your hard work go unpaid. Let Lance help you recover what's yours.
-              </p>
-            </div>
-          </div>
-        </div>
+        <PainSectionCTA />
       </section>
 
       {/* Section Break */}
@@ -333,6 +323,7 @@ export default function LanceLanding() {
                       <div className="mt-6 p-4 bg-blue-600/10 rounded-lg border border-blue-500/20">
                         <p className="text-blue-300 text-sm italic">"Lance found 8 overdue invoices I had completely forgotten about!"</p>
                         <p className="text-blue-400 text-xs mt-1">— Sarah Chen, Freelance Designer</p>
+                        <p className="text-blue-400 text-xs mt-2 font-medium">Included in all plans — starting at $29/month during beta</p>
                       </div>
                     </div>
                   </div>
@@ -497,6 +488,7 @@ export default function LanceLanding() {
                       <div className="mt-6 p-4 bg-green-600/10 rounded-lg border border-green-500/20">
                         <p className="text-green-300 text-sm italic">"Lance recovered $12K in unpaid invoices within 2 weeks, that's a 40% lift!"</p>
                         <p className="text-green-400 text-xs mt-1">— Alex Rodriguez, Freelance Developer</p>
+                        <p className="text-green-400 text-xs mt-2 font-medium">Included in all plans — starting at $29/month during beta</p>
                       </div>
                     </div>
                   </div>
@@ -639,6 +631,7 @@ export default function LanceLanding() {
                       <div className="mt-6 p-4 bg-purple-600/10 rounded-lg border border-purple-500/20">
                         <p className="text-purple-300 text-sm italic">"I've recovered 23% more on-time payments since using Lance!"</p>
                         <p className="text-purple-400 text-xs mt-1">— Maria Santos, Freelance Consultant</p>
+                        <p className="text-purple-400 text-xs mt-2 font-medium">Included in all plans — starting at $29/month during beta</p>
                       </div>
                     </div>
                   </div>
@@ -776,6 +769,9 @@ export default function LanceLanding() {
         </div>
       </div>
 
+      {/* Pricing Preview Section - Mid-Funnel */}
+      <PricingPreviewSection />
+
       {/* Who It's For */}
       <section className="py-32 bg-primary-dark relative">
         {/* AI Chip Pattern */}
@@ -795,6 +791,7 @@ export default function LanceLanding() {
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
                    Designers, Copywriters, and Marketers
                 </p>
+                <p className="text-sm text-blue-400 mt-4">Included in all plans — starting at $29/month during beta</p>
               </div>
               <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
                 <div className="w-20 h-20 mx-auto mb-6 rounded-3xl gradient-primary flex items-center justify-center shadow-xl">
@@ -804,6 +801,7 @@ export default function LanceLanding() {
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
                    Developers, Web Designers and Consultants
                 </p>
+                <p className="text-sm text-blue-400 mt-4">Included in all plans — starting at $29/month during beta</p>
               </div>
               <div className="depth-card-dark rounded-3xl p-10 transform hover:scale-105 transition-all duration-300">
                 <div className="w-20 h-20 mx-auto mb-6 rounded-3xl gradient-primary flex items-center justify-center shadow-xl">
@@ -813,6 +811,7 @@ export default function LanceLanding() {
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
                    Videographers, Photographers, and Event Pros
                 </p>
+                <p className="text-sm text-blue-400 mt-4">Included in all plans — starting at $29/month during beta</p>
               </div>
             </div>
           </div>
@@ -890,30 +889,7 @@ export default function LanceLanding() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-32 bg-[#141828] relative">
-        {/* Invoice Checkoff Background */}
-        <div className="absolute inset-0">
-          <Receipt className="invoice-checkoff w-24 h-24 top-20 left-20" style={{ animationDelay: "0s" }} />
-          <Receipt className="invoice-checkoff w-20 h-20 top-40 right-32" style={{ animationDelay: "1s" }} />
-          <Receipt className="invoice-checkoff w-28 h-28 bottom-32 left-1/4" style={{ animationDelay: "2s" }} />
-          <Receipt className="invoice-checkoff w-16 h-16 bottom-20 right-20" style={{ animationDelay: "0.5s" }} />
-        </div>
-
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="mx-auto max-w-5xl text-center">
-            <h1 className="h1-hero mb-8 text-white">
-              Start Collecting Without the <span className="gradient-text">Awkward Conversations</span>
-            </h1>
-
-            <p className="text-xl mb-8" style={{ color: "#AEB6C4" }}>
-              Join hundreds of pioneering freelancers who've transformed their payment process with Lance.
-            </p>
-
-            {/* CTA Input */}
-            <WaitlistForm variant="cta" />
-          </div>
-        </div>
-      </section>
+      <FinalCTASection />
     </div>
   )
 }
