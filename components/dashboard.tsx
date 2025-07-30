@@ -22,6 +22,13 @@ import {
   ChevronUp,
   ChevronDown,
   FileText,
+  Crown,
+  Rocket,
+  Lock,
+  Star,
+  Check,
+  Sparkles,
+  Shield,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"

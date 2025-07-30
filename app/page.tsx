@@ -18,6 +18,11 @@ import {
   Cpu,
   Receipt,
   DollarSign,
+  Check,
+  Crown,
+  Rocket,
+  Lock,
+  Sparkles,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -821,6 +826,199 @@ export default function LanceLanding() {
                 <p className="text-lg" style={{ color: "#AEB6C4" }}>
                    Videographers, Photographers, and Event Pros
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Section */}
+      <section className="py-32 bg-primary-dark relative">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="mx-auto max-w-6xl text-center">
+            <h2 className="h2-section mb-4">Choose Your Revenue Recovery Plan</h2>
+            <p className="text-xl text-blue-400 font-semibold mb-16">Every plan includes our core recovery engine. Scale up as you grow.</p>
+
+            {/* Founders Plan Banner */}
+            <div className="mb-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-8 text-white relative overflow-hidden max-w-4xl mx-auto">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-4 justify-center">
+                  <Crown className="h-6 w-6" />
+                  <Rocket className="h-6 w-6" />
+                  <span className="text-xl font-bold">Founders Plan</span>
+                </div>
+                <div className="text-3xl font-bold mb-3">$29/month for life</div>
+                <div className="text-lg mb-6 opacity-90">For our first 500 users only, lock in this rate forever.</div>
+                
+                <div className="flex items-center justify-between mb-6 max-w-md mx-auto">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="h-4 w-4" />
+                    <span>322 spots remaining</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Lock className="h-4 w-4" />
+                    <span>No price increases. Ever.</span>
+                  </div>
+                </div>
+                
+                <Button className="w-full max-w-md bg-white text-red-600 hover:bg-gray-100 font-semibold py-4 rounded-xl transition-all duration-300 text-lg">
+                  Claim Founders Plan
+                </Button>
+                
+                <div className="text-sm mt-3 opacity-75">*Includes all Core features. Upgrade anytime.</div>
+              </div>
+            </div>
+
+            {/* Pricing Toggle */}
+            <div className="flex items-center justify-center mb-12">
+              <div className="bg-slate-700 rounded-lg p-1 flex">
+                <button className="px-6 py-3 bg-white text-slate-800 rounded-md font-medium text-sm">
+                  Monthly
+                </button>
+                <button className="px-6 py-3 text-slate-300 hover:text-white font-medium text-sm">
+                  Yearly Save 20%
+                </button>
+              </div>
+            </div>
+
+            {/* Pricing Cards */}
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* Lance Core */}
+              <div className="depth-card-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-300">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-white mb-3">Lance Core</h3>
+                  <div className="text-4xl font-bold text-white mb-2">$49</div>
+                  <div className="text-slate-400 text-lg">/month</div>
+                  <div className="text-slate-300 text-lg mt-3">Solo freelancers</div>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Smart follow-ups</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Weekly reports</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Proposal builder</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Email integration</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Basic templates</span>
+                  </div>
+                </div>
+                
+                <Button className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-4 rounded-xl transition-all duration-300 text-lg">
+                  Start Free Trial
+                </Button>
+              </div>
+
+              {/* Lance Pro */}
+              <div className="depth-card-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-300 relative">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="bg-blue-600 text-white text-sm px-4 py-2 rounded-full flex items-center gap-2">
+                    <Star className="h-4 w-4" />
+                    <span>Most Popular</span>
+                  </div>
+                </div>
+                
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-white mb-3">Lance Pro</h3>
+                  <div className="text-4xl font-bold text-white mb-2">$99</div>
+                  <div className="text-slate-400 text-lg">/month</div>
+                  <div className="text-slate-300 text-lg mt-3">High-earning freelancers</div>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Everything in Core</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Client risk scoring</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Slack/WhatsApp bot</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Advanced templates</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Priority support</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Analytics dashboard</span>
+                  </div>
+                </div>
+                
+                <Button className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-4 rounded-xl transition-all duration-300 text-lg">
+                  Start Free Trial
+                </Button>
+              </div>
+
+              {/* Lance Studio */}
+              <div className="depth-card-dark rounded-3xl p-8 transform hover:scale-105 transition-all duration-300">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-white mb-3">Lance Studio</h3>
+                  <div className="text-4xl font-bold text-white mb-2">From $199</div>
+                  <div className="text-slate-400 text-lg">/month</div>
+                  <div className="text-slate-300 text-lg mt-3">Agencies, small studios</div>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Everything in Pro</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Multi-user dashboard</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Shared inbox & workflows</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Dedicated support</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Concierge onboarding</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300 text-lg">Studio insights & ROI</span>
+                  </div>
+                </div>
+                
+                <Button className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-4 rounded-xl transition-all duration-300 text-lg">
+                  Contact Sales
+                </Button>
               </div>
             </div>
           </div>
