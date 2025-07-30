@@ -63,46 +63,73 @@ function BetaCountdown() {
 
 export function PricingContent() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="flex flex-col pt-24">
       {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8">
-            <Badge variant="secondary" className="mb-4">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Revenue Recovery Made Simple
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Stop chasing clients.
-              <br />
-              <span className="text-blue-400">Start collecting cash.</span>
-            </h1>
-            <p className="text-xl sm:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto">
-              <strong className="text-green-400">Lance recovers $500–$1,000/month</strong> in lost payments, automatically.
-              <br />
-              For less than the price of one missed invoice, get peace of mind, time back, and your income on autopilot.
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-              <Rocket className="w-5 h-5 mr-2" />
-              Start Free Trial
-            </Button>
+      <section className="relative py-32 flex items-center justify-center min-h-[80vh]">
+        {/* Wave Background - Main background that spans all sections */}
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/hero-wave-bg.png')",
+            zIndex: -1
+          }}
+        ></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="mx-auto max-w-6xl text-center">
+            <div className="mb-8">
+              <Badge variant="secondary" className="mb-4">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Revenue Recovery Made Simple
+              </Badge>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+                Stop chasing clients.
+                <br />
+                <span className="text-blue-400">Start collecting cash.</span>
+              </h1>
+              <p className="text-xl sm:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto">
+                <strong className="text-green-400">Lance recovers $500–$1,000/month</strong> in lost payments, automatically.
+                <br />
+                For less than the price of one missed invoice, get peace of mind, time back, and your income on autopilot.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+                <Rocket className="w-5 h-5 mr-2" />
+                Start Free Trial
+              </Button>
+              <p className="text-slate-400 text-sm">
+                No credit card required
+              </p>
+            </div>
+            
             <p className="text-slate-400 text-sm">
-              No credit card required
+              Join 500+ freelancers who've recovered over $250K using Lance.
             </p>
           </div>
-          
-          <p className="text-slate-400 text-sm">
-            Join 500+ freelancers who've recovered over $250K using Lance.
-          </p>
         </div>
       </section>
 
       {/* Early Adopter Offer */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-600/20 to-red-600/20 border-y border-orange-500/30">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-24">
+        {/* Top Curve */}
+        <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-1px)' }}>
+          <svg 
+            viewBox="0 0 1200 120" 
+            preserveAspectRatio="none" 
+            className="relative block w-full h-[60px]" 
+            style={{ transform: 'rotateX(180deg)' }}
+          >
+            <path 
+              d="M600,112C268.63,112,0,69.39,0,69.39V0H1200V69.39C1200,69.39,931.37,112,600,112Z" 
+              className="fill-[#0B0F19]"
+            ></path>
+          </svg>
+        </div>
+
+        <div className="absolute inset-0 bg-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-8 text-white">
             <div className="flex items-center justify-center mb-4">
               <Crown className="w-8 h-8 mr-3" />
@@ -128,12 +155,26 @@ export function PricingContent() {
               *Includes all Core features. Upgrade anytime.
             </p>
           </div>
+          </div>
         </div>
       </section>
 
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Pricing Tiers */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative py-24">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Choose Your Revenue Recovery Plan
@@ -161,19 +202,21 @@ export function PricingContent() {
                 {/* Lance Beta */}
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <BetaCountdown />
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-green-600/20 text-green-300 border border-green-500/30 px-2 py-1 text-xs">
+                      Beta
+                    </Badge>
+                  </div>
                   <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Beta, Free for Early Users</CardTitle>
+                    <CardTitle className="text-2xl text-white">Lance Beta</CardTitle>
                     <div className="text-3xl font-bold text-green-400">
-                      Free <span className="text-lg text-slate-400">(Beta)</span>
+                      $29.99<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
                       Early access freelancers
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      Recover your first $500+ with Lance, free during our limited-time beta. No credit card. Full access.
-                    </p>
-                    <p className="text-xs text-orange-400 font-semibold mt-1">
-                      Beta ends August 31, 2025
+                      Recover your first $500+ with Lance, free during our limited-time beta.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -199,20 +242,11 @@ export function PricingContent() {
                     <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
                       Start Free Trial
                     </Button>
-                    <p className="text-xs text-slate-400 text-center mt-2">
-                      Want more power? Lance Pro launches Sept 1, join now and be first in line.
-                    </p>
                   </CardContent>
                 </Card>
 
                 {/* Lance Pro - Most Popular */}
-                <Card className="relative border-blue-500 bg-slate-800/50 scale-105 flex flex-col h-full">
-                  {/* <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white px-4 py-1">
-                      <Star className="w-4 h-4 mr-1" />
-                      Most Popular
-                    </Badge>
-                  </div> */}
+                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
                       Coming Sept 1
@@ -222,9 +256,6 @@ export function PricingContent() {
                     <CardTitle className="text-2xl text-white">Lance Pro</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       $99<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <div className="text-sm text-purple-300 font-medium mt-1">
-                      Launching September 1
                     </div>
                     <CardDescription className="text-slate-400">
                       High-earning freelancers
@@ -271,9 +302,6 @@ export function PricingContent() {
                     <div className="text-3xl font-bold text-white">
                       From $199<span className="text-lg text-slate-400">/month</span>
                     </div>
-                    <div className="text-sm text-slate-300 font-medium mt-1">
-                      Coming soon
-                    </div>
                     <CardDescription className="text-slate-400">
                       Agencies, small studios
                     </CardDescription>
@@ -313,19 +341,15 @@ export function PricingContent() {
               <div className="grid md:grid-cols-3 gap-8">
                 {/* Lance Core Yearly */}
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                <div className="absolute top-4 right-4">
+                  <div className="absolute top-4 right-4">
                     <Badge className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-2 py-1 text-xs">
                       Coming Sept 1
                     </Badge>
                   </div>
-                <CardHeader className="text-center">
+                  <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Core</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       $39<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <div className="text-sm text-slate-400">$468 billed annually</div>
-                    <div className="text-sm text-blue-300 font-medium mt-1">
-                      Launching September 1
                     </div>
                     <CardDescription className="text-slate-400">
                       Solo freelancers
@@ -360,7 +384,7 @@ export function PricingContent() {
                 </Card>
 
                 {/* Lance Pro Yearly - Most Popular */}
-                <Card className="relative border-blue-500 bg-slate-800/50 scale-105 flex flex-col h-full">
+                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
                       Coming Sept 1
@@ -370,10 +394,6 @@ export function PricingContent() {
                     <CardTitle className="text-2xl text-white">Lance Pro</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       $79<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <div className="text-sm text-slate-400">$948 billed annually</div>
-                    <div className="text-sm text-purple-300 font-medium mt-1">
-                      Launching September 1
                     </div>
                     <CardDescription className="text-slate-400">
                       High-earning freelancers
@@ -420,10 +440,6 @@ export function PricingContent() {
                     <div className="text-3xl font-bold text-white">
                       From $159<span className="text-lg text-slate-400">/month</span>
                     </div>
-                    <div className="text-sm text-slate-400">$1,908 billed annually</div>
-                    <div className="text-sm text-slate-300 font-medium mt-1">
-                      Coming soon
-                    </div>
                     <CardDescription className="text-slate-400">
                       Agencies, small studios
                     </CardDescription>
@@ -459,12 +475,26 @@ export function PricingContent() {
               </div>
             </TabsContent>
           </Tabs>
+          </div>
         </div>
       </section>
 
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Value Justification - ROI Visual */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-800/30">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative py-24">
+        <div className="absolute inset-0 bg-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
               Lance isn't a tool. It's revenue insurance.
@@ -519,12 +549,26 @@ export function PricingContent() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Social Proof */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative py-24">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Trusted by 500+ freelancers
@@ -596,12 +640,26 @@ export function PricingContent() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
       {/* FAQ Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-800/30">
-        <div className="max-w-4xl mx-auto">
+      <section className="relative py-24">
+        <div className="absolute inset-0 bg-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Frequently Asked Questions
@@ -701,12 +759,26 @@ export function PricingContent() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          </div>
         </div>
       </section>
 
+      {/* Section Break */}
+      <div className="relative py-16">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+            <div className="w-3 h-3 rounded-full bg-blue-600/30"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Final CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-24">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19]"></div>
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
             Start collecting what you're owed.
           </h2>
@@ -728,6 +800,7 @@ export function PricingContent() {
           <p className="text-slate-400 text-sm mt-6">
             Join 500+ freelancers who've recovered over $250K using Lance.
           </p>
+          </div>
         </div>
       </section>
     </div>
