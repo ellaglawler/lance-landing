@@ -313,7 +313,12 @@ export function PricingContent() {
               <div className="grid md:grid-cols-3 gap-8">
                 {/* Lance Core Yearly */}
                 <Card className="relative border-slate-700 bg-slate-800/50">
-                  <CardHeader className="text-center">
+                <div className="absolute top-4 right-4">
+                    <Badge className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-2 py-1 text-xs">
+                      Coming Sept 1
+                    </Badge>
+                  </div>
+                <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Core</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       $39<span className="text-lg text-slate-400">/month</span>
@@ -330,7 +335,7 @@ export function PricingContent() {
                     <div className="space-y-3">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
+                        <span className="text-slate-300">Invoice chasing</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -338,15 +343,11 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal builder</span>
+                        <span className="text-slate-300">Proposal templates</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Email integration</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Basic templates</span>
+                        <span className="text-slate-300">Smart follow-ups</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -356,35 +357,34 @@ export function PricingContent() {
                 </Card>
 
                 {/* Lance Pro Yearly - Most Popular */}
-                <Card className="relative border-blue-500 bg-slate-800/50 scale-105">
-                  {/* <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white px-4 py-1">
-                      <Star className="w-4 h-4 mr-1" />
-                      Most Popular 
+                <Card className="relative border-blue-500 bg-slate-800/50 scale-105 flex flex-col h-full">
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
+                      Coming Sept 1
                     </Badge>
-                  </div> */}
+                  </div>
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Pro</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       $79<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <div className="text-sm text-slate-400">$948 billed annually</div>
+                    <div className="text-sm text-purple-300 font-medium mt-1">
+                      Launching September 1
+                    </div>
                     <CardDescription className="text-slate-400">
                       High-earning freelancers
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      Automate follow-ups and protect your cash flow.
+                      For high-earning freelancers ready to automate their revenue.
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
+                    {/* Lance Pro features */}
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Everything in Core</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
+                        <span className="text-slate-300">Everything in Beta</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -392,11 +392,7 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Advanced AI personalized templates</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Priority support</span>
+                        <span className="text-slate-300">Client risk scoring</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -410,37 +406,38 @@ export function PricingContent() {
                 </Card>
 
                 {/* Lance Studio Yearly */}
-                <Card className="relative border-slate-700 bg-slate-800/50">
+                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-slate-600/20 text-slate-300 border border-slate-500/30 px-2 py-1 text-xs">
+                      Coming Soon
+                    </Badge>
+                  </div>
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Studio</CardTitle>
                     <div className="text-3xl font-bold text-white">
                       From $159<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <div className="text-sm text-slate-400">$1,908 billed annually</div>
+                    <div className="text-sm text-slate-300 font-medium mt-1">
+                      Coming soon
+                    </div>
                     <CardDescription className="text-slate-400">
                       Agencies, small studios
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      Built for teams that want to scale with confidence.
+                      For agencies and studios scaling their client ops.
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
+                    {/* Lance Studio features */}
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
                         <span className="text-slate-300">Everything in Pro</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Multi-user dashboard</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
                         <span className="text-slate-300">Shared inbox & workflows</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Dedicated support</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
