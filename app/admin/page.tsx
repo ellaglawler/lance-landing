@@ -25,84 +25,30 @@ import {
   FileText,
   Zap
 } from 'lucide-react'
-
-interface SchedulerStatus {
-  scheduler_running: boolean
-  jobs: Array<{
-    id: string
-    name: string
-    next_run_time: string | null
-    trigger: string
-  }>
-  job_count: number
-}
-
-interface WebhookStatus {
-  webhook_setup: {
-    total_users: number
-    users_with_gmail: number
-    users_with_history_id: number
-    setup_percentage: number
-  }
-  activity: {
-    recent_activity_1h: number
-    daily_activity: number
-  }
-  health: {
-    status: string
-    last_check: string
-  }
-}
-
-interface User {
-  id: number
-  email: string
-  name: string
-  last_gmail_scan: string | null
-  gmail_history_id: string | null
-  gmail_access_token: boolean
-  gmail_refresh_token: boolean
-  created_at: string
-}
-
-interface UserDebugInfo {
-  user: User
-  invoice_stats: {
-    total_invoices: number
-    invoices_this_week: number
-    invoices_this_month: number
-  }
-  recent_errors: Array<{
-    id: number
-    message_id: string
-    reason: string
-    error_type: string | null
-    created_at: string
-  }>
-}
-
-interface ParsingError {
-  id: number
-  user_id: number | null
-  message_id: string
-  thread_id: string | null
-  reason: string
-  error_type: string | null
-  created_at: string
-  raw_content: string | null
-}
-
-interface ScanLog {
-  user_id: number
-  user_email: string
-  scan_timestamp: string
-  scan_type: string
-}
+import {
+  getSchedulerStatus,
+  getWebhookStatus,
+  searchUsers,
+  getParsingErrors,
+  getScanLogs,
+  startScheduler,
+  stopScheduler,
+  triggerAllUsersScan,
+  triggerUserScan,
+  registerGmailWatches,
+  getUserDebugInfo,
+  type SchedulerStatus,
+  type WebhookStatus,
+  type AdminUser,
+  type UserDebugInfo,
+  type ParsingError,
+  type ScanLog
+} from '@/lib/api'
 
 export default function AdminDashboard() {
   const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null)
   const [webhookStatus, setWebhookStatus] = useState<WebhookStatus | null>(null)
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<AdminUser[]>([])
   const [parsingErrors, setParsingErrors] = useState<ParsingError[]>([])
   const [scanLogs, setScanLogs] = useState<ScanLog[]>([])
   const [selectedUser, setSelectedUser] = useState<UserDebugInfo | null>(null)
@@ -110,8 +56,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
   const { toast } = useToast()
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
 
   useEffect(() => {
     loadDashboardData()
@@ -139,83 +83,63 @@ export default function AdminDashboard() {
   }
 
   const loadSchedulerStatus = async () => {
-    const response = await fetch(`${API_BASE}/admin/scheduler/status`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
+    try {
+      const data = await getSchedulerStatus()
       setSchedulerStatus(data)
+    } catch (error) {
+      console.error('Failed to load scheduler status:', error)
     }
   }
 
   const loadWebhookStatus = async () => {
-    const response = await fetch(`${API_BASE}/admin/webhook-status`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
+    try {
+      const data = await getWebhookStatus()
       setWebhookStatus(data)
+    } catch (error) {
+      console.error('Failed to load webhook status:', error)
     }
   }
 
   const loadUsers = async () => {
-    const response = await fetch(`${API_BASE}/admin/users/search`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
+    try {
+      const data = await searchUsers()
       setUsers(data)
+    } catch (error) {
+      console.error('Failed to load users:', error)
     }
   }
 
   const loadParsingErrors = async () => {
-    const response = await fetch(`${API_BASE}/admin/parsing-errors/?limit=50`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
+    try {
+      const data = await getParsingErrors({ limit: 50 })
       setParsingErrors(data)
+    } catch (error) {
+      console.error('Failed to load parsing errors:', error)
     }
   }
 
   const loadScanLogs = async () => {
-    const response = await fetch(`${API_BASE}/admin/scan-logs?limit=50`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
+    try {
+      const data = await getScanLogs({ limit: 50 })
       setScanLogs(data)
+    } catch (error) {
+      console.error('Failed to load scan logs:', error)
     }
   }
 
   const handleSchedulerAction = async (action: 'start' | 'stop') => {
     try {
-      const response = await fetch(`${API_BASE}/admin/scheduler/${action}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: `Scheduler ${action}ed successfully`
-        })
-        await loadSchedulerStatus()
+      if (action === 'start') {
+        await startScheduler()
       } else {
-        throw new Error('Failed to control scheduler')
+        await stopScheduler()
       }
+      
+      toast({
+        title: "Success",
+        description: `Scheduler ${action}ed successfully`
+      })
+      await loadSchedulerStatus()
     } catch (error) {
       toast({
         title: "Error",
@@ -228,26 +152,18 @@ export default function AdminDashboard() {
   const handleScanAction = async (type: 'all' | 'user', userId?: number) => {
     try {
       setScanning(true)
-      const url = type === 'all' 
-        ? `${API_BASE}/admin/scheduler/scan-all`
-        : `${API_BASE}/admin/scheduler/scan-user/${userId}`
       
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: `Scan triggered successfully`
-        })
-        await loadDashboardData()
-      } else {
-        throw new Error('Failed to trigger scan')
+      if (type === 'all') {
+        await triggerAllUsersScan()
+      } else if (userId) {
+        await triggerUserScan(userId)
       }
+      
+      toast({
+        title: "Success",
+        description: `Scan triggered successfully`
+      })
+      await loadDashboardData()
     } catch (error) {
       toast({
         title: "Error",
@@ -261,23 +177,12 @@ export default function AdminDashboard() {
 
   const handleRegisterWatches = async () => {
     try {
-      const response = await fetch(`${API_BASE}/admin/gmail/register-watches-all`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      const data = await registerGmailWatches()
+      toast({
+        title: "Success",
+        description: data.message
       })
-      
-      if (response.ok) {
-        const data = await response.json()
-        toast({
-          title: "Success",
-          description: data.message
-        })
-        await loadWebhookStatus()
-      } else {
-        throw new Error('Failed to register watches')
-      }
+      await loadWebhookStatus()
     } catch (error) {
       toast({
         title: "Error",
@@ -291,23 +196,15 @@ export default function AdminDashboard() {
     if (!searchEmail) return
     
     try {
-      const response = await fetch(`${API_BASE}/admin/users/search?email=${searchEmail}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        if (data.length > 0) {
-          await loadUserDebugInfo(data[0].id)
-        } else {
-          toast({
-            title: "Not Found",
-            description: "No user found with that email",
-            variant: "destructive"
-          })
-        }
+      const data = await searchUsers({ email: searchEmail })
+      if (data.length > 0) {
+        await loadUserDebugInfo(data[0].id)
+      } else {
+        toast({
+          title: "Not Found",
+          description: "No user found with that email",
+          variant: "destructive"
+        })
       }
     } catch (error) {
       toast({
@@ -320,16 +217,8 @@ export default function AdminDashboard() {
 
   const loadUserDebugInfo = async (userId: number) => {
     try {
-      const response = await fetch(`${API_BASE}/admin/users/${userId}/debug`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setSelectedUser(data)
-      }
+      const data = await getUserDebugInfo(userId)
+      setSelectedUser(data)
     } catch (error) {
       toast({
         title: "Error",
@@ -367,7 +256,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminGuard>
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-6 pt-32">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>

@@ -21,7 +21,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
 
   const checkAdminStatus = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('jwt')
       if (!token) {
         setIsAdmin(false)
         setLoading(false)
