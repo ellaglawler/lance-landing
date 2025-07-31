@@ -5,12 +5,13 @@ import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { useRouter } from 'next/navigation'
 import { useAuth } from './auth-context';
-import { Settings } from 'lucide-react'
+import { Shield } from 'lucide-react'
 
 export const Header = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth()
   const router = useRouter();
-
+  
+  
   // Time-based greeting
   let greeting = 'Good Morning';
   if (typeof window !== 'undefined') {
@@ -35,18 +36,14 @@ export const Header = () => {
         )}
         <div className="flex items-center gap-8">
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center">
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/admin" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Admin
+            </Link>
           </nav>
           {isAuthenticated ? (
           <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
             <Avatar 
               className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
               onClick={() => router.push('/profile')}

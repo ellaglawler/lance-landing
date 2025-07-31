@@ -272,6 +272,148 @@ export async function getActivityTimeline(days: number = 7): Promise<ActivityTim
   return res.data;
 }
 
+// Admin API functions
+export interface SchedulerStatus {
+  scheduler_running: boolean;
+  jobs: Array<{
+    id: string;
+    name: string;
+    next_run_time: string | null;
+    trigger: string;
+  }>;
+  job_count: number;
+}
+
+export interface WebhookStatus {
+  webhook_setup: {
+    total_users: number;
+    users_with_gmail: number;
+    users_with_history_id: number;
+    setup_percentage: number;
+  };
+  activity: {
+    recent_activity_1h: number;
+    daily_activity: number;
+  };
+  health: {
+    status: string;
+    last_check: string;
+  };
+}
+
+export interface AdminUser {
+  id: number;
+  email: string;
+  name: string;
+  last_gmail_scan: string | null;
+  gmail_history_id: string | null;
+  gmail_access_token: boolean;
+  gmail_refresh_token: boolean;
+  created_at: string;
+}
+
+export interface UserDebugInfo {
+  user: AdminUser;
+  invoice_stats: {
+    total_invoices: number;
+    invoices_this_week: number;
+    invoices_this_month: number;
+  };
+  recent_errors: Array<{
+    id: number;
+    message_id: string;
+    reason: string;
+    error_type: string | null;
+    created_at: string;
+  }>;
+}
+
+export interface ParsingError {
+  id: number;
+  user_id: number | null;
+  message_id: string;
+  thread_id: string | null;
+  reason: string;
+  error_type: string | null;
+  created_at: string;
+  raw_content: string | null;
+}
+
+export interface ScanLog {
+  user_id: number;
+  user_email: string;
+  scan_timestamp: string;
+  scan_type: string;
+}
+
+// Get scheduler status
+export async function getSchedulerStatus(): Promise<SchedulerStatus> {
+  const res = await api.get('/admin/scheduler/status');
+  return res.data;
+}
+
+// Start scheduler
+export async function startScheduler(): Promise<{ status: string; message: string }> {
+  const res = await api.post('/admin/scheduler/start');
+  return res.data;
+}
+
+// Stop scheduler
+export async function stopScheduler(): Promise<{ status: string; message: string }> {
+  const res = await api.post('/admin/scheduler/stop');
+  return res.data;
+}
+
+// Get webhook status
+export async function getWebhookStatus(): Promise<WebhookStatus> {
+  const res = await api.get('/admin/webhook-status');
+  return res.data;
+}
+
+// Search users
+export async function searchUsers(params?: { email?: string; limit?: number }): Promise<AdminUser[]> {
+  const res = await api.get('/admin/users/search', { params });
+  return res.data;
+}
+
+// Get user debug info
+export async function getUserDebugInfo(userId: number): Promise<UserDebugInfo> {
+  const res = await api.get(`/admin/users/${userId}/debug`);
+  return res.data;
+}
+
+// Get parsing errors
+export async function getParsingErrors(params?: { user_id?: number; error_type?: string; limit?: number }): Promise<ParsingError[]> {
+  const res = await api.get('/admin/parsing-errors/', { params });
+  return res.data;
+}
+
+// Get scan logs
+export async function getScanLogs(params?: { user_id?: number; limit?: number }): Promise<ScanLog[]> {
+  const res = await api.get('/admin/scan-logs', { params });
+  return res.data;
+}
+
+// Trigger scan for all users
+export async function triggerAllUsersScan(): Promise<{ status: string; message: string }> {
+  const res = await api.post('/admin/scheduler/scan-all');
+  return res.data;
+}
+
+// Trigger scan for specific user
+export async function triggerUserScan(userId: number, frequencyHours?: number): Promise<{ status: string; message: string; periodic_scan_setup?: boolean }> {
+  const res = await api.post(`/admin/scheduler/scan-user/${userId}`, null, {
+    params: frequencyHours ? { frequency_hours: frequencyHours } : {}
+  });
+  return res.data;
+}
+
+// Register Gmail watches for all users
+export async function registerGmailWatches(): Promise<{ message: string; results: Array<{ user_id: number; email: string; status: string; history_id?: string; error?: string }> }> {
+  const res = await api.post('/admin/gmail/register-watches-all');
+  return res.data;
+}
+
 // Stripe Subscription API functions
 export interface StripeCheckoutSession {
   id: string;
