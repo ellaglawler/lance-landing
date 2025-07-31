@@ -158,7 +158,7 @@ export default function LanceLanding() {
                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
               </div>
-              <span className="text-sm text-gray-400">We are just getting started, join our small group of 100+ freelancers getting paid 2x faster.</span>
+              <span className="text-sm text-gray-400">We are just getting started, join our group of 500+ freelancers getting paid 2x faster.</span>
             </div>
 
             {/* Enhanced Stats with Visual Hierarchy */}
