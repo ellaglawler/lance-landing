@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,6 +57,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   useEffect(() => {
     loadDashboardData()
@@ -71,7 +73,16 @@ export default function AdminDashboard() {
         loadParsingErrors(),
         loadScanLogs()
       ])
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to access the admin dashboard",
+          variant: "destructive"
+        })
+        router.push('/dashboard')
+        return
+      }
       toast({
         title: "Error",
         description: "Failed to load dashboard data",

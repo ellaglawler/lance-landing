@@ -5,39 +5,13 @@ import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { useRouter } from 'next/navigation'
 import { useAuth } from './auth-context';
-import { Settings, Shield } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Shield } from 'lucide-react'
 
 export const Header = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth()
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Check admin status
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!isAuthenticated) return;
-      
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'}/admin/scheduler/status`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        setIsAdmin(response.status !== 403);
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [isAuthenticated]);
-
+  
+  
   // Time-based greeting
   let greeting = 'Good Morning';
   if (typeof window !== 'undefined') {
@@ -63,15 +37,10 @@ export const Header = () => {
         <div className="flex items-center gap-8">
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
-              Pricing
+            <Link href="/admin" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Admin
             </Link>
-            {isAdmin && (
-              <Link href="/admin" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Admin
-              </Link>
-            )}
           </nav>
           {isAuthenticated ? (
           <div className="flex items-center gap-4">
