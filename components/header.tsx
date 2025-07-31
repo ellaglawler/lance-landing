@@ -75,14 +75,6 @@ export const Header = () => {
           </nav>
           {isAuthenticated ? (
           <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
             <Avatar 
               className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
               onClick={() => router.push('/profile')}
