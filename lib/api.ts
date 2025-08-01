@@ -475,6 +475,20 @@ export async function getCheckoutSession(sessionId: string): Promise<any> {
 }
 
 // Test Invoice Generator API functions
+export interface InvoiceResponse {
+  id: number;
+  client_name: string;
+  client_email: string | null;
+  amount: number;
+  due_date: string | null;
+  days_overdue: number;
+  is_overdue: boolean;
+  subject: string | null;
+  detected_at: string;
+  is_cloud_invoice: boolean;
+  cloud_invoice_link: string | null;
+}
+
 export interface TestInvoiceRequest {
   scenario: 'due' | 'past-due' | 'paid' | 'all';
   count: number;
@@ -536,6 +550,19 @@ export async function setUserAdminStatus(userId: number, isAdmin: boolean): Prom
   const res = await api.post('/admin/users/set-admin', {
     user_id: userId,
     is_admin: isAdmin
+  });
+  return res.data;
+}
+
+export async function getUserInvoices(userId: number, params?: {
+  status?: string;
+  limit?: number;
+}): Promise<InvoiceResponse[]> {
+  const res = await api.get(`/admin/users/${userId}/invoices`, {
+    params: {
+      status: params?.status || 'all',
+      limit: params?.limit || 50
+    }
   });
   return res.data;
 }

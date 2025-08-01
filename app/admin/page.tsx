@@ -41,12 +41,14 @@ import {
   registerGmailWatches,
   getUserDebugInfo,
   setUserAdminStatus,
+  getUserInvoices,
   type SchedulerStatus,
   type WebhookStatus,
   type AdminUser,
   type UserDebugInfo,
   type ParsingError,
-  type ScanLog
+  type ScanLog,
+  type InvoiceResponse
 } from '@/lib/api'
 
 export default function AdminDashboard() {
@@ -56,6 +58,7 @@ export default function AdminDashboard() {
   const [parsingErrors, setParsingErrors] = useState<ParsingError[]>([])
   const [scanLogs, setScanLogs] = useState<ScanLog[]>([])
   const [selectedUser, setSelectedUser] = useState<UserDebugInfo | null>(null)
+  const [selectedUserInvoices, setSelectedUserInvoices] = useState<InvoiceResponse[]>([])
   const [searchEmail, setSearchEmail] = useState('')
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
@@ -233,6 +236,7 @@ export default function AdminDashboard() {
     try {
       const data = await getUserDebugInfo(userId)
       setSelectedUser(data)
+      await loadUserInvoices(userId)
     } catch (error) {
       toast({
         title: "Error",
@@ -259,8 +263,28 @@ export default function AdminDashboard() {
     }
   }
 
+  const loadUserInvoices = async (userId: number) => {
+    try {
+      const data = await getUserInvoices(userId, { limit: 100 })
+      setSelectedUserInvoices(data)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load user invoices",
+        variant: "destructive"
+      })
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString()
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
   }
 
   const getStatusBadge = (status: string) => {
@@ -565,6 +589,7 @@ export default function AdminDashboard() {
                       <TableHead>Gmail Status</TableHead>
                       <TableHead>Webhook</TableHead>
                       <TableHead>Admin</TableHead>
+                      <TableHead>Invoices</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -607,6 +632,20 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-medium">
+                              {selectedUser?.user.id === user.id ? selectedUser.invoice_stats.total_invoices : '?'}
+                            </span>
+                            <Button 
+                              onClick={() => loadUserDebugInfo(user.id)}
+                              size="sm"
+                              variant="outline"
+                            >
+                              View
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <Button 
                             onClick={() => handleScanAction('user', user.id)}
                             size="sm"
@@ -622,6 +661,68 @@ export default function AdminDashboard() {
                 </Table>
               </CardContent>
             </Card>
+
+            {/* Selected User Invoices */}
+            {selectedUser && selectedUserInvoices.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Invoices for {selectedUser.user.email}</CardTitle>
+                  <CardDescription>
+                    {selectedUserInvoices.length} invoices found
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Due Date</TableHead>
+                        <TableHead>Detected</TableHead>
+                        <TableHead>Subject</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedUserInvoices.map((invoice) => (
+                        <TableRow key={invoice.id}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{invoice.client_name}</div>
+                              {invoice.client_email && (
+                                <div className="text-sm text-muted-foreground">{invoice.client_email}</div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-medium">{formatCurrency(invoice.amount)}</div>
+                            {invoice.days_overdue > 0 && (
+                              <div className="text-sm text-red-600">
+                                {invoice.days_overdue} days overdue
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.is_overdue ? (
+                              <Badge variant="destructive">Overdue</Badge>
+                            ) : (
+                              <Badge variant="default" className="bg-green-500">Paid</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.due_date ? formatDate(invoice.due_date) : 'No due date'}
+                          </TableCell>
+                          <TableCell>{formatDate(invoice.detected_at)}</TableCell>
+                          <TableCell className="max-w-xs truncate">
+                            {invoice.subject || 'No subject'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="test-invoices" className="space-y-6">
