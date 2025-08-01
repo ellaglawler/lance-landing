@@ -589,13 +589,6 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="test-invoices" className="space-y-6">
-            <div className="flex items-center gap-2 mb-6">
-              <TestTube className="w-6 h-6" />
-              <div>
-                <h2 className="text-2xl font-bold">Test Invoice Generator</h2>
-                <p className="text-muted-foreground">Generate simulated invoice emails for testing the webhook pipeline</p>
-              </div>
-            </div>
             <TestInvoiceGenerator />
           </TabsContent>
 

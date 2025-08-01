@@ -52,9 +52,6 @@ export default function TestInvoiceGenerator() {
     if (!formData.send_to) {
       return 'Send To email is required'
     }
-    if (!formData.send_to.endsWith('@gmail.com')) {
-      return 'Send To email must be a Gmail address'
-    }
     if (formData.count < 1 || formData.count > 50) {
       return 'Count must be between 1 and 50'
     }
@@ -191,7 +188,7 @@ export default function TestInvoiceGenerator() {
             Generate Test Invoices
           </CardTitle>
           <CardDescription>
-            Create simulated invoice emails to test the webhook-to-database flow
+            Create simulated invoice emails to test the invoice extraction flow
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -245,11 +242,10 @@ export default function TestInvoiceGenerator() {
               type="email"
               value={formData.send_to}
               onChange={(e) => setFormData(prev => ({ ...prev, send_to: e.target.value }))}
-              placeholder="test@gmail.com"
-              className={!formData.send_to.endsWith('@gmail.com') && formData.send_to ? 'border-red-500' : ''}
+              placeholder="test@example.com"
             />
-            {!formData.send_to.endsWith('@gmail.com') && formData.send_to && (
-              <p className="text-sm text-red-500">Email must be a Gmail address</p>
+            {formData.send_to && !formData.send_to.endsWith('@gmail.com') && (
+              <p className="text-sm text-yellow-600">💡 Tip: Gmail addresses work best for testing webhook flows</p>
             )}
           </div>
 
