@@ -948,9 +948,9 @@ Regards`
                     <Circle className="h-3 w-3 text-blue-400" />
                     <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
                     <Button
-                      size="sm"
                       variant="outline"
-                      className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white font-semibold px-4 py-1"
+                      size="sm"
+                      className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
                       onClick={(e) => {
                         e.stopPropagation() // Prevent row click when button is clicked
                         const el = document.getElementById(`invoice-${inv.id}`)
@@ -961,7 +961,8 @@ Regards`
                         }
                       }}
                     >
-                      View
+                      <span className="hidden sm:inline">View Details</span>
+                      <span className="sm:hidden">View</span>
                     </Button>
                   </li>
                 ))}
