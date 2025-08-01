@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import AdminGuard from '@/components/admin-guard'
+import TestInvoiceGenerator from '@/components/test-invoice-generator'
 import { 
   Play, 
   Square, 
@@ -24,7 +25,8 @@ import {
   Activity,
   Settings,
   FileText,
-  Zap
+  Zap,
+  TestTube
 } from 'lucide-react'
 import {
   getSchedulerStatus,
@@ -38,12 +40,15 @@ import {
   triggerUserScan,
   registerGmailWatches,
   getUserDebugInfo,
+  setUserAdminStatus,
+  getUserInvoices,
   type SchedulerStatus,
   type WebhookStatus,
   type AdminUser,
   type UserDebugInfo,
   type ParsingError,
-  type ScanLog
+  type ScanLog,
+  type InvoiceResponse
 } from '@/lib/api'
 
 export default function AdminDashboard() {
@@ -53,6 +58,7 @@ export default function AdminDashboard() {
   const [parsingErrors, setParsingErrors] = useState<ParsingError[]>([])
   const [scanLogs, setScanLogs] = useState<ScanLog[]>([])
   const [selectedUser, setSelectedUser] = useState<UserDebugInfo | null>(null)
+  const [selectedUserInvoices, setSelectedUserInvoices] = useState<InvoiceResponse[]>([])
   const [searchEmail, setSearchEmail] = useState('')
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
@@ -230,6 +236,7 @@ export default function AdminDashboard() {
     try {
       const data = await getUserDebugInfo(userId)
       setSelectedUser(data)
+      await loadUserInvoices(userId)
     } catch (error) {
       toast({
         title: "Error",
@@ -239,8 +246,45 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleSetAdminStatus = async (userId: number, isAdmin: boolean) => {
+    try {
+      await setUserAdminStatus(userId, isAdmin)
+      toast({
+        title: "Success",
+        description: `User ${isAdmin ? 'promoted to' : 'removed from'} admin`
+      })
+      await loadUsers() // Refresh the users list
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to update admin status",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const loadUserInvoices = async (userId: number) => {
+    try {
+      const data = await getUserInvoices(userId, { limit: 100 })
+      setSelectedUserInvoices(data)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load user invoices",
+        variant: "destructive"
+      })
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString()
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
   }
 
   const getStatusBadge = (status: string) => {
@@ -285,6 +329,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="scheduler">Scheduler</TabsTrigger>
             <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="test-invoices">Test Invoices</TabsTrigger>
             <TabsTrigger value="errors">Error Logs</TabsTrigger>
             <TabsTrigger value="scans">Scan Logs</TabsTrigger>
           </TabsList>
@@ -377,6 +422,19 @@ export default function AdminDashboard() {
                     >
                       <Zap className="w-4 h-4 mr-2" />
                       Scan All Users
+                    </Button>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={() => {
+                        const tabsList = document.querySelector('[role="tablist"]') as HTMLElement
+                        const testInvoicesTab = tabsList?.querySelector('[value="test-invoices"]') as HTMLElement
+                        testInvoicesTab?.click()
+                      }}
+                      variant="outline"
+                    >
+                      <TestTube className="w-4 h-4 mr-2" />
+                      Generate Test Invoices
                     </Button>
                   </div>
                   <Button 
@@ -530,6 +588,8 @@ export default function AdminDashboard() {
                       <TableHead>Last Scan</TableHead>
                       <TableHead>Gmail Status</TableHead>
                       <TableHead>Webhook</TableHead>
+                      <TableHead>Admin</TableHead>
+                      <TableHead>Invoices</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -555,6 +615,37 @@ export default function AdminDashboard() {
                           )}
                         </TableCell>
                         <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {user.is_admin ? (
+                              <Badge variant="default" className="bg-purple-500">Admin</Badge>
+                            ) : (
+                              <Badge variant="secondary">User</Badge>
+                            )}
+                            <Button 
+                              onClick={() => handleSetAdminStatus(user.id, !user.is_admin)}
+                              size="sm"
+                              variant="outline"
+                              className="ml-2"
+                            >
+                              {user.is_admin ? 'Remove' : 'Make'} Admin
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-medium">
+                              {selectedUser?.user.id === user.id ? selectedUser.invoice_stats.total_invoices : '?'}
+                            </span>
+                            <Button 
+                              onClick={() => loadUserDebugInfo(user.id)}
+                              size="sm"
+                              variant="outline"
+                            >
+                              View
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <Button 
                             onClick={() => handleScanAction('user', user.id)}
                             size="sm"
@@ -570,6 +661,72 @@ export default function AdminDashboard() {
                 </Table>
               </CardContent>
             </Card>
+
+            {/* Selected User Invoices */}
+            {selectedUser && selectedUserInvoices.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Invoices for {selectedUser.user.email}</CardTitle>
+                  <CardDescription>
+                    {selectedUserInvoices.length} invoices found
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Due Date</TableHead>
+                        <TableHead>Detected</TableHead>
+                        <TableHead>Subject</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedUserInvoices.map((invoice) => (
+                        <TableRow key={invoice.id}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{invoice.client_name}</div>
+                              {invoice.client_email && (
+                                <div className="text-sm text-muted-foreground">{invoice.client_email}</div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-medium">{formatCurrency(invoice.amount)}</div>
+                            {invoice.days_overdue > 0 && (
+                              <div className="text-sm text-red-600">
+                                {invoice.days_overdue} days overdue
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.is_overdue ? (
+                              <Badge variant="destructive">Overdue</Badge>
+                            ) : (
+                              <Badge variant="default" className="bg-green-500">Paid</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.due_date ? formatDate(invoice.due_date) : 'No due date'}
+                          </TableCell>
+                          <TableCell>{formatDate(invoice.detected_at)}</TableCell>
+                          <TableCell className="max-w-xs truncate">
+                            {invoice.subject || 'No subject'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="test-invoices" className="space-y-6">
+            <TestInvoiceGenerator />
           </TabsContent>
 
           <TabsContent value="errors" className="space-y-6">
