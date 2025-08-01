@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const parsedUser = JSON.parse(storedUser);
       console.log('AuthContext: Loading user from localStorage', { 
         storedUser: parsedUser,
-        is_admin: parsedUser?.is_admin 
+        is_admin: parsedUser?.is_admin // This is not a security risk because it is not used to determine access to any resources.
       });
       setUser(parsedUser);
     }
