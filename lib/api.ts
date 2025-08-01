@@ -507,6 +507,13 @@ export interface TestInvoiceJobStatus {
   started_at?: string;
   ended_at?: string;
   error?: string;
+  debug?: {
+    redis_status: string;
+    queue_length: number | string;
+    worker_count: number | string;
+    queue_name: string;
+    job_position?: number | string;
+  };
 }
 
 export async function generateTestInvoices(request: TestInvoiceRequest): Promise<TestInvoiceResponse> {
