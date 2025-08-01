@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import AdminGuard from '@/components/admin-guard'
+import TestInvoiceGenerator from '@/components/test-invoice-generator'
 import { 
   Play, 
   Square, 
@@ -24,7 +25,8 @@ import {
   Activity,
   Settings,
   FileText,
-  Zap
+  Zap,
+  TestTube
 } from 'lucide-react'
 import {
   getSchedulerStatus,
@@ -285,6 +287,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="scheduler">Scheduler</TabsTrigger>
             <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="test-invoices">Test Invoices</TabsTrigger>
             <TabsTrigger value="errors">Error Logs</TabsTrigger>
             <TabsTrigger value="scans">Scan Logs</TabsTrigger>
           </TabsList>
@@ -377,6 +380,19 @@ export default function AdminDashboard() {
                     >
                       <Zap className="w-4 h-4 mr-2" />
                       Scan All Users
+                    </Button>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={() => {
+                        const tabsList = document.querySelector('[role="tablist"]') as HTMLElement
+                        const testInvoicesTab = tabsList?.querySelector('[value="test-invoices"]') as HTMLElement
+                        testInvoicesTab?.click()
+                      }}
+                      variant="outline"
+                    >
+                      <TestTube className="w-4 h-4 mr-2" />
+                      Generate Test Invoices
                     </Button>
                   </div>
                   <Button 
@@ -570,6 +586,17 @@ export default function AdminDashboard() {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="test-invoices" className="space-y-6">
+            <div className="flex items-center gap-2 mb-6">
+              <TestTube className="w-6 h-6" />
+              <div>
+                <h2 className="text-2xl font-bold">Test Invoice Generator</h2>
+                <p className="text-muted-foreground">Generate simulated invoice emails for testing the webhook pipeline</p>
+              </div>
+            </div>
+            <TestInvoiceGenerator />
           </TabsContent>
 
           <TabsContent value="errors" className="space-y-6">

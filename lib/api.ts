@@ -472,3 +472,49 @@ export async function getCheckoutSession(sessionId: string): Promise<any> {
   const res = await api.get(`/stripe/checkout-session/${sessionId}`);
   return res.data;
 }
+
+// Test Invoice Generator API functions
+export interface TestInvoiceRequest {
+  scenario: 'due' | 'past-due' | 'paid' | 'all';
+  count: number;
+  client?: string;
+  send_to: string;
+}
+
+export interface TestInvoiceResponse {
+  status: string;
+  job_id: string;
+  message?: string;
+}
+
+export interface TestInvoiceJobStatus {
+  job_id: string;
+  status: 'queued' | 'started' | 'finished' | 'failed' | 'error';
+  result?: {
+    total_sent: number;
+    errors: string[];
+    sent_emails: Array<{
+      scenario: string;
+      client: string;
+      send_to: string;
+      subject: string;
+      amount: number;
+      gmail_message_id: string;
+      sent_at: string;
+    }>;
+  };
+  enqueued_at?: string;
+  started_at?: string;
+  ended_at?: string;
+  error?: string;
+}
+
+export async function generateTestInvoices(request: TestInvoiceRequest): Promise<TestInvoiceResponse> {
+  const res = await api.post('/admin/generate-test-invoices', request);
+  return res.data;
+}
+
+export async function getTestInvoiceJobStatus(jobId: string): Promise<TestInvoiceJobStatus> {
+  const res = await api.get(`/admin/test-invoice-job-status?job_id=${jobId}`);
+  return res.data;
+}
