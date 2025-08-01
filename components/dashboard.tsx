@@ -22,13 +22,6 @@ import {
   ChevronUp,
   ChevronDown,
   FileText,
-  Crown,
-  Rocket,
-  Lock,
-  Star,
-  Check,
-  Sparkles,
-  Shield,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -1165,7 +1158,7 @@ Regards`
                 </div>
 
                 {/* Activity summary */}
-                <div className="mt-8 flex items-center justify-center gap-6 text-xs">
+                <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center sm:justify-center gap-3 sm:gap-6 text-xs">
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                     <span className="text-slate-400">Follow-ups</span>
@@ -1264,7 +1257,8 @@ Regards`
                 }}
               >
                 <Zap className="h-4 w-4 mr-2" />
-                Approve All Reminders ({allInvoices.filter(inv => inv.status === "overdue").length})
+                <span className="hidden sm:inline">Approve All Reminders</span>
+                <span className="sm:hidden">Approve All</span> ({allInvoices.filter(inv => inv.status === "overdue").length})
               </Button>
             </div>
           </CardHeader>
@@ -1423,7 +1417,8 @@ Regards`
                           onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
                           className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
                         >
-                          View Details
+                          <span className="hidden sm:inline">View Details</span>
+                          <span className="sm:hidden">View</span>
                         </Button>
                       </div>
                     </div>
