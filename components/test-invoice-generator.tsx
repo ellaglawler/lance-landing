@@ -244,9 +244,6 @@ export default function TestInvoiceGenerator() {
               onChange={(e) => setFormData(prev => ({ ...prev, send_to: e.target.value }))}
               placeholder="test@example.com"
             />
-            {formData.send_to && !formData.send_to.endsWith('@gmail.com') && (
-              <p className="text-sm text-yellow-600">💡 Tip: Gmail addresses work best for testing webhook flows</p>
-            )}
           </div>
 
           <Button 
