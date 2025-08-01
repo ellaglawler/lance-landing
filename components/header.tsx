@@ -8,7 +8,7 @@ import { useAuth } from './auth-context';
 import { Shield } from 'lucide-react'
 
 export const Header = () => {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, isAdmin, logout } = useAuth()
   const router = useRouter();
   
   
@@ -37,10 +37,17 @@ export const Header = () => {
         <div className="flex items-center gap-8">
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/admin" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Admin
-            </Link>
+            {isAuthenticated && (
+              <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+                Dashboard
+              </Link>
+            )}
+            {isAdmin && (
+              <Link href="/admin" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
           </nav>
           {isAuthenticated ? (
           <div className="flex items-center gap-4">
