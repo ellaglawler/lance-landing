@@ -309,6 +309,7 @@ export interface AdminUser {
   gmail_history_id: string | null;
   gmail_access_token: boolean;
   gmail_refresh_token: boolean;
+  is_admin: boolean;
   created_at: string;
 }
 
@@ -523,5 +524,18 @@ export async function generateTestInvoices(request: TestInvoiceRequest): Promise
 
 export async function getTestInvoiceJobStatus(jobId: string): Promise<TestInvoiceJobStatus> {
   const res = await api.get(`/admin/test-invoice-job-status?job_id=${jobId}`);
+  return res.data;
+}
+
+export async function setUserAdminStatus(userId: number, isAdmin: boolean): Promise<{
+  message: string;
+  user_id: number;
+  email: string;
+  is_admin: boolean;
+}> {
+  const res = await api.post('/admin/users/set-admin', {
+    user_id: userId,
+    is_admin: isAdmin
+  });
   return res.data;
 }

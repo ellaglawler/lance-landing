@@ -40,6 +40,7 @@ import {
   triggerUserScan,
   registerGmailWatches,
   getUserDebugInfo,
+  setUserAdminStatus,
   type SchedulerStatus,
   type WebhookStatus,
   type AdminUser,
@@ -236,6 +237,23 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to load user debug info",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleSetAdminStatus = async (userId: number, isAdmin: boolean) => {
+    try {
+      await setUserAdminStatus(userId, isAdmin)
+      toast({
+        title: "Success",
+        description: `User ${isAdmin ? 'promoted to' : 'removed from'} admin`
+      })
+      await loadUsers() // Refresh the users list
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to update admin status",
         variant: "destructive"
       })
     }
@@ -546,6 +564,7 @@ export default function AdminDashboard() {
                       <TableHead>Last Scan</TableHead>
                       <TableHead>Gmail Status</TableHead>
                       <TableHead>Webhook</TableHead>
+                      <TableHead>Admin</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -569,6 +588,23 @@ export default function AdminDashboard() {
                           ) : (
                             <Badge variant="secondary">Inactive</Badge>
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {user.is_admin ? (
+                              <Badge variant="default" className="bg-purple-500">Admin</Badge>
+                            ) : (
+                              <Badge variant="secondary">User</Badge>
+                            )}
+                            <Button 
+                              onClick={() => handleSetAdminStatus(user.id, !user.is_admin)}
+                              size="sm"
+                              variant="outline"
+                              className="ml-2"
+                            >
+                              {user.is_admin ? 'Remove' : 'Make'} Admin
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Button 
