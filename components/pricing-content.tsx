@@ -171,7 +171,7 @@ export function PricingContent() {
       </div>
 
       {/* Pricing Tiers */}
-      <section className="relative py-24">
+      <section id="pricing-tiers" className="relative py-24">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19]"></div>
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="max-w-7xl mx-auto">
