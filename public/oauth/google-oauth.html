@@ -9,9 +9,36 @@
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get("code");
             const error = urlParams.get("error");
+            
+            // Check if we have tokens from backend (successful OAuth)
+            const access_token = urlParams.get("access_token");
+            const refresh_token = urlParams.get("refresh_token");
+            const token_type = urlParams.get("token_type");
+            const user_id = urlParams.get("user_id");
+            const user_email = urlParams.get("user_email");
+            const is_admin = urlParams.get("is_admin");
 
             if (window.opener) {
-                window.opener.postMessage({ code, error }, window.location.origin);
+                if (access_token && refresh_token) {
+                    // Successful OAuth - send tokens to parent window
+                    window.opener.postMessage({ 
+                        success: true,
+                        access_token,
+                        refresh_token,
+                        token_type,
+                        user: {
+                            id: user_id,
+                            email: user_email,
+                            is_admin: is_admin === 'true'
+                        }
+                    }, window.location.origin);
+                } else if (code) {
+                    // Still in OAuth flow - send code to parent
+                    window.opener.postMessage({ code, error }, window.location.origin);
+                } else if (error) {
+                    // OAuth error
+                    window.opener.postMessage({ error }, window.location.origin);
+                }
                 window.close();
             }
         })();
