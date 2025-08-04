@@ -72,14 +72,14 @@ api.interceptors.response.use(
 
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
-  const res = await api.get('/auth/google/login');
-  return res.data.authorization_url as string; // Note: backend returns {authorization_url}
+  const res = await api.get('/auth/google/signup');
+  return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
 // Get Google OAuth URL for sign in (SSO only)
 export async function getGoogleSigninUrl() {
-  const res = await api.get('/auth/google/login');
-  return res.data.authorization_url as string; // Note: backend returns {authorization_url}
+  const res = await api.get('/auth/google/signin');
+  return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
 // Check Gmail connection and token validity for the current user
