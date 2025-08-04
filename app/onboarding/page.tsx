@@ -101,7 +101,7 @@ export default function OnboardingPage() {
       } else if (code) {
         // Legacy code-based flow (fallback)
         setLoading(true);
-        exchangeGoogleCode(code)
+        exchangeGoogleCode(code, isSignUp)
           .then((data) => {
             // Store JWT and user info in AuthContext
             login(data.access_token, data.user);

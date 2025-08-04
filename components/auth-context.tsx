@@ -6,7 +6,8 @@ interface User {
   id: string;
   email: string;
   name?: string;
-  previewImage?: string; // Optional profile image URL or data
+  profile_picture_url?: string; // Profile picture URL from backend
+  previewImage?: string; // Optional profile image URL or data (legacy)
   is_admin?: boolean; // Admin privileges flag
   // Add more fields as needed
 }
@@ -19,6 +20,7 @@ interface AuthContextType {
   login: (token: string, user: User) => void;
   logout: () => void;
   setUser: (user: User | null) => void;
+  updateUser: (updates: Partial<User>) => void; // Add method to update user
   loading: boolean; // Add loading state to the interface
 }
 
@@ -64,6 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user');
   };
 
+  const updateUser = (updates: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
   // Compute admin status from user data
   const isAdmin = user?.is_admin === true;
 
@@ -90,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         setUser,
+        updateUser, // Expose updateUser method
         loading, // Expose loading state
       }}
     >

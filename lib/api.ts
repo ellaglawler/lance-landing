@@ -72,19 +72,19 @@ api.interceptors.response.use(
 
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
-  const res = await api.get('/api/auth/google/login');
-  return res.data.authorization_url as string; // Note: backend returns {authorization_url}
+  const res = await api.get('/auth/google/signup');
+  return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
 // Get Google OAuth URL for sign in (SSO only)
 export async function getGoogleSigninUrl() {
-  const res = await api.get('/api/auth/google/login');
-  return res.data.authorization_url as string; // Note: backend returns {authorization_url}
+  const res = await api.get('/auth/google/signin');
+  return res.data.auth_url as string; // Note: backend returns {auth_url}
 }
 
 // Check Gmail connection and token validity for the current user
 export async function checkGmailToken() {
-  const res = await api.get('/api/auth/google/check-gmail-token');
+  const res = await api.get('/auth/google/check-gmail-token');
   return {
     gmail_connected: res.data.gmail_connected,
     gmail_token_valid: res.data.gmail_token_valid,
@@ -92,14 +92,34 @@ export async function checkGmailToken() {
 }
 
 // Exchange Google OAuth code for tokens (GET /google/callback?code=...)
-export async function exchangeGoogleCode(code: string) {
-  const res = await api.get('/api/auth/google/callback', { params: { code } });
+export async function exchangeGoogleCode(code: string, isSignUp: boolean = true) {
+  const endpoint = isSignUp ? '/auth/google/callback-signup' : '/auth/google/callback-signin';
+  const res = await api.get(endpoint, { params: { code } });
+  return res.data;
+}
+
+// Upload profile picture
+export async function uploadProfilePicture(file: File): Promise<{ message: string; profile_picture_url: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const res = await api.post('/auth/profile-picture', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return res.data;
+}
+
+// Remove profile picture
+export async function removeProfilePicture(): Promise<{ message: string }> {
+  const res = await api.delete('/auth/profile-picture');
   return res.data;
 }
 
 // Scan Gmail for invoices for the current user
 export async function scanInvoices(query?: string, maxResults: number = 50) {
-  const res = await api.get('/api/invoices/scan/', {
+  const res = await api.get('/invoices/scan/', {
     params: {
       ...(query ? { query } : {}),
       max_results: maxResults,
@@ -479,6 +499,7 @@ export interface InvoiceResponse {
   client_name: string;
   client_email: string | null;
   amount: number;
+  currency: string;  // Currency code (USD, EUR, GBP, etc.)
   due_date: string | null;
   days_overdue: number;
   is_overdue: boolean;
@@ -486,6 +507,7 @@ export interface InvoiceResponse {
   detected_at: string;
   is_cloud_invoice: boolean;
   cloud_invoice_link: string | null;
+  confidence: number | null;  // Confidence score (0-1) for invoice detection
   
   // Payment tracking fields
   paid_at: string | null;

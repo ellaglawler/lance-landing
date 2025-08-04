@@ -55,11 +55,13 @@ export const Header = () => {
               className="ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900 cursor-pointer hover:ring-blue-500/40 transition-all"
               onClick={() => router.push('/profile')}
             >
-              {user?.previewImage && <AvatarImage src={user.previewImage} />}
+              {user?.profile_picture_url && <AvatarImage src={user.profile_picture_url} />}
               <AvatarFallback className="bg-blue-600 text-white font-bold">
                 {user?.name
                   ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
-                  : "U"}
+                  : user?.email
+                    ? user.email.charAt(0).toUpperCase()
+                    : "U"}
               </AvatarFallback>
             </Avatar>
           </div>
