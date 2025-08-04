@@ -98,6 +98,25 @@ export async function exchangeGoogleCode(code: string) {
   return res.data;
 }
 
+// Upload profile picture
+export async function uploadProfilePicture(file: File): Promise<{ message: string; profile_picture_url: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const res = await api.post('/auth/profile-picture', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return res.data;
+}
+
+// Remove profile picture
+export async function removeProfilePicture(): Promise<{ message: string }> {
+  const res = await api.delete('/auth/profile-picture');
+  return res.data;
+}
+
 // Scan Gmail for invoices for the current user
 export async function scanInvoices(query?: string, maxResults: number = 50) {
   const res = await api.get('/invoices/scan/', {

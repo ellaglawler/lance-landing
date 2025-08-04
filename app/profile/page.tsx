@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useAuth } from "@/components/auth-context"
 import Subscription from "@/components/subscription"
+import { uploadProfilePicture, removeProfilePicture } from "@/lib/api"
 
 interface ProfileData {
   // Empty interface as we no longer need notifications
@@ -19,7 +20,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { logout, user } = useAuth()
+  const { logout, user, updateUser } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   
@@ -34,9 +35,9 @@ export default function ProfilePage() {
   // Check for changes whenever profileData is updated
   useEffect(() => {
     const hasDataChanges = JSON.stringify(profileData) !== JSON.stringify(originalData)
-    const hasImageChanges = previewImage !== null
+    const hasImageChanges = previewImage !== null && previewImage !== user?.profile_picture_url
     setHasChanges(hasDataChanges || hasImageChanges)
-  }, [profileData, previewImage, originalData])
+  }, [profileData, previewImage, originalData, user?.profile_picture_url])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -64,19 +65,30 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Upload profile picture if there's a new one
+      if (previewImage && fileInputRef.current?.files?.[0]) {
+        const file = fileInputRef.current.files[0]
+        const result = await uploadProfilePicture(file)
+        
+        // Update the user in auth context with new profile picture
+        updateUser({ profile_picture_url: result.profile_picture_url })
+        
+        // Clear the preview image and file input
+        setPreviewImage(null)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+        
+        toast.success("Profile picture uploaded successfully")
+      }
       
       // Update original data to match current data
       setOriginalData(profileData)
-      if (previewImage) {
-        // Here you would typically upload the image to your storage
-        // and update the user's profile picture URL
-      }
       
       toast.success("Changes saved successfully")
       setHasChanges(false)
     } catch (error) {
+      console.error('Error saving changes:', error)
       toast.error("Failed to save changes")
     } finally {
       setIsSaving(false)
@@ -97,10 +109,22 @@ export default function ProfilePage() {
     fileInputRef.current?.click()
   }
 
-  const removePhoto = () => {
-    setPreviewImage(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+  const removePhoto = async () => {
+    try {
+      await removeProfilePicture()
+      
+      // Update the user in auth context
+      updateUser({ profile_picture_url: undefined })
+      
+      setPreviewImage(null)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
+      
+      toast.success("Profile picture removed successfully")
+    } catch (error) {
+      console.error('Error removing profile picture:', error)
+      toast.error("Failed to remove profile picture")
     }
   }
 
@@ -165,12 +189,15 @@ export default function ProfilePage() {
               <div className="relative group">
                 <Avatar className="h-24 w-24 ring-4 ring-blue-500/20 ring-offset-2 ring-offset-slate-900">
                   {previewImage && <AvatarImage src={previewImage} />}
+                  {!previewImage && user?.profile_picture_url && <AvatarImage src={user.profile_picture_url} />}
                   <AvatarFallback className="bg-blue-600 text-white text-2xl font-bold">
                     {previewImage
                       ? "..."
                       : (user?.name
                           ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
-                          : "U")}
+                          : user?.email
+                            ? user.email.charAt(0).toUpperCase()
+                            : "U")}
                   </AvatarFallback>
                 </Avatar>
                 <div 
@@ -201,7 +228,7 @@ export default function ProfilePage() {
                   >
                     Upload New Picture
                   </Button>
-                  {previewImage && (
+                  {(previewImage || user?.profile_picture_url) && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -224,7 +251,8 @@ export default function ProfilePage() {
                 </div>
                 <Input
                   id="firstName"
-                  placeholder="Ella"
+                  value={user?.name ? user.name.split(' ')[0] : ''}
+                  placeholder="First Name"
                   className="bg-slate-700/50 border-slate-600 text-slate-300 placeholder:text-slate-500"
                   readOnly
                 />
@@ -236,7 +264,8 @@ export default function ProfilePage() {
                 </div>
                 <Input
                   id="lastName"
-                  placeholder="Lawler"
+                  value={user?.name ? user.name.split(' ').slice(1).join(' ') : ''}
+                  placeholder="Last Name"
                   className="bg-slate-700/50 border-slate-600 text-slate-300 placeholder:text-slate-500"
                   readOnly
                 />
@@ -251,7 +280,8 @@ export default function ProfilePage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="ella@lance.ai"
+                    value={user?.email || ''}
+                    placeholder="Email"
                     className="bg-slate-700/50 border-slate-600 text-slate-300 pl-10 placeholder:text-slate-500"
                     readOnly
                   />
