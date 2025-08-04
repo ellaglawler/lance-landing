@@ -72,19 +72,19 @@ api.interceptors.response.use(
 
 // Get Google OAuth URL for sign up (full SSO + Gmail)
 export async function getGoogleSignupUrl() {
-  const res = await api.get('/api/auth/google/login');
+  const res = await api.get('/auth/google/login');
   return res.data.authorization_url as string; // Note: backend returns {authorization_url}
 }
 
 // Get Google OAuth URL for sign in (SSO only)
 export async function getGoogleSigninUrl() {
-  const res = await api.get('/api/auth/google/login');
+  const res = await api.get('/auth/google/login');
   return res.data.authorization_url as string; // Note: backend returns {authorization_url}
 }
 
 // Check Gmail connection and token validity for the current user
 export async function checkGmailToken() {
-  const res = await api.get('/api/auth/google/check-gmail-token');
+  const res = await api.get('/auth/google/check-gmail-token');
   return {
     gmail_connected: res.data.gmail_connected,
     gmail_token_valid: res.data.gmail_token_valid,
@@ -119,7 +119,7 @@ export async function removeProfilePicture(): Promise<{ message: string }> {
 
 // Scan Gmail for invoices for the current user
 export async function scanInvoices(query?: string, maxResults: number = 50) {
-  const res = await api.get('/api/invoices/scan/', {
+  const res = await api.get('/invoices/scan/', {
     params: {
       ...(query ? { query } : {}),
       max_results: maxResults,
