@@ -339,12 +339,12 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       status: "overdue" as const,
       tone: inv.tone || "Polite",
       emailThread: inv.emailThread,
-      lastReminderSent: inv.lastReminderSent,
-      nextFollowUpDate: inv.nextFollowUpDate,
+      lastReminderSent: inv.last_reminder_sent,
+      nextFollowUpDate: inv.next_follow_up_date,
     }))
 
   const pastInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.is_paid)
+    .filter(inv => !inv.is_overdue)
     .map(inv => ({
       id: inv.id,
       client: inv.client_name,
@@ -1397,7 +1397,7 @@ Regards`
                           <div className="font-bold text-xl text-white">{invoice.client}</div>
                           <div className="text-sm text-slate-300 font-medium">
                             <span className="font-bold text-slate-400">${invoice.amount.toLocaleString()}</span> • Paid
-                            {'daysToPayment' in invoice ? ` in ${invoice.daysToPayment} days` : ''}
+                            {'daysToPayment' in invoice && invoice.daysToPayment !== null ? ` in ${invoice.daysToPayment} days` : ' (unknown)'}
                           </div>
                           <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
@@ -1537,7 +1537,7 @@ Regards`
                           </div>
                           <div>
                             <span className="text-slate-400">Days to Payment:</span>
-                            <div className="text-blue-400 font-medium">{selectedInvoice.daysToPayment} days</div>
+                            <div className="text-blue-400 font-medium">{selectedInvoice.daysToPayment !== null ? `${selectedInvoice.daysToPayment} days` : 'Unknown'}</div>
                           </div>
                         </div>
                       </div>

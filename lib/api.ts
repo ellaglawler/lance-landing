@@ -487,6 +487,15 @@ export interface InvoiceResponse {
   detected_at: string;
   is_cloud_invoice: boolean;
   cloud_invoice_link: string | null;
+  
+  // Payment tracking fields
+  paid_at: string | null;
+  message_type: string | null;
+  days_to_payment: number | null;
+  message_sent: string | null;
+  tone: string | null;
+  last_reminder_sent: string | null;
+  next_follow_up_date: string | null;
 }
 
 export interface TestInvoiceRequest {
