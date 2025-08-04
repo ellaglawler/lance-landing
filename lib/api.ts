@@ -506,6 +506,7 @@ export interface InvoiceResponse {
   detected_at: string;
   is_cloud_invoice: boolean;
   cloud_invoice_link: string | null;
+  confidence: number | null;  // Confidence score (0-1) for invoice detection
   
   // Payment tracking fields
   paid_at: string | null;
