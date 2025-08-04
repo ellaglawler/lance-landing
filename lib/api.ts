@@ -93,8 +93,9 @@ export async function checkGmailToken() {
 }
 
 // Exchange Google OAuth code for tokens (GET /google/callback?code=...)
-export async function exchangeGoogleCode(code: string) {
-  const res = await api.get('/auth/google/callback-signup', { params: { code } });
+export async function exchangeGoogleCode(code: string, isSignUp: boolean = true) {
+  const endpoint = isSignUp ? '/auth/google/callback-signup' : '/auth/google/callback-signin';
+  const res = await api.get(endpoint, { params: { code } });
   return res.data;
 }
 
@@ -499,6 +500,7 @@ export interface InvoiceResponse {
   client_name: string;
   client_email: string | null;
   amount: number;
+  currency: string;  // Currency code (USD, EUR, GBP, etc.)
   due_date: string | null;
   days_overdue: number;
   is_overdue: boolean;

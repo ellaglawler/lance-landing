@@ -54,7 +54,7 @@ export default function OnboardingPage() {
       const { code, error, flow } = event.data || {};
       if (code) {
         setLoading(true);
-        exchangeGoogleCode(code)
+        exchangeGoogleCode(code, isSignUp)
           .then((data) => {
             // Store JWT and user info in AuthContext
             login(data.access_token, data.user);
