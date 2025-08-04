@@ -23,6 +23,7 @@ import {
   Rocket,
   Lock,
   Sparkles,
+  Diamond,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -838,364 +839,81 @@ export default function LanceLanding() {
         </div>
       </div>
 
-      {/* Early Adopter Offer */}
-      <section className="relative py-24">
-        {/* Top Curve */}
-        <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ transform: 'translateY(-1px)' }}>
-          <svg 
-            viewBox="0 0 1200 120" 
-            preserveAspectRatio="none" 
-            className="relative block w-full h-[60px]" 
-            style={{ transform: 'rotateX(180deg)' }}
-          >
-            <path 
-              d="M600,112C268.63,112,0,69.39,0,69.39V0H1200V69.39C1200,69.39,931.37,112,600,112Z" 
-              className="fill-[#0B0F19]"
-            ></path>
-          </svg>
-        </div>
 
-        <div className="absolute inset-0 bg-[#0B0F19]"></div>
-        <div className="container mx-auto px-4 md:px-6 relative">
-          <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-8 text-white">
-            <div className="flex items-center justify-center mb-4">
-              <Crown className="w-8 h-8 mr-3" />
-              <h2 className="text-3xl font-bold">🚀 Founders Plan: $29/month for life</h2>
-            </div>
-            <p className="text-xl mb-6">
-              For our first 500 users only, lock in this rate forever.
-            </p>
-            <div className="flex items-center justify-center gap-8 mb-6">
-              <div className="flex items-center">
-                <Clock className="w-5 h-5 mr-2" />
-                <span className="font-semibold">322 spots remaining</span>
-              </div>
-              <div className="flex items-center">
-                <Lock className="w-5 h-5 mr-2" />
-                <span className="font-semibold">No price increases. Ever.</span>
-              </div>
-            </div>
-            <Button size="lg" className="bg-white text-orange-600 hover:bg-slate-100 px-8 py-4 text-lg font-semibold">
-              Claim Founders Plan
-            </Button>
-            <div className="mt-4">
-              <Badge className="bg-orange-900/30 text-orange-400 border border-orange-500/30 px-2 py-1 text-xs font-bold">
-                Beta ends in 31d 10h 1m55s
-              </Badge>
-            </div>
-            <p className="text-orange-100 text-sm mt-4">
-              *Includes all Core features. Upgrade anytime.
-            </p>
-          </div>
-          </div>
-        </div>
-      </section>
 
       {/* Pricing Section */}
       <section className="relative py-24">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0F19]/80 to-[#0B0F19]"></div>
         <div className="container mx-auto px-4 md:px-6 relative">
-          <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Choose Your Revenue Recovery Plan
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
+              Recover $500-$1,000/month<br />
+              for less than the price of a coffee a day
             </h2>
-            <p className="text-xl text-slate-300">
-              Every plan includes our core recovery engine. Scale up as you grow.
+            <p className="text-xl text-blue-400 mb-12">
+              Lance users typically earn back their cost in 3 days — with 20x ROI.
             </p>
-          </div>
 
-          <Tabs defaultValue="monthly" className="w-full">
-            <div className="flex justify-center mb-8">
-              <TabsList className="grid w-full max-w-md grid-cols-2">
-                <TabsTrigger value="monthly">Monthly</TabsTrigger>
-                <TabsTrigger value="yearly">
-                  Yearly
-                  <Badge variant="secondary" className="ml-2 text-xs">
-                    Save 20%
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
+            {/* Founders Deal Card */}
+            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 max-w-2xl mx-auto">
+              {/* Crown and Price */}
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-3">
+                  <Crown className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Founders Deal: $29/month</h3>
+              </div>
+              
+              <p className="text-slate-400 mb-6">Limited to first 500 users • Locked for life.</p>
+              
+              {/* Metrics */}
+              <div className="flex justify-center gap-12 mb-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-400">$748</div>
+                  <div className="text-sm text-slate-400">Avg. recovered monthly</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-400">3 days</div>
+                  <div className="text-sm text-slate-400">Pays for itself</div>
+                </div>
+              </div>
+              
+              {/* Features */}
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                  <span className="text-slate-300">AI-powered invoice chasing</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                  <span className="text-slate-300">Professional follow-up sequences</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                  <span className="text-slate-300">Payment analytics & insights</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                  <span className="text-slate-300">Client relationship protection</span>
+                </div>
+              </div>
+              
+              {/* CTA Button */}
+              <Link href="/pricing#pricing-tiers">
+                <Button size="lg" className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 text-lg font-semibold mb-4">
+                  View Plans →
+                </Button>
+              </Link>
+              
+              <p className="text-sm text-slate-400">322 spots remaining • No credit card required</p>
             </div>
 
-            <TabsContent value="monthly" className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-8">
-                {/* Lance Beta */}
-                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-green-600/20 text-green-300 border border-green-500/30 px-2 py-1 text-xs">
-                      Beta
-                    </Badge>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Beta</CardTitle>
-                    <div className="text-3xl font-bold text-green-400">
-                      $29.99<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <CardDescription className="text-slate-400">
-                      Early access freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      Recover your first $500+ with Lance, free during our limited-time beta.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 flex-1 flex flex-col">
-                    {/* Lance Beta features */}
-                    <div className="space-y-3 flex-1">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Invoice chasing</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Weekly reports</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal templates</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
-                      Start Free Trial
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Lance Pro - Most Popular */}
-                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
-                      Coming Sept 1
-                    </Badge>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Pro</CardTitle>
-                    <div className="text-3xl font-bold text-white">
-                      $99<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <CardDescription className="text-slate-400">
-                      High-earning freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      For high-earning freelancers ready to automate their revenue.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 flex-1 flex flex-col">
-                    {/* Lance Pro features */}
-                    <div className="space-y-3 flex-1">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Everything in Beta</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Slack/WhatsApp bot</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Analytics dashboard</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming September 1
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Lance Studio */}
-                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-slate-600/20 text-slate-300 border border-slate-500/30 px-2 py-1 text-xs">
-                      Coming Soon
-                    </Badge>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Studio</CardTitle>
-                    <div className="text-3xl font-bold text-white">
-                      From $199<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <CardDescription className="text-slate-400">
-                      Agencies, small studios
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      For agencies and studios scaling their client ops.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 flex-1 flex flex-col">
-                    {/* Lance Studio features */}
-                    <div className="space-y-3 flex-1">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Everything in Pro</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Shared inbox & workflows</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Concierge onboarding</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Studio insights & ROI</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming Soon
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="yearly" className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-8">
-                {/* Lance Core Yearly */}
-                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-2 py-1 text-xs">
-                      Coming Sept 1
-                    </Badge>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Core</CardTitle>
-                    <div className="text-3xl font-bold text-white">
-                      $39<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <CardDescription className="text-slate-400">
-                      Solo freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      Essential tools to get you paid, fast.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 flex-1 flex flex-col">
-                    <div className="space-y-3 flex-1">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Invoice chasing</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Weekly reports</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal templates</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming September 1
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Lance Pro Yearly - Most Popular */}
-                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
-                      Coming Sept 1
-                    </Badge>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Pro</CardTitle>
-                    <div className="text-3xl font-bold text-white">
-                      $79<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <CardDescription className="text-slate-400">
-                      High-earning freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      For high-earning freelancers ready to automate their revenue.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 flex-1 flex flex-col">
-                    {/* Lance Pro features */}
-                    <div className="space-y-3 flex-1">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Everything in Beta</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Slack/WhatsApp bot</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Analytics dashboard</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming September 1
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Lance Studio Yearly */}
-                <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-slate-600/20 text-slate-300 border border-slate-500/30 px-2 py-1 text-xs">
-                      Coming Soon
-                    </Badge>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Studio</CardTitle>
-                    <div className="text-3xl font-bold text-white">
-                      From $159<span className="text-lg text-slate-400">/month</span>
-                    </div>
-                    <CardDescription className="text-slate-400">
-                      Agencies, small studios
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      For agencies and studios scaling their client ops.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4 flex-1 flex flex-col">
-                    {/* Lance Studio features */}
-                    <div className="space-y-3 flex-1">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Everything in Pro</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Shared inbox & workflows</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Concierge onboarding</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Studio insights & ROI</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming Soon
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
+            {/* Testimonial */}
+            <div className="mt-12 p-6 bg-slate-800/30 rounded-2xl border border-slate-700">
+              <p className="text-lg text-slate-300 italic">
+                "Lance recovered $1.2K in week one, that's a game changer!" — Sarah Chen, Freelance Designer
+              </p>
+            </div>
           </div>
         </div>
       </section>

@@ -51,8 +51,55 @@ export default function OnboardingPage() {
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      const { code, error, flow } = event.data || {};
-      if (code) {
+      const { code, error, success, access_token, refresh_token, user } = event.data || {};
+      
+      if (success && access_token && user) {
+        // Direct token response from backend
+        setLoading(true);
+        try {
+          // Store JWT and user info in AuthContext
+          login(access_token, user);
+          if (isSignUp) {
+            setStep(STEP.SCANNING);
+            // Call scanInvoices API here
+            scanInvoices()
+              .then((data) => {
+                if (data && data.invoices && data.invoices.length > 0) {
+                  const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
+                  setScanResult({ count: data.invoices.length, total });
+                  setNoInvoices(false);
+                } else {
+                  setNoInvoices(true);
+                }
+                setStep(STEP.RESULTS);
+              })
+              .catch(() => {
+                setError('Failed to scan for invoices.');
+                setStep(STEP.ERROR);
+              })
+              .finally(() => setLoading(false));
+          } else {
+            setStep(STEP.SCANNING);
+            checkGmailToken()
+              .then((tokensValid) => {
+                if (tokensValid) {
+                  // Redirect to dashboard
+                  router.push("/dashboard");
+                } else {
+                  setStep(STEP.RECONNECT);
+                }
+              })
+              .catch(() => {
+                setError('Failed to check Gmail token.');
+                setStep(STEP.ERROR);
+              });
+          }
+        } catch (err) {
+          setError('Failed to process authentication.');
+          setStep(STEP.ERROR);
+        }
+      } else if (code) {
+        // Legacy code-based flow (fallback)
         setLoading(true);
         exchangeGoogleCode(code, isSignUp)
           .then((data) => {
