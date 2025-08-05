@@ -73,14 +73,14 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
     : "bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap border border-white/20"
 
   const getButtonText = () => {
-    if (showDemoButton === false) return "🔥 Join Free Beta";
+    if (showDemoButton === false) return "Join Free Beta";
     switch (variant) {
       case "contact":
         return "Start Getting Paid Faster"
       case "demo":
         return "Get Early Access"
       case "pricing":
-        return plan === "starter" ? "🔥 Join Free Beta" : plan === "core" ? "Start Core Trial" : plan === "pro" ? "Start Pro Trial" : "Contact Sales"
+        return plan === "starter" ? "Join Free Beta" : plan === "core" ? "Start Core Trial" : plan === "pro" ? "Start Pro Trial" : "Contact Sales"
       case "hero":
       case "cta":
       default:
@@ -118,7 +118,7 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
   const getPlaceholder = () => {
     switch (variant) {
       case "pricing":
-        return "Enter your best email (we'll send your invite soon)"
+        return "Enter your email for invite"
       default:
         return "Enter your email"
     }

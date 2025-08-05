@@ -62,6 +62,42 @@ function BetaCountdown() {
   );
 }
 
+// Early access spots countdown component
+function EarlyAccessCountdown() {
+  const endDate = new Date('2025-09-01T00:00:00Z');
+  const startDate = new Date('2025-08-01T00:00:00Z');
+  const startSpots = 100;
+  const [spotsLeft, setSpotsLeft] = useState(startSpots);
+
+  useEffect(() => {
+    function updateSpots() {
+      const now = new Date();
+      const totalDuration = endDate.getTime() - startDate.getTime();
+      const elapsed = now.getTime() - startDate.getTime();
+      
+      if (elapsed >= totalDuration) {
+        setSpotsLeft(0);
+        return;
+      }
+      
+      if (elapsed < 0) {
+        setSpotsLeft(startSpots);
+        return;
+      }
+      
+      const progress = elapsed / totalDuration;
+      const remainingSpots = Math.max(0, Math.floor(startSpots * (1 - progress)));
+      setSpotsLeft(remainingSpots);
+    }
+    
+    updateSpots();
+    const interval = setInterval(updateSpots, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  return spotsLeft;
+}
+
 export function PricingContent() {
   const [showBetaForm, setShowBetaForm] = useState(false);
 
@@ -840,12 +876,12 @@ export function PricingContent() {
           <div className="bg-slate-800 rounded-2xl p-8 max-w-lg w-full border border-slate-700 relative z-10 shadow-2xl">
             <div className="text-center mb-8">
               <h3 className="text-3xl font-bold text-white mb-4">
-                Stop chasing payments. Start collecting — for free.
+                Stop chasing payments. Start collecting, for free.
               </h3>
               <p className="text-slate-300 text-lg leading-relaxed">
                 Join the Lance Beta to unlock your personal AI collections agent.
                 <br />
-                Recover what you're owed — no awkward follow-ups, no setup, no cost.
+                Recover what you're owed, no awkward follow-ups, no setup, no cost.
               </p>
             </div>
 
@@ -854,7 +890,7 @@ export function PricingContent() {
               <div className="inline-flex items-center gap-2 bg-orange-600/20 border border-orange-500/30 px-4 py-2 rounded-full">
                 <span className="text-orange-400 font-semibold text-sm">🔥</span>
                 <span className="text-orange-300 text-sm font-medium">
-                  Only 142 early access spots left. Secure yours now.
+                  Only <EarlyAccessCountdown /> early access spots left. Secure yours now.
                 </span>
               </div>
             </div>
@@ -870,10 +906,10 @@ export function PricingContent() {
             <div className="text-center space-y-3">
               <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
                 <CheckCircle className="w-4 h-4" />
-                <span>No credit card required. Free access ends in 27 days.</span>
+                <span>No credit card required.</span>
               </div>
               <div className="flex items-center justify-center gap-2 text-slate-400 text-xs">
-                <span>🔒</span>
+                <Shield className="w-3 h-3" />
                 <span>We'll never spam you</span>
               </div>
             </div>
