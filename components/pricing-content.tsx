@@ -191,7 +191,11 @@ export function PricingContent() {
                 <span className="font-semibold">No price increases. Ever.</span>
               </div>
             </div>
-            <Button size="lg" className="bg-white text-orange-600 hover:bg-slate-100 px-8 py-4 text-lg font-semibold">
+            <Button 
+              size="lg" 
+              className="bg-white text-orange-600 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
+              onClick={() => setShowBetaForm(true)}
+            >
               Claim Founders Plan
             </Button>
             <p className="text-orange-100 text-sm mt-4">
@@ -854,7 +858,12 @@ export function PricingContent() {
               <Rocket className="w-5 h-5 mr-2" />
               Join Free Beta
             </Button>
-            <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-4 text-lg"
+              onClick={() => setShowBetaForm(true)}
+            >
               <Crown className="w-5 h-5 mr-2" />
               Claim Founders Plan
             </Button>
