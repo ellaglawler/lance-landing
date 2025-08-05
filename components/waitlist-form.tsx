@@ -62,7 +62,9 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
     ? "flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
     : "flex-1 px-4 py-3 text-lg rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
 
-  const buttonClasses = variant === "hero"
+  const buttonClasses = variant === "pricing"
+    ? "bg-green-500 hover:bg-green-400 text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap transition-colors shadow-lg"
+    : variant === "hero"
     ? "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
     : "cta-button-primary text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap"
 
@@ -71,14 +73,14 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
     : "bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg font-semibold rounded-xl whitespace-nowrap border border-white/20"
 
   const getButtonText = () => {
-    if (showDemoButton === false) return "Join Waitlist";
+    if (showDemoButton === false) return "Join Free Beta";
     switch (variant) {
       case "contact":
         return "Start Getting Paid Faster"
       case "demo":
         return "Get Early Access"
       case "pricing":
-        return plan === "starter" ? "Start Free" : plan === "core" ? "Start Core Trial" : plan === "pro" ? "Start Pro Trial" : "Contact Sales"
+        return plan === "starter" ? "Join Free Beta" : plan === "core" ? "Start Core Trial" : plan === "pro" ? "Start Pro Trial" : "Contact Sales"
       case "hero":
       case "cta":
       default:
@@ -113,13 +115,22 @@ export function WaitlistForm({ variant = "hero", className = "", showDemoButton 
     }
   }
 
+  const getPlaceholder = () => {
+    switch (variant) {
+      case "pricing":
+        return "Enter your email for invite"
+      default:
+        return "Enter your email"
+    }
+  }
+
   return (
     <div className={className}>
       <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
         <div className={`flex ${variant === "pricing" ? "flex-col" : "flex-col sm:flex-row"} justify-center items-center gap-3 w-full max-w-3xl mx-auto`}>
           <input 
             type="email" 
-            placeholder="Enter your email" 
+            placeholder={getPlaceholder()}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isSubmitting || status === "success"}

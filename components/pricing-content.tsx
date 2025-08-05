@@ -24,6 +24,7 @@ import {
   Lock,
 } from "lucide-react"
 import React, { useEffect, useState } from 'react';
+import { WaitlistForm } from "@/components/waitlist-form"
 
 // Countdown component
 function BetaCountdown() {
@@ -61,7 +62,45 @@ function BetaCountdown() {
   );
 }
 
+// Early access spots countdown component
+function EarlyAccessCountdown() {
+  const endDate = new Date('2025-09-01T00:00:00Z');
+  const startDate = new Date('2025-08-01T00:00:00Z');
+  const startSpots = 100;
+  const [spotsLeft, setSpotsLeft] = useState(startSpots);
+
+  useEffect(() => {
+    function updateSpots() {
+      const now = new Date();
+      const totalDuration = endDate.getTime() - startDate.getTime();
+      const elapsed = now.getTime() - startDate.getTime();
+      
+      if (elapsed >= totalDuration) {
+        setSpotsLeft(0);
+        return;
+      }
+      
+      if (elapsed < 0) {
+        setSpotsLeft(startSpots);
+        return;
+      }
+      
+      const progress = elapsed / totalDuration;
+      const remainingSpots = Math.max(0, Math.floor(startSpots * (1 - progress)));
+      setSpotsLeft(remainingSpots);
+    }
+    
+    updateSpots();
+    const interval = setInterval(updateSpots, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  return spotsLeft;
+}
+
 export function PricingContent() {
+  const [showBetaForm, setShowBetaForm] = useState(false);
+
   return (
     <div className="flex flex-col pt-24">
       {/* Hero Section */}
@@ -94,9 +133,13 @@ export function PricingContent() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+              <Button 
+                size="lg" 
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+                onClick={() => setShowBetaForm(true)}
+              >
                 <Rocket className="w-5 h-5 mr-2" />
-                Start Free Trial
+                Join Free Beta
               </Button>
               <p className="text-slate-400 text-sm">
                 No credit card required
@@ -148,7 +191,11 @@ export function PricingContent() {
                 <span className="font-semibold">No price increases. Ever.</span>
               </div>
             </div>
-            <Button size="lg" className="bg-white text-orange-600 hover:bg-slate-100 px-8 py-4 text-lg font-semibold">
+            <Button 
+              size="lg" 
+              className="bg-white text-orange-600 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
+              onClick={() => setShowBetaForm(true)}
+            >
               Claim Founders Plan
             </Button>
             <p className="text-orange-100 text-sm mt-4">
@@ -210,38 +257,44 @@ export function PricingContent() {
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Beta</CardTitle>
                     <div className="text-3xl font-bold text-green-400">
-                      $29.99<span className="text-lg text-slate-400">/month</span>
+                      Free during beta
+                    </div>
+                    <div className="text-lg text-slate-400">
+                      (normally $49/month)
                     </div>
                     <CardDescription className="text-slate-400">
-                      Early access freelancers
+                      For early access freelancers ready to stop chasing and start collecting.
                     </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      Recover your first $500+ with Lance, free during our limited-time beta.
-                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Beta features */}
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Invoice chasing</span>
+                        <span className="text-slate-300">Invoice chasing, done for you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Weekly reports</span>
+                        <span className="text-slate-300">Weekly reports on what's paid and what's at risk</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal templates</span>
+                        <span className="text-slate-300">Smart AI-written follow-ups that sound like you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
+                        <span className="text-slate-300">Auto-scans your inbox, no setup required</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
-                      Start Free Trial
+                    <Button 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto"
+                      onClick={() => setShowBetaForm(true)}
+                    >
+                      Join Free Beta
                     </Button>
+                    <p className="text-xs text-slate-400 text-center mt-2">
+                      *Free access available until Beta end date. No credit card required.
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -258,11 +311,8 @@ export function PricingContent() {
                       $99<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      High-earning freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
                       For high-earning freelancers ready to automate their revenue.
-                    </p>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Pro features */}
@@ -273,15 +323,22 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Slack/WhatsApp bot</span>
+                        <span className="text-slate-300">Slack/WhatsApp notifications when action is needed</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
+                        <span className="text-slate-300">Client risk scoring, know who's likely to ghost</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Analytics dashboard</span>
+                        <span className="text-slate-300">Analytics dashboard to track performance</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                        <span className="text-slate-300">AI-optimized follow-up strategy</span>
+                      </div>
+                      <div className="text-xs text-slate-400 ml-8 mb-2">
+                        Smarter timing, tone, and escalation, tuned to maximize client response and on-time payments.
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -303,10 +360,10 @@ export function PricingContent() {
                       From $199<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      Agencies, small studios
+                      For agencies & studios scaling their client ops.
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      For agencies and studios scaling their client ops.
+                      Built for teams running serious freelance operations.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -318,15 +375,15 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Shared inbox & workflows</span>
+                        <span className="text-slate-300">Shared inbox + client workflows</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Concierge onboarding</span>
+                        <span className="text-slate-300">Concierge onboarding & support</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Studio insights & ROI</span>
+                        <span className="text-slate-300">Studio insights, ROI by client, team, and service</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -352,29 +409,26 @@ export function PricingContent() {
                       $39<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      Solo freelancers
+                      For early access freelancers ready to stop chasing and start collecting.
                     </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      Essential tools to get you paid, fast.
-                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Invoice chasing</span>
+                        <span className="text-slate-300">Invoice chasing, done for you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Weekly reports</span>
+                        <span className="text-slate-300">Weekly reports on what's paid and what's at risk</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal templates</span>
+                        <span className="text-slate-300">Smart AI-written follow-ups that sound like you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
+                        <span className="text-slate-300">Auto-scans your inbox, no setup required</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -396,11 +450,8 @@ export function PricingContent() {
                       $79<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      High-earning freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
                       For high-earning freelancers ready to automate their revenue.
-                    </p>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Pro features */}
@@ -411,15 +462,22 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Slack/WhatsApp bot</span>
+                        <span className="text-slate-300">Slack/WhatsApp notifications when action is needed</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
+                        <span className="text-slate-300">Client risk scoring, know who's likely to ghost</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Analytics dashboard</span>
+                        <span className="text-slate-300">Analytics dashboard to track performance</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                        <span className="text-slate-300">AI-optimized follow-up strategy</span>
+                      </div>
+                      <div className="text-xs text-slate-400 ml-8 mb-2">
+                        Smarter timing, tone, and escalation, tuned to maximize client response and on-time payments.
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -441,10 +499,10 @@ export function PricingContent() {
                       From $159<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      Agencies, small studios
+                      For agencies & studios scaling their client ops.
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      For agencies and studios scaling their client ops.
+                      Built for teams running serious freelance operations.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -456,15 +514,15 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Shared inbox & workflows</span>
+                        <span className="text-slate-300">Shared inbox + client workflows</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Concierge onboarding</span>
+                        <span className="text-slate-300">Concierge onboarding & support</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Studio insights & ROI</span>
+                        <span className="text-slate-300">Studio insights, ROI by client, team, and service</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -536,7 +594,7 @@ export function PricingContent() {
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
-                <span className="text-slate-300">Lance Cost</span>
+                <span className="text-slate-300">Lance Cost (Post-Beta)</span>
                 <span className="text-red-400 font-semibold">$49/month</span>
               </div>
               <div className="flex items-center justify-between p-4 bg-green-600/20 rounded-lg border border-green-500/30">
@@ -682,10 +740,11 @@ export function PricingContent() {
                   <div>
                     <h4 className="font-semibold text-white mb-2">What you get:</h4>
                     <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Full access to all Lance features — completely free</li>
+                      <li>Full access to all Lance features, completely free during beta</li>
                       <li>Priority support and direct feedback to our team</li>
                       <li>Early access to new features before public release</li>
                       <li>Lock-in opportunity for our Founders Plan ($29/month for life)</li>
+                      <li>No credit card required, start recovering payments immediately</li>
                     </ul>
                   </div>
                   <div>
@@ -700,6 +759,10 @@ export function PricingContent() {
                   <div>
                     <h4 className="font-semibold text-white mb-2">Our roadmap:</h4>
                     <p className="text-sm">We're building the future of freelancer payment recovery. Beta users help us shape features like AI-powered client risk assessment, advanced automation workflows, and seamless integrations with your existing tools.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">Post-Beta transition:</h4>
+                    <p className="text-sm">When beta ends, you'll have the option to continue with Lance at $49/month, or upgrade to our Founders Plan for $29/month for life. We'll notify you well in advance of any changes.</p>
                   </div>
                 </div>
               </AccordionContent>
@@ -787,11 +850,20 @@ export function PricingContent() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+              onClick={() => setShowBetaForm(true)}
+            >
               <Rocket className="w-5 h-5 mr-2" />
-              Start Free Trial
+              Join Free Beta
             </Button>
-            <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-4 text-lg"
+              onClick={() => setShowBetaForm(true)}
+            >
               <Crown className="w-5 h-5 mr-2" />
               Claim Founders Plan
             </Button>
@@ -803,6 +875,65 @@ export function PricingContent() {
           </div>
         </div>
       </section>
+
+      {/* Beta Signup Modal */}
+      {showBetaForm && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          {/* Blurred background success screenshot for credibility */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-blue-500/10 backdrop-blur-sm"></div>
+          
+          <div className="bg-slate-800 rounded-2xl p-8 max-w-lg w-full border border-slate-700 relative z-10 shadow-2xl">
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-bold text-white mb-4">
+                Stop chasing payments. Start collecting, for free.
+              </h3>
+              <p className="text-slate-300 text-lg leading-relaxed">
+                Join the Lance Beta to unlock your personal AI collections agent.
+                <br />
+                Recover what you're owed, no awkward follow-ups, no setup, no cost.
+              </p>
+            </div>
+
+            {/* Scarcity trigger */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-orange-600/20 border border-orange-500/30 px-4 py-2 rounded-full">
+                <span className="text-orange-400 font-semibold text-sm">🔥</span>
+                <span className="text-orange-300 text-sm font-medium">
+                  Only <EarlyAccessCountdown /> early access spots left. Secure yours now.
+                </span>
+              </div>
+            </div>
+            
+            <WaitlistForm 
+              variant="pricing" 
+              plan="starter"
+              showDemoButton={false}
+              className="mb-6"
+            />
+            
+            {/* Trust indicators */}
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
+                <CheckCircle className="w-4 h-4" />
+                <span>No credit card required.</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-slate-400 text-xs">
+                <Shield className="w-3 h-3" />
+                <span>We'll never spam you</span>
+              </div>
+            </div>
+            
+            <div className="text-center mt-6">
+              <button
+                onClick={() => setShowBetaForm(false)}
+                className="text-slate-400 hover:text-white text-sm transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 
