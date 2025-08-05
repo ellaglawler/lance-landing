@@ -834,25 +834,54 @@ export function PricingContent() {
       {/* Beta Signup Modal */}
       {showBetaForm && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-2xl p-8 max-w-md w-full border border-slate-700">
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-white mb-2">Join Lance Beta</h3>
-              <p className="text-slate-300">
-                Get early access to Lance and start recovering payments for free.
+          {/* Blurred background success screenshot for credibility */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-blue-500/10 backdrop-blur-sm"></div>
+          
+          <div className="bg-slate-800 rounded-2xl p-8 max-w-lg w-full border border-slate-700 relative z-10 shadow-2xl">
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-bold text-white mb-4">
+                Stop chasing payments. Start collecting — for free.
+              </h3>
+              <p className="text-slate-300 text-lg leading-relaxed">
+                Join the Lance Beta to unlock your personal AI collections agent.
+                <br />
+                Recover what you're owed — no awkward follow-ups, no setup, no cost.
               </p>
+            </div>
+
+            {/* Scarcity trigger */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-orange-600/20 border border-orange-500/30 px-4 py-2 rounded-full">
+                <span className="text-orange-400 font-semibold text-sm">🔥</span>
+                <span className="text-orange-300 text-sm font-medium">
+                  Only 142 early access spots left. Secure yours now.
+                </span>
+              </div>
             </div>
             
             <WaitlistForm 
               variant="pricing" 
               plan="starter"
               showDemoButton={false}
-              className="mb-4"
+              className="mb-6"
             />
             
-            <div className="text-center">
+            {/* Trust indicators */}
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
+                <CheckCircle className="w-4 h-4" />
+                <span>No credit card required. Free access ends in 27 days.</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-slate-400 text-xs">
+                <span>🔒</span>
+                <span>We'll never spam you</span>
+              </div>
+            </div>
+            
+            <div className="text-center mt-6">
               <button
                 onClick={() => setShowBetaForm(false)}
-                className="text-slate-400 hover:text-white text-sm"
+                className="text-slate-400 hover:text-white text-sm transition-colors"
               >
                 Close
               </button>
