@@ -94,9 +94,9 @@ export function PricingContent() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
                 <Rocket className="w-5 h-5 mr-2" />
-                Start Free Trial
+                Join Free Beta
               </Button>
               <p className="text-slate-400 text-sm">
                 No credit card required
@@ -210,38 +210,41 @@ export function PricingContent() {
                   <CardHeader className="text-center">
                     <CardTitle className="text-2xl text-white">Lance Beta</CardTitle>
                     <div className="text-3xl font-bold text-green-400">
-                      $29.99<span className="text-lg text-slate-400">/month</span>
+                      Free during beta
+                    </div>
+                    <div className="text-lg text-slate-400">
+                      (normally $49/month)
                     </div>
                     <CardDescription className="text-slate-400">
-                      Early access freelancers
+                      For early access freelancers ready to stop chasing and start collecting.
                     </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      Recover your first $500+ with Lance, free during our limited-time beta.
-                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Beta features */}
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Invoice chasing</span>
+                        <span className="text-slate-300">Invoice chasing, done for you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Weekly reports</span>
+                        <span className="text-slate-300">Weekly reports on what's paid and what's at risk</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal templates</span>
+                        <span className="text-slate-300">Smart AI-written follow-ups that sound like you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
+                        <span className="text-slate-300">Auto-scans your inbox — no setup required</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white mt-auto">
-                      Start Free Trial
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">
+                      Join Free Beta
                     </Button>
+                    <p className="text-xs text-slate-400 text-center mt-2">
+                      *Free access available until Beta end date. No credit card required.
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -352,29 +355,26 @@ export function PricingContent() {
                       $39<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      Solo freelancers
+                      For early access freelancers ready to stop chasing and start collecting.
                     </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
-                      Essential tools to get you paid, fast.
-                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Invoice chasing</span>
+                        <span className="text-slate-300">Invoice chasing, done for you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Weekly reports</span>
+                        <span className="text-slate-300">Weekly reports on what's paid and what's at risk</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Proposal templates</span>
+                        <span className="text-slate-300">Smart AI-written follow-ups that sound like you</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Smart follow-ups</span>
+                        <span className="text-slate-300">Auto-scans your inbox — no setup required</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -536,7 +536,7 @@ export function PricingContent() {
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
-                <span className="text-slate-300">Lance Cost</span>
+                <span className="text-slate-300">Lance Cost (Post-Beta)</span>
                 <span className="text-red-400 font-semibold">$49/month</span>
               </div>
               <div className="flex items-center justify-between p-4 bg-green-600/20 rounded-lg border border-green-500/30">
@@ -682,10 +682,11 @@ export function PricingContent() {
                   <div>
                     <h4 className="font-semibold text-white mb-2">What you get:</h4>
                     <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Full access to all Lance features — completely free</li>
+                      <li>Full access to all Lance features — completely free during beta</li>
                       <li>Priority support and direct feedback to our team</li>
                       <li>Early access to new features before public release</li>
                       <li>Lock-in opportunity for our Founders Plan ($29/month for life)</li>
+                      <li>No credit card required — start recovering payments immediately</li>
                     </ul>
                   </div>
                   <div>
@@ -700,6 +701,10 @@ export function PricingContent() {
                   <div>
                     <h4 className="font-semibold text-white mb-2">Our roadmap:</h4>
                     <p className="text-sm">We're building the future of freelancer payment recovery. Beta users help us shape features like AI-powered client risk assessment, advanced automation workflows, and seamless integrations with your existing tools.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">Post-Beta transition:</h4>
+                    <p className="text-sm">When beta ends, you'll have the option to continue with Lance at $49/month, or upgrade to our Founders Plan for $29/month for life. We'll notify you well in advance of any changes.</p>
                   </div>
                 </div>
               </AccordionContent>
@@ -787,9 +792,9 @@ export function PricingContent() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
               <Rocket className="w-5 h-5 mr-2" />
-              Start Free Trial
+              Join Free Beta
             </Button>
             <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-4 text-lg">
               <Crown className="w-5 h-5 mr-2" />
