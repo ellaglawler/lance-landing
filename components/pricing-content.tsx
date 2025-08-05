@@ -24,6 +24,7 @@ import {
   Lock,
 } from "lucide-react"
 import React, { useEffect, useState } from 'react';
+import { WaitlistForm } from "@/components/waitlist-form"
 
 // Countdown component
 function BetaCountdown() {
@@ -62,6 +63,8 @@ function BetaCountdown() {
 }
 
 export function PricingContent() {
+  const [showBetaForm, setShowBetaForm] = useState(false);
+
   return (
     <div className="flex flex-col pt-24">
       {/* Hero Section */}
@@ -94,7 +97,11 @@ export function PricingContent() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
+              <Button 
+                size="lg" 
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+                onClick={() => setShowBetaForm(true)}
+              >
                 <Rocket className="w-5 h-5 mr-2" />
                 Join Free Beta
               </Button>
@@ -239,7 +246,10 @@ export function PricingContent() {
                         <span className="text-slate-300">Auto-scans your inbox, no setup required</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">
+                    <Button 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto"
+                      onClick={() => setShowBetaForm(true)}
+                    >
                       Join Free Beta
                     </Button>
                     <p className="text-xs text-slate-400 text-center mt-2">
@@ -800,7 +810,11 @@ export function PricingContent() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+              onClick={() => setShowBetaForm(true)}
+            >
               <Rocket className="w-5 h-5 mr-2" />
               Join Free Beta
             </Button>
@@ -816,6 +830,36 @@ export function PricingContent() {
           </div>
         </div>
       </section>
+
+      {/* Beta Signup Modal */}
+      {showBetaForm && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-2xl p-8 max-w-md w-full border border-slate-700">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-white mb-2">Join Lance Beta</h3>
+              <p className="text-slate-300">
+                Get early access to Lance and start recovering payments for free.
+              </p>
+            </div>
+            
+            <WaitlistForm 
+              variant="pricing" 
+              plan="starter"
+              showDemoButton={false}
+              className="mb-4"
+            />
+            
+            <div className="text-center">
+              <button
+                onClick={() => setShowBetaForm(false)}
+                className="text-slate-400 hover:text-white text-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 
