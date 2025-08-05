@@ -236,7 +236,7 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Auto-scans your inbox — no setup required</span>
+                        <span className="text-slate-300">Auto-scans your inbox, no setup required</span>
                       </div>
                     </div>
                     <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">
@@ -261,11 +261,8 @@ export function PricingContent() {
                       $99<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      High-earning freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
                       For high-earning freelancers ready to automate their revenue.
-                    </p>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Pro features */}
@@ -276,15 +273,22 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Slack/WhatsApp bot</span>
+                        <span className="text-slate-300">Slack/WhatsApp notifications when action is needed</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
+                        <span className="text-slate-300">Client risk scoring, know who's likely to ghost</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Analytics dashboard</span>
+                        <span className="text-slate-300">Analytics dashboard to track performance</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                        <span className="text-slate-300">AI-optimized follow-up strategy</span>
+                      </div>
+                      <div className="text-xs text-slate-400 ml-8 mb-2">
+                        Smarter timing, tone, and escalation, tuned to maximize client response and on-time payments.
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -306,10 +310,10 @@ export function PricingContent() {
                       From $199<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      Agencies, small studios
+                      For agencies & studios scaling their client ops.
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      For agencies and studios scaling their client ops.
+                      Built for teams running serious freelance operations.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -321,15 +325,15 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Shared inbox & workflows</span>
+                        <span className="text-slate-300">Shared inbox + client workflows</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Concierge onboarding</span>
+                        <span className="text-slate-300">Concierge onboarding & support</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Studio insights & ROI</span>
+                        <span className="text-slate-300">Studio insights, ROI by client, team, and service</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -374,7 +378,7 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Auto-scans your inbox — no setup required</span>
+                        <span className="text-slate-300">Auto-scans your inbox, no setup required</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -396,11 +400,8 @@ export function PricingContent() {
                       $79<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      High-earning freelancers
-                    </CardDescription>
-                    <p className="text-sm text-blue-400 font-medium mt-2">
                       For high-earning freelancers ready to automate their revenue.
-                    </p>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     {/* Lance Pro features */}
@@ -411,15 +412,22 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Slack/WhatsApp bot</span>
+                        <span className="text-slate-300">Slack/WhatsApp notifications when action is needed</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Client risk scoring</span>
+                        <span className="text-slate-300">Client risk scoring, know who's likely to ghost</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Analytics dashboard</span>
+                        <span className="text-slate-300">Analytics dashboard to track performance</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                        <span className="text-slate-300">AI-optimized follow-up strategy</span>
+                      </div>
+                      <div className="text-xs text-slate-400 ml-8 mb-2">
+                        Smarter timing, tone, and escalation, tuned to maximize client response and on-time payments.
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -441,10 +449,10 @@ export function PricingContent() {
                       From $159<span className="text-lg text-slate-400">/month</span>
                     </div>
                     <CardDescription className="text-slate-400">
-                      Agencies, small studios
+                      For agencies & studios scaling their client ops.
                     </CardDescription>
                     <p className="text-sm text-blue-400 font-medium mt-2">
-                      For agencies and studios scaling their client ops.
+                      Built for teams running serious freelance operations.
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -456,15 +464,15 @@ export function PricingContent() {
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Shared inbox & workflows</span>
+                        <span className="text-slate-300">Shared inbox + client workflows</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Concierge onboarding</span>
+                        <span className="text-slate-300">Concierge onboarding & support</span>
                       </div>
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-slate-300">Studio insights & ROI</span>
+                        <span className="text-slate-300">Studio insights, ROI by client, team, and service</span>
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
@@ -682,11 +690,11 @@ export function PricingContent() {
                   <div>
                     <h4 className="font-semibold text-white mb-2">What you get:</h4>
                     <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Full access to all Lance features — completely free during beta</li>
+                      <li>Full access to all Lance features, completely free during beta</li>
                       <li>Priority support and direct feedback to our team</li>
                       <li>Early access to new features before public release</li>
                       <li>Lock-in opportunity for our Founders Plan ($29/month for life)</li>
-                      <li>No credit card required — start recovering payments immediately</li>
+                      <li>No credit card required, start recovering payments immediately</li>
                     </ul>
                   </div>
                   <div>
