@@ -805,11 +805,11 @@ Regards`
           <CardContent className="pt-0 pb-4">
             {/* Key Metrics Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* You’re Owed */}
+              {/* You're Owed */}
               <div className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-4">
                 <BadgeDollarSign className="text-red-400 h-7 w-7" />
                 <div>
-                  <div className="text-slate-400 text-xs font-medium">You’re Owed</div>
+                  <div className="text-slate-400 text-xs font-medium">You're Owed</div>
                   <div className="text-white text-xl font-bold">
                     ${(isDemoMode ? 2450 : mappedOverdueInvoices.reduce((sum, inv) => sum + inv.amount, 0)).toLocaleString()}
                   </div>
@@ -980,7 +980,7 @@ Regards`
                     }}
                   >
                     <Circle className="h-3 w-3 text-blue-400" />
-                    <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>’s overdue invoice</span>
+                    <span className="flex-1 text-slate-300">Review <span className="font-semibold text-white">{inv.client}</span>'s overdue invoice</span>
                     <Button
                       variant="outline"
                       size="sm"
@@ -1501,15 +1501,6 @@ Regards`
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...invoice, status: "overdue" })}
-                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
-                        >
-                          <span className="hidden sm:inline">View Details</span>
-                          <span className="sm:hidden">View</span>
-                        </Button>
                         {sentReminders.has(invoice.id) ? (
                           <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-lg border border-green-500/20">
                             <CheckCircle className="h-4 w-4 text-green-400" />
@@ -1521,7 +1512,8 @@ Regards`
                             onClick={() => setSelectedInvoice({ ...invoice, status: "overdue" })}
                             className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
                           >
-                            Approve
+                            <span className="hidden sm:inline">Review & Approve</span>
+                            <span className="sm:hidden">Review</span>
                           </Button>
                         )}
                       </div>
@@ -1732,6 +1724,125 @@ Regards`
                     </div>
                   )}
 
+                  {/* Edit Message Section */}
+                  {!selectedInvoice.isPastInvoice && isEditingMessage && (
+                    <div className="space-y-6">
+                      <div className="space-y-4">
+                        <div className="text-sm font-medium text-slate-300 mb-3">Select Tone:</div>
+                        <div className="flex gap-3">
+                          <Button
+                            variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              const newTone = "Polite"
+                              const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
+                              setSelectedInvoice({ 
+                                ...selectedInvoice, 
+                                tone: newTone,
+                                customMessage: selectedInvoice.customMessage || defaultMessage
+                              })
+                            }}
+                            className={
+                              selectedInvoice.tone === "Polite"
+                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                            }
+                          >
+                            Polite
+                          </Button>
+                          <Button
+                            variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              const newTone = "Professional"
+                              const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
+                              setSelectedInvoice({ 
+                                ...selectedInvoice, 
+                                tone: newTone,
+                                customMessage: selectedInvoice.customMessage || defaultMessage
+                              })
+                            }}
+                            className={
+                              selectedInvoice.tone === "Professional"
+                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                            }
+                          >
+                            Professional
+                          </Button>
+                          <Button
+                            variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              const newTone = "Firm"
+                              const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
+                              setSelectedInvoice({ 
+                                ...selectedInvoice, 
+                                tone: newTone,
+                                customMessage: selectedInvoice.customMessage || defaultMessage
+                              })
+                            }}
+                            className={
+                              selectedInvoice.tone === "Firm"
+                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                            }
+                          >
+                            Firm
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="text-sm font-medium text-slate-300 mb-3">Edit Message Content:</div>
+                        <Textarea
+                          value={selectedInvoice.customMessage || generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")}
+                          onChange={(e) => setSelectedInvoice({ 
+                            ...selectedInvoice, 
+                            customMessage: e.target.value 
+                          })}
+                          className="min-h-[200px] bg-slate-700 border-slate-600 text-slate-300 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
+                          placeholder="Edit your message content here..."
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const defaultMessage = generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")
+                              setSelectedInvoice({ 
+                                ...selectedInvoice, 
+                                customMessage: defaultMessage
+                              })
+                            }}
+                            className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 text-xs"
+                          >
+                            Reset to Default
+                          </Button>
+                          <div className="text-xs text-slate-400 flex items-center">
+                            You can customize the message while keeping the selected tone
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4">
+                        <Button
+                          variant="outline"
+                          className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                          onClick={() => setIsEditingMessage(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                          onClick={() => setIsEditingMessage(false)}
+                        >
+                          Save Changes
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Upcoming Reminder Section for Overdue Invoices */}
                   {!selectedInvoice.isPastInvoice && !isEditingMessage && (
                     <div className="space-y-4">
@@ -1758,137 +1869,6 @@ Regards`
                         </div>
                       </div>
                     </div>
-                  )}
-
-                  {/* Message Preview or Edit Section */}
-                  {!selectedInvoice.isPastInvoice && (
-                    <>
-                      {isEditingMessage ? (
-                        // Edit Message View
-                        <div className="space-y-6">
-                          <div className="space-y-4">
-                            <div className="text-sm font-medium text-slate-300 mb-3">Select Tone:</div>
-                            <div className="flex gap-3">
-                              <Button
-                                variant={selectedInvoice.tone === "Polite" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => {
-                                  const newTone = "Polite"
-                                  const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
-                                  setSelectedInvoice({ 
-                                    ...selectedInvoice, 
-                                    tone: newTone,
-                                    customMessage: selectedInvoice.customMessage || defaultMessage
-                                  })
-                                }}
-                                className={
-                                  selectedInvoice.tone === "Polite"
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                                }
-                              >
-                                Polite
-                              </Button>
-                              <Button
-                                variant={selectedInvoice.tone === "Professional" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => {
-                                  const newTone = "Professional"
-                                  const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
-                                  setSelectedInvoice({ 
-                                    ...selectedInvoice, 
-                                    tone: newTone,
-                                    customMessage: selectedInvoice.customMessage || defaultMessage
-                                  })
-                                }}
-                                className={
-                                  selectedInvoice.tone === "Professional"
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                                }
-                              >
-                                Professional
-                              </Button>
-                              <Button
-                                variant={selectedInvoice.tone === "Firm" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => {
-                                  const newTone = "Firm"
-                                  const defaultMessage = generateDefaultMessage(selectedInvoice, newTone)
-                                  setSelectedInvoice({ 
-                                    ...selectedInvoice, 
-                                    tone: newTone,
-                                    customMessage: selectedInvoice.customMessage || defaultMessage
-                                  })
-                                }}
-                                className={
-                                  selectedInvoice.tone === "Firm"
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
-                                }
-                              >
-                                Firm
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="space-y-4">
-                            <div className="text-sm font-medium text-slate-300 mb-3">Edit Message Content:</div>
-                            <Textarea
-                              value={selectedInvoice.customMessage || generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")}
-                              onChange={(e) => setSelectedInvoice({ 
-                                ...selectedInvoice, 
-                                customMessage: e.target.value 
-                              })}
-                              className="min-h-[200px] bg-slate-700 border-slate-600 text-slate-300 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
-                              placeholder="Edit your message content here..."
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const defaultMessage = generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")
-                                  setSelectedInvoice({ 
-                                    ...selectedInvoice, 
-                                    customMessage: defaultMessage
-                                  })
-                                }}
-                                className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 text-xs"
-                              >
-                                Reset to Default
-                              </Button>
-                              <div className="text-xs text-slate-400 flex items-center">
-                                You can customize the message while keeping the selected tone
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-4">
-                            <Button
-                              variant="outline"
-                              className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
-                              onClick={() => setIsEditingMessage(false)}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                              onClick={() => setIsEditingMessage(false)}
-                            >
-                              Save Changes
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        // Preview View
-                        <div className="border-2 border-dashed border-slate-600 rounded-xl p-6 bg-slate-700/30">
-                          <div className="text-sm leading-relaxed text-slate-300 whitespace-pre-wrap">
-                            {selectedInvoice.customMessage || generateDefaultMessage(selectedInvoice, selectedInvoice.tone || "Polite")}
-                          </div>
-                        </div>
-                      )}
-                    </>
                   )}
 
                   {/* Action Buttons */}
@@ -1943,6 +1923,39 @@ Regards`
                             }}
                           >
                             Edit Message
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="flex-1 bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 font-semibold transition-all duration-300"
+                            onClick={() => {
+                              // Schedule reminder for default delay (e.g., +2 days)
+                              const nextFollowUp = new Date()
+                              const daysToAdd = selectedInvoice.daysOverdue && selectedInvoice.daysOverdue > 14 ? 3 : 7
+                              nextFollowUp.setDate(nextFollowUp.getDate() + daysToAdd)
+                              
+                              // Update the invoice with scheduled date
+                              setSelectedInvoice({
+                                ...selectedInvoice,
+                                nextFollowUpDate: nextFollowUp.toISOString()
+                              })
+                              
+                              // Show success notification
+                              if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('toast', { 
+                                  detail: { 
+                                    message: `Reminder scheduled for ${formatDate(nextFollowUp.toISOString())}`,
+                                    type: 'success'
+                                  } 
+                                }))
+                              }
+                              
+                              // Close modal after scheduling
+                              setTimeout(() => {
+                                setSelectedInvoice(null)
+                              }, 1500)
+                            }}
+                          >
+                            Schedule Reminder
                           </Button>
                           <Button
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
