@@ -138,7 +138,6 @@ export function PricingContent() {
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
                 onClick={() => setShowBetaForm(true)}
               >
-                <Rocket className="w-5 h-5 mr-2" />
                 Join Free Beta
               </Button>
               <p className="text-slate-400 text-sm">
@@ -176,7 +175,7 @@ export function PricingContent() {
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-8 text-white">
             <div className="flex items-center justify-center mb-4">
               <Crown className="w-8 h-8 mr-3" />
-              <h2 className="text-3xl font-bold">🚀 Founders Plan: $29/month for life</h2>
+              <h2 className="text-3xl font-bold">Founders Plan: $29/month for life</h2>
             </div>
             <p className="text-xl mb-6">
               For our first 500 users only, lock in this rate forever.
@@ -246,7 +245,7 @@ export function PricingContent() {
 
             <TabsContent value="monthly" className="space-y-6">
               <div className="grid md:grid-cols-3 gap-8">
-                {/* Lance Beta */}
+                {/* Lance Core */}
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <BetaCountdown />
                   <div className="absolute top-4 right-4">
@@ -255,7 +254,7 @@ export function PricingContent() {
                     </Badge>
                   </div>
                   <CardHeader className="text-center">
-                    <CardTitle className="text-2xl text-white">Lance Beta</CardTitle>
+                    <CardTitle className="text-2xl text-white">Lance Core</CardTitle>
                     <div className="text-3xl font-bold text-green-400">
                       Free during beta
                     </div>
@@ -267,7 +266,7 @@ export function PricingContent() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 flex-1 flex flex-col">
-                    {/* Lance Beta features */}
+                    {/* Lance Core features */}
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -855,7 +854,6 @@ export function PricingContent() {
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
               onClick={() => setShowBetaForm(true)}
             >
-              <Rocket className="w-5 h-5 mr-2" />
               Join Free Beta
             </Button>
             <Button 
