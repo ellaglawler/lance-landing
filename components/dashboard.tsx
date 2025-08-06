@@ -853,6 +853,96 @@ Regards`
     return null
   }
 
+  // Helper function to get payment insights for paid invoices
+  const getPaymentInsights = (invoice: InvoiceUI): {
+    successMessage: string;
+    clientPattern: string;
+    comparisonToAverage: string;
+    paymentReliability: string;
+  } => {
+    const daysToPayment = invoice.daysToPayment ?? 0
+    
+    // Generate success message
+    const successMessage = daysToPayment <= 3 
+      ? `Invoice Paid — Lance helped you get paid in just ${daysToPayment} days!`
+      : daysToPayment <= 7
+      ? `Invoice Paid — Lance helped you get paid in ${daysToPayment} days.`
+      : `Invoice Paid — Lance helped you get paid in ${daysToPayment} days.`
+    
+    // Generate client payment pattern (demo data for now)
+    let clientPattern = ""
+    if (demoMode) {
+      const patterns: { [key: string]: string } = {
+        "Blue Corp": "This client typically pays in 3-5 days.",
+        "StartupXYZ": "This client typically pays in 10-15 days.",
+        "Design Studio Pro": "This client typically pays in 2-4 days.",
+      }
+      clientPattern = patterns[invoice.client] || "First payment from this client."
+    } else {
+      // In real implementation, this would query payment history
+      clientPattern = daysToPayment <= 5 ? "This client typically pays quickly." : "This client typically pays within terms."
+    }
+    
+    // Generate comparison to average
+    const averageDays = demoMode ? 7.2 : 8.5 // Would be calculated from real data
+    const comparisonToAverage = daysToPayment < averageDays
+      ? `Faster than your average client (${averageDays} days)`
+      : `About average for your clients (${averageDays} days)`
+    
+    // Generate payment reliability
+    const reliability = demoMode ? "On-time 4 out of 5 times" : "Reliable payer"
+    
+    return {
+      successMessage,
+      clientPattern,
+      comparisonToAverage,
+      paymentReliability: reliability
+    }
+  }
+
+  // Helper function to get payment timeline for paid invoices
+  const getPaymentTimeline = (invoice: InvoiceUI): Array<{
+    step: string;
+    date: string;
+    icon: any;
+    color: string;
+  }> => {
+    const timeline = []
+    
+    // Invoice sent
+    if (invoice.dateSent) {
+      timeline.push({
+        step: "Invoice Sent",
+        date: formatDate(invoice.dateSent),
+        icon: FileText,
+        color: "text-blue-400"
+      })
+    }
+    
+    // Reminders sent (if any)
+    const history = getReminderHistory(invoice)
+    if (history.hasReminders) {
+      timeline.push({
+        step: `${history.reminderCount} Reminder${history.reminderCount > 1 ? 's' : ''} Sent`,
+        date: history.lastReminderDate,
+        icon: Send,
+        color: "text-orange-400"
+      })
+    }
+    
+    // Payment received
+    if (invoice.datePaid) {
+      timeline.push({
+        step: "Paid in Full",
+        date: formatDate(invoice.datePaid),
+        icon: CheckCircle,
+        color: "text-green-400"
+      })
+    }
+    
+    return timeline
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 p-6 pt-32">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -1484,6 +1574,7 @@ Regards`
                 const days = invoice.daysOverdue ?? 0;
                 if (invoice.status === "paid") {
                   // Render paid invoice
+                  const insights = getPaymentInsights(invoice)
                   return (
                     <div
                       key={invoice.id}
@@ -1495,30 +1586,48 @@ Regards`
                             {invoice.avatar}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <div className="font-bold text-xl text-white">{invoice.client}</div>
+                        <div className="flex-1">
+                          <div className="font-bold text-xl text-white">
+                            {invoice.client}
+                            {invoice.id && (
+                              <span className="text-slate-400 font-normal text-lg ml-2">
+                                #{invoice.id}
+                              </span>
+                            )}
+                          </div>
                           <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-slate-400">${invoice.amount.toLocaleString()}</span> • Paid
+                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
                             {'daysToPayment' in invoice && invoice.daysToPayment !== null ? ` in ${invoice.daysToPayment} days` : ' (unknown)'}
                           </div>
                           <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent ?? '') : ''}
+                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
                             </div>
                             <div className="flex items-center gap-1">
+                              <CheckCircle className="h-3 w-3 text-green-400" />
+                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid) : ''}
+                            </div>
+                          </div>
+                          
+                          {/* Payment Insights */}
+                          <div className="mt-2 space-y-1">
+                            <div className="text-xs text-green-400 flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
-                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid ?? '') : ''}
+                              <span className="font-medium">{insights.successMessage}</span>
+                            </div>
+                            <div className="text-xs text-slate-400">
+                              {insights.clientPattern} • {insights.comparisonToAverage}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
-                          className="font-semibold bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-300"
+                          className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
                         >
                           <span className="hidden sm:inline">View Details</span>
                           <span className="sm:hidden">View</span>
@@ -1661,6 +1770,25 @@ Regards`
                 </div>
 
                 <div className="space-y-6">
+                  {/* Success Banner for Paid Invoices */}
+                  {selectedInvoice.isPastInvoice && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-500 rounded-lg">
+                          <CheckCircle className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-green-400 font-semibold text-lg">
+                            {getPaymentInsights(selectedInvoice).successMessage}
+                          </div>
+                          <div className="text-green-300 text-sm mt-1">
+                            Great work! Lance helped streamline your payment process.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Invoice Details Card */}
                   <div className="bg-slate-700 p-5 rounded-xl border border-slate-600">
                     <div className="text-sm text-slate-300 mb-2 font-medium">
@@ -1698,6 +1826,25 @@ Regards`
                           <div>
                             <span className="text-slate-400">Days to Payment:</span>
                             <div className="text-blue-400 font-medium">{selectedInvoice.daysToPayment !== null ? `${selectedInvoice.daysToPayment} days` : 'Unknown'}</div>
+                          </div>
+                        </div>
+                        
+                        {/* Payment Insights */}
+                        <div className="mt-4 pt-3 border-t border-slate-600">
+                          <div className="text-sm font-medium text-slate-300 mb-2">Payment Insights</div>
+                          <div className="space-y-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <Brain className="h-3 w-3 text-blue-400" />
+                              <span className="text-slate-300">{getPaymentInsights(selectedInvoice).clientPattern}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <BarChart2 className="h-3 w-3 text-purple-400" />
+                              <span className="text-slate-300">{getPaymentInsights(selectedInvoice).comparisonToAverage}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="h-3 w-3 text-green-400" />
+                              <span className="text-slate-300">{getPaymentInsights(selectedInvoice).paymentReliability}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1830,6 +1977,37 @@ Regards`
                           ))}
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* Payment Timeline for Paid Invoices */}
+                  {selectedInvoice.isPastInvoice && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-blue-400" />
+                        <h4 className="text-lg font-semibold text-white">Payment Journey</h4>
+                      </div>
+                      <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
+                        <div className="space-y-3">
+                          {getPaymentTimeline(selectedInvoice).map((step, index) => {
+                            const IconComponent = step.icon
+                            return (
+                              <div key={index} className="flex items-center gap-3">
+                                <div className={`p-1.5 rounded-full bg-slate-600 ${step.color}`}>
+                                  <IconComponent className="h-3 w-3" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium text-white">{step.step}</div>
+                                  <div className="text-xs text-slate-400">{step.date}</div>
+                                </div>
+                                {index < getPaymentTimeline(selectedInvoice).length - 1 && (
+                                  <div className="w-px h-6 bg-slate-600 mx-2"></div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
                     </div>
                   )}
 
