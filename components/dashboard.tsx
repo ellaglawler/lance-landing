@@ -785,6 +785,72 @@ Regards`
     return riskData[clientName] || "No payment history available."
   }
 
+  // Helper function to get reminder history for display in invoice rows
+  const getReminderHistory = (invoice: InvoiceUI): {
+    reminderCount: number;
+    lastReminderDate: string;
+    lastReminderTone: string;
+    hasReminders: boolean;
+  } => {
+    if (demoMode) {
+      // Demo data based on invoice ID
+      const demoData: { [key: number]: { count: number; date: string; tone: string } } = {
+        1: { count: 2, date: "2024-02-15", tone: "Polite" },
+        2: { count: 1, date: "2024-02-10", tone: "Polite" },
+        3: { count: 3, date: "2024-02-10", tone: "Professional" },
+      }
+      
+      const data = demoData[invoice.id]
+      if (data) {
+        return {
+          reminderCount: data.count,
+          lastReminderDate: formatDate(data.date),
+          lastReminderTone: data.tone,
+          hasReminders: true
+        }
+      }
+    } else {
+      // Real data from email threads
+      const emailThreads = invoice.emailThread || []
+      const reminderEmails = emailThreads.filter(email => 
+        email.subject.toLowerCase().includes('reminder') || 
+        email.subject.toLowerCase().includes('follow up')
+      )
+      
+      if (reminderEmails.length > 0) {
+        const lastReminder = reminderEmails[reminderEmails.length - 1]
+        return {
+          reminderCount: reminderEmails.length,
+          lastReminderDate: formatDate(lastReminder.date),
+          lastReminderTone: lastReminder.tone,
+          hasReminders: true
+        }
+      }
+    }
+    
+    return {
+      reminderCount: 0,
+      lastReminderDate: "",
+      lastReminderTone: "",
+      hasReminders: false
+    }
+  }
+
+  // Helper function to get smart suggestion for high-risk clients
+  const getSmartSuggestion = (invoice: InvoiceUI): string | null => {
+    const history = getReminderHistory(invoice)
+    
+    if (history.reminderCount >= 3 && (invoice.daysOverdue ?? 0) > 21) {
+      return "Client hasn't replied to 3 reminders — consider requesting payment confirmation."
+    }
+    
+    if (history.reminderCount >= 2 && (invoice.daysOverdue ?? 0) > 14) {
+      return "Multiple reminders sent — may need escalation."
+    }
+    
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 p-6 pt-32">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -1490,14 +1556,55 @@ Regards`
                             {invoice.avatar}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <div className="font-bold text-xl text-white">{invoice.client}</div>
+                        <div className="flex-1">
+                          <div className="font-bold text-xl text-white">
+                            {invoice.client}
+                            {invoice.id && (
+                              <span className="text-slate-400 font-normal text-lg ml-2">
+                                #{invoice.id}
+                              </span>
+                            )}
+                          </div>
                           <div className="text-sm text-slate-300 font-medium">
                             <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
                           </div>
                           <div className={`text-xs mt-1 font-medium ${getStatusTextColor(days)}`}>
                             {getStatusText(days)}
                           </div>
+                          
+                          {/* Reminder History Context */}
+                          {(() => {
+                            const history = getReminderHistory(invoice)
+                            const suggestion = getSmartSuggestion(invoice)
+                            
+                            return (
+                              <div className="mt-2 space-y-1">
+                                {history.hasReminders ? (
+                                  <div className="text-xs text-slate-400 flex items-center gap-1">
+                                    <span>📤</span>
+                                    <span>{history.reminderCount} reminder{history.reminderCount > 1 ? 's' : ''} sent</span>
+                                    <span>•</span>
+                                    <span>Last sent: {history.lastReminderDate}</span>
+                                    <span>•</span>
+                                    <span>Tone: {history.lastReminderTone}</span>
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-slate-400 flex items-center gap-1">
+                                    <span>📤</span>
+                                    <span>No reminders sent yet</span>
+                                  </div>
+                                )}
+                                
+                                {/* Smart Suggestion for High-Risk Clients */}
+                                {suggestion && (
+                                  <div className="text-xs text-yellow-400 flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
+                                    <span>🧠</span>
+                                    <span>{suggestion}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })()}
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
