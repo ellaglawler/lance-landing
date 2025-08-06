@@ -1,4 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+
+// Extend AxiosRequestConfig to include our custom retry flag
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
 
 // Base URL can be set here if needed, or use relative URLs for Next.js proxying
 const api = axios.create({
@@ -40,12 +45,13 @@ let isRefreshing = false;
 let refreshPromise: Promise<any> | null = null;
 let retryCount = 0;
 const MAX_RETRIES = 3;
+let isRedirecting = false; // Prevent multiple redirects
 
 // Attempt to refresh JWT if 401 is encountered with mutex lock
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomAxiosRequestConfig;
     
     if (
       error.response &&
@@ -61,9 +67,27 @@ api.interceptors.response.use(
         console.error('[API] Max retry attempts reached, clearing tokens and redirecting');
         clearTokens();
         retryCount = 0;
-        // Redirect to login page
-        if (typeof window !== 'undefined') {
-          window.location.href = '/onboarding';
+        // Show user-friendly message before redirect
+        if (typeof window !== 'undefined' && !isRedirecting) {
+          isRedirecting = true;
+          // Try to show toast notification if available
+          try {
+            // Check if toast is available (from useToast hook)
+            const event = new CustomEvent('show-toast', {
+              detail: {
+                title: 'Session Expired',
+                description: 'Please log in again to continue.',
+                variant: 'destructive'
+              }
+            });
+            window.dispatchEvent(event);
+          } catch (e) {
+            console.log('[API] Toast notification not available');
+          }
+          // Debounced redirect to prevent multiple navigation triggers
+          setTimeout(() => {
+            window.location.href = '/onboarding';
+          }, 100); // Small delay to prevent multiple redirects
         }
         return Promise.reject(error);
       }
@@ -85,9 +109,26 @@ api.interceptors.response.use(
             console.error('[API] Token refresh failed:', refreshError);
             clearTokens();
             retryCount = 0;
-            // Redirect to login page on refresh failure
-            if (typeof window !== 'undefined') {
-              window.location.href = '/onboarding';
+            // Show user-friendly message before redirect
+            if (typeof window !== 'undefined' && !isRedirecting) {
+              isRedirecting = true;
+              // Try to show toast notification if available
+              try {
+                const event = new CustomEvent('show-toast', {
+                  detail: {
+                    title: 'Session Expired',
+                    description: 'Please log in again to continue.',
+                    variant: 'destructive'
+                  }
+                });
+                window.dispatchEvent(event);
+              } catch (e) {
+                console.log('[API] Toast notification not available');
+              }
+              // Debounced redirect to prevent multiple navigation triggers
+              setTimeout(() => {
+                window.location.href = '/onboarding';
+              }, 100); // Small delay to prevent multiple redirects
             }
             throw refreshError;
           } finally {
@@ -102,6 +143,7 @@ api.interceptors.response.use(
         const newToken = await refreshPromise;
         console.log('[API] Retrying original request with new token...');
         // Update Authorization header and retry original request
+        originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
