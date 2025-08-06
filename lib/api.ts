@@ -493,6 +493,9 @@ export async function getCheckoutSession(sessionId: string): Promise<any> {
   return res.data;
 }
 
+// Invoice status enum
+export type InvoiceStatus = "paid" | "overdue" | "due";
+
 // Test Invoice Generator API functions
 export interface InvoiceResponse {
   id: number;
@@ -521,6 +524,9 @@ export interface InvoiceResponse {
   // Reminder summary fields (computed from email threads)
   reminder_count: number;
   last_reminder_tone: string | null;
+  
+  // Computed status field
+  status: InvoiceStatus;
 }
 
 export interface TestInvoiceRequest {

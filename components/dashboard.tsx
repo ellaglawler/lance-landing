@@ -49,7 +49,7 @@ interface InvoiceUI {
   client: string;
   amount: number;
   avatar: string;
-  status: "overdue" | "paid" | "pending_response";
+  status: "overdue" | "paid" | "due";
   tone?: string;
   customMessage?: string;
   daysOverdue?: number;
@@ -442,7 +442,7 @@ Regards`
     }
     return {
       ...invoice,
-      status: "pending_response",
+      status: "due",
       lastReminderSent: now.toISOString(),
       nextFollowUpDate: nextFollowUp.toISOString(),
       emailThread: [...(invoice.emailThread ?? []), newEmail]
@@ -483,7 +483,7 @@ Regards`
       // Update local state with the sent email
       const updatedInvoice = {
         ...invoice,
-        status: "pending_response" as const,
+        status: "due" as const,
         lastReminderSent: sentEmail.sent_at || new Date().toISOString(),
         nextFollowUpDate: sentEmail.next_follow_up_date || nextFollowUp.toISOString(),
         emailThread: [
@@ -540,7 +540,7 @@ Regards`
         return invoice
       })
       setInvoices(updatedInvoices)
-      return { sent_count: updatedInvoices.filter(inv => inv.status === "pending_response").length, failed_count: 0 }
+      return { sent_count: updatedInvoices.filter(inv => inv.status === "due").length, failed_count: 0 }
     }
 
     try {
@@ -1990,7 +1990,7 @@ Regards`
                         >
                           Close
                         </Button>
-                      ) : selectedInvoice.status === "pending_response" ? (
+                      ) : selectedInvoice.status === "due" ? (
                         <>
                           <div className="flex-1 flex items-center justify-center gap-3 px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                             <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
