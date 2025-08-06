@@ -22,6 +22,8 @@ import {
   ChevronUp,
   ChevronDown,
   FileText,
+  Send,
+  Brain,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -1581,7 +1583,7 @@ Regards`
                               <div className="mt-2 space-y-1">
                                 {history.hasReminders ? (
                                   <div className="text-xs text-slate-400 flex items-center gap-1">
-                                    <span>📤</span>
+                                    <Send className="h-3 w-3" />
                                     <span>{history.reminderCount} reminder{history.reminderCount > 1 ? 's' : ''} sent</span>
                                     <span>•</span>
                                     <span>Last sent: {history.lastReminderDate}</span>
@@ -1590,7 +1592,7 @@ Regards`
                                   </div>
                                 ) : (
                                   <div className="text-xs text-slate-400 flex items-center gap-1">
-                                    <span>📤</span>
+                                    <Send className="h-3 w-3" />
                                     <span>No reminders sent yet</span>
                                   </div>
                                 )}
@@ -1598,7 +1600,7 @@ Regards`
                                 {/* Smart Suggestion for High-Risk Clients */}
                                 {suggestion && (
                                   <div className="text-xs text-yellow-400 flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
-                                    <span>🧠</span>
+                                    <Brain className="h-3 w-3" />
                                     <span>{suggestion}</span>
                                   </div>
                                 )}
