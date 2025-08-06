@@ -1,4 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+
+// Extend AxiosRequestConfig to include our custom retry flag
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
 
 // Base URL can be set here if needed, or use relative URLs for Next.js proxying
 const api = axios.create({
@@ -35,11 +40,19 @@ function clearTokens() {
   localStorage.removeItem('jwt');
 }
 
-// Attempt to refresh JWT if 401 is encountered
+// Mutex lock for refresh token operations
+let isRefreshing = false;
+let refreshPromise: Promise<any> | null = null;
+let retryCount = 0;
+const MAX_RETRIES = 3;
+let isRedirecting = false; // Prevent multiple redirects
+
+// Attempt to refresh JWT if 401 is encountered with mutex lock
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomAxiosRequestConfig;
+    
     if (
       error.response &&
       error.response.status === 401 &&
@@ -48,18 +61,94 @@ api.interceptors.response.use(
     ) {
       console.log('[API] 401 detected, attempting token refresh...');
       originalRequest._retry = true;
+      
+      // Check retry limits to prevent infinite loops
+      if (retryCount >= MAX_RETRIES) {
+        console.error('[API] Max retry attempts reached, clearing tokens and redirecting');
+        clearTokens();
+        retryCount = 0;
+        // Show user-friendly message before redirect
+        if (typeof window !== 'undefined' && !isRedirecting) {
+          isRedirecting = true;
+          // Try to show toast notification if available
+          try {
+            // Check if toast is available (from useToast hook)
+            const event = new CustomEvent('show-toast', {
+              detail: {
+                title: 'Session Expired',
+                description: 'Please log in again to continue.',
+                variant: 'destructive'
+              }
+            });
+            window.dispatchEvent(event);
+          } catch (e) {
+            console.log('[API] Toast notification not available');
+          }
+          // Debounced redirect to prevent multiple navigation triggers
+          setTimeout(() => {
+            window.location.href = '/onboarding';
+          }, 100); // Small delay to prevent multiple redirects
+        }
+        return Promise.reject(error);
+      }
+      
+      // Use mutex lock to prevent concurrent refresh attempts
+      if (!isRefreshing) {
+        isRefreshing = true;
+        retryCount++;
+        
+        refreshPromise = (async () => {
+          try {
+            console.log('[API] Calling /auth/refresh (refresh token sent via HttpOnly cookie)...');
+            const res = await api.post('/auth/refresh');
+            setTokens(res.data.access_token);
+            console.log('[API] Token refresh successful');
+            retryCount = 0; // Reset retry count on successful refresh
+            return res.data.access_token;
+          } catch (refreshError) {
+            console.error('[API] Token refresh failed:', refreshError);
+            clearTokens();
+            retryCount = 0;
+            // Show user-friendly message before redirect
+            if (typeof window !== 'undefined' && !isRedirecting) {
+              isRedirecting = true;
+              // Try to show toast notification if available
+              try {
+                const event = new CustomEvent('show-toast', {
+                  detail: {
+                    title: 'Session Expired',
+                    description: 'Please log in again to continue.',
+                    variant: 'destructive'
+                  }
+                });
+                window.dispatchEvent(event);
+              } catch (e) {
+                console.log('[API] Toast notification not available');
+              }
+              // Debounced redirect to prevent multiple navigation triggers
+              setTimeout(() => {
+                window.location.href = '/onboarding';
+              }, 100); // Small delay to prevent multiple redirects
+            }
+            throw refreshError;
+          } finally {
+            isRefreshing = false;
+            refreshPromise = null;
+          }
+        })();
+      }
+      
       try {
-        console.log('[API] Calling /auth/refresh (refresh token sent via HttpOnly cookie)...');
-        const res = await api.post('/auth/refresh');
-        setTokens(res.data.access_token);
-        console.log('[API] Token refresh successful, retrying original request...');
+        // Wait for the refresh to complete (either success or failure)
+        const newToken = await refreshPromise;
+        console.log('[API] Retrying original request with new token...');
         // Update Authorization header and retry original request
-        originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        console.error('[API] Token refresh failed:', refreshError);
-        clearTokens();
-        // Optionally, redirect to login page here
+        // Refresh failed, reject the original request
+        return Promise.reject(error);
       }
     } else {
       if (error.response && error.response.status === 401) {
@@ -493,6 +582,9 @@ export async function getCheckoutSession(sessionId: string): Promise<any> {
   return res.data;
 }
 
+// Invoice status enum
+export type InvoiceStatus = "PAID" | "OVERDUE" | "DUE";
+
 // Test Invoice Generator API functions
 export interface InvoiceResponse {
   id: number;
@@ -517,6 +609,13 @@ export interface InvoiceResponse {
   tone: string | null;
   last_reminder_sent: string | null;
   next_follow_up_date: string | null;
+  
+  // Reminder summary fields (computed from email threads)
+  reminder_count: number;
+  last_reminder_tone: string | null;
+  
+  // Computed status field
+  status: InvoiceStatus;
 }
 
 export interface TestInvoiceRequest {

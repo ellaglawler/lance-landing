@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast'
 import AdminGuard from '@/components/admin-guard'
 import TestInvoiceGenerator from '@/components/test-invoice-generator'
+import { InvoiceStatusBadge } from '@/components/ui/invoice-status-badge'
 import { 
   Play, 
   Square, 
@@ -701,11 +702,7 @@ export default function AdminDashboard() {
                             )}
                           </TableCell>
                           <TableCell>
-                            {invoice.is_overdue ? (
-                              <Badge variant="destructive">Overdue</Badge>
-                            ) : (
-                              <Badge variant="default" className="bg-green-500">Paid</Badge>
-                            )}
+                            <InvoiceStatusBadge status={invoice.status} />
                           </TableCell>
                           <TableCell>
                             {invoice.due_date ? formatDate(invoice.due_date) : 'No due date'}
