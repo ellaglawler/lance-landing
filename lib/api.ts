@@ -517,6 +517,10 @@ export interface InvoiceResponse {
   tone: string | null;
   last_reminder_sent: string | null;
   next_follow_up_date: string | null;
+  
+  // Reminder summary fields (computed from email threads)
+  reminder_count: number;
+  last_reminder_tone: string | null;
 }
 
 export interface TestInvoiceRequest {

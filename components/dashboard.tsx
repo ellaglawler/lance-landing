@@ -60,6 +60,8 @@ interface InvoiceUI {
   isPastInvoice?: boolean;
   lastReminderSent?: string;
   nextFollowUpDate?: string;
+  reminderCount?: number;
+  lastReminderTone?: string | null;
 }
 
 interface ActivityFeedItem {
@@ -343,6 +345,8 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       emailThread: inv.emailThread,
       lastReminderSent: inv.last_reminder_sent,
       nextFollowUpDate: inv.next_follow_up_date,
+      reminderCount: inv.reminder_count || 0,
+      lastReminderTone: inv.last_reminder_tone || null,
     }))
 
   const pastInvoices: InvoiceUI[] = invoices
@@ -365,6 +369,8 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       daysToPayment: inv.days_to_payment,
       status: "paid" as const,
       emailThread: inv.emailThread,
+      reminderCount: inv.reminder_count || 0,
+      lastReminderTone: inv.last_reminder_tone || null,
     }))
 
   const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...pastInvoices]
@@ -798,6 +804,7 @@ Regards`
         1: { count: 2, date: "2024-02-15", tone: "Polite" },
         2: { count: 1, date: "2024-02-10", tone: "Polite" },
         3: { count: 3, date: "2024-02-10", tone: "Professional" },
+        32: { count: 4, date: "2024-08-04", tone: "Firm" }, // Add data for invoice #32
       }
       
       const data = demoData[invoice.id]
@@ -810,19 +817,12 @@ Regards`
         }
       }
     } else {
-      // Real data from email threads
-      const emailThreads = invoice.emailThread || []
-      const reminderEmails = emailThreads.filter(email => 
-        email.subject.toLowerCase().includes('reminder') || 
-        email.subject.toLowerCase().includes('follow up')
-      )
-      
-      if (reminderEmails.length > 0) {
-        const lastReminder = reminderEmails[reminderEmails.length - 1]
+      // Use reminder summary data from API response
+      if (invoice.reminderCount && invoice.reminderCount > 0) {
         return {
-          reminderCount: reminderEmails.length,
-          lastReminderDate: formatDate(lastReminder.date),
-          lastReminderTone: lastReminder.tone,
+          reminderCount: invoice.reminderCount,
+          lastReminderDate: invoice.lastReminderSent ? formatDate(invoice.lastReminderSent) : "Unknown",
+          lastReminderTone: invoice.lastReminderTone || "Unknown",
           hasReminders: true
         }
       }
@@ -1502,11 +1502,11 @@ Regards`
                           <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
+                              Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent ?? '') : ''}
                             </div>
                             <div className="flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
-                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid) : ''}
+                              Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid ?? '') : ''}
                             </div>
                           </div>
                         </div>
