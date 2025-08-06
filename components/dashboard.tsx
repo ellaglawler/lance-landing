@@ -49,7 +49,7 @@ interface InvoiceUI {
   client: string;
   amount: number;
   avatar: string;
-  status: "overdue" | "paid" | "due";
+  status: "OVERDUE" | "PAID" | "DUE";
   tone?: string;
   customMessage?: string;
   daysOverdue?: number;
@@ -101,8 +101,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       client_name: "Acme Design Co.",
       amount: 1200,
       days_overdue: 14,
-      is_overdue: true,
-      is_paid: false,
+      status: "overdue",
       detected_at: "2024-01-01T00:00:00Z",
       tone: "Polite",
       emailThread: [
@@ -127,8 +126,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       client_name: "TechStart Inc.",
       amount: 850,
       days_overdue: 7,
-      is_overdue: true,
-      is_paid: false,
+      status: "overdue",
       detected_at: "2024-01-02T00:00:00Z",
       tone: "Polite",
       emailThread: [
@@ -146,8 +144,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       client_name: "Creative Studio",
       amount: 400,
       days_overdue: 21,
-      is_overdue: true,
-      is_paid: false,
+      status: "overdue",
       detected_at: "2024-01-03T00:00:00Z",
       tone: "Firm",
       emailThread: [
@@ -179,8 +176,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       id: 101,
       client_name: "Blue Corp",
       amount: 2500,
-      is_overdue: false,
-      is_paid: true,
+      status: "paid",
       detected_at: "2024-01-15T00:00:00Z",
       paid_at: "2024-01-18T00:00:00Z",
       message_type: "Polite",
@@ -207,8 +203,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       id: 102,
       client_name: "StartupXYZ",
       amount: 1800,
-      is_overdue: false,
-      is_paid: true,
+      status: "paid",
       detected_at: "2024-01-10T00:00:00Z",
       paid_at: "2024-01-25T00:00:00Z",
       message_type: "Professional",
@@ -242,8 +237,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       id: 103,
       client_name: "Design Studio Pro",
       amount: 950,
-      is_overdue: false,
-      is_paid: true,
+      status: "paid",
       detected_at: "2024-01-08T00:00:00Z",
       paid_at: "2024-01-12T00:00:00Z",
       message_type: "Polite",
@@ -327,9 +321,9 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }
   }, [fetchInvoices, fetchActivities, demoMode])
 
-  // Split invoices into overdue and paid, and map to UI shape
+  // Split invoices by status and map to UI shape
   const mappedOverdueInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.is_overdue)
+    .filter(inv => inv.status === "OVERDUE")
     .map(inv => ({
       id: inv.id,
       client: inv.client_name,
@@ -342,7 +336,29 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
             .join("")
             .toUpperCase()
         : "--",
-      status: "overdue" as const,
+      status: "OVERDUE" as const,
+      tone: inv.tone || "Polite",
+      emailThread: inv.emailThread,
+      lastReminderSent: inv.last_reminder_sent,
+      nextFollowUpDate: inv.next_follow_up_date,
+      reminderCount: inv.reminder_count || 0,
+      lastReminderTone: inv.last_reminder_tone || null,
+    }))
+
+  const dueInvoices: InvoiceUI[] = invoices
+    .filter(inv => inv.status === "DUE")
+    .map(inv => ({
+      id: inv.id,
+      client: inv.client_name,
+      amount: inv.amount,
+      avatar: inv.client_name
+        ? inv.client_name
+            .split(" ")
+            .map((w: string) => w[0])
+            .join("")
+            .toUpperCase()
+        : "--",
+      status: "DUE" as const,
       tone: inv.tone || "Polite",
       emailThread: inv.emailThread,
       lastReminderSent: inv.last_reminder_sent,
@@ -352,7 +368,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }))
 
   const pastInvoices: InvoiceUI[] = invoices
-    .filter(inv => !inv.is_overdue)
+    .filter(inv => inv.status === "PAID")
     .map(inv => ({
       id: inv.id,
       client: inv.client_name,
@@ -369,13 +385,13 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       messageType: inv.message_type,
       messageSent: inv.message_sent,
       daysToPayment: inv.days_to_payment,
-      status: "paid" as const,
+      status: "PAID" as const,
       emailThread: inv.emailThread,
       reminderCount: inv.reminder_count || 0,
       lastReminderTone: inv.last_reminder_tone || null,
     }))
 
-  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...pastInvoices]
+  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...dueInvoices, ...pastInvoices]
 
   // --- UX: Send Reminder Logic ---
   function generateEmailContent(invoice: InvoiceUI): string {
@@ -442,7 +458,7 @@ Regards`
     }
     return {
       ...invoice,
-      status: "due",
+      status: "DUE",
       lastReminderSent: now.toISOString(),
       nextFollowUpDate: nextFollowUp.toISOString(),
       emailThread: [...(invoice.emailThread ?? []), newEmail]
@@ -534,13 +550,13 @@ Regards`
     if (demoMode) {
       // In demo mode, just update local state for all invoices
       const updatedInvoices = allInvoices.map(invoice => {
-        if (invoice.status === "overdue") {
+        if (invoice.status === "OVERDUE") {
           return sendReminder(invoice)
         }
         return invoice
       })
       setInvoices(updatedInvoices)
-      return { sent_count: updatedInvoices.filter(inv => inv.status === "due").length, failed_count: 0 }
+      return { sent_count: updatedInvoices.filter(inv => inv.status === "DUE").length, failed_count: 0 }
     }
 
     try {
@@ -733,7 +749,7 @@ Regards`
     // Filter by days overdue (only applies to overdue invoices)
     if (daysFilter !== "all") {
       filtered = filtered.filter((invoice) => {
-        if (invoice.status === "paid") return true // Always show paid invoices
+        if (invoice.status === "PAID") return true // Always show paid invoices
         const days = invoice.daysOverdue ?? 0;
         if (daysFilter === "1-7") return days >= 1 && days <= 7
         if (daysFilter === "8-14") return days >= 8 && days <= 14
@@ -1434,7 +1450,7 @@ Regards`
                 onClick={() => {
                   // Get all overdue invoice IDs
                   const overdueInvoiceIds = allInvoices
-                    .filter(inv => inv.status === "overdue")
+                    .filter(inv => inv.status === "OVERDUE")
                     .map(inv => inv.id)
                   
                   if (overdueInvoiceIds.length === 0) return
@@ -1451,7 +1467,7 @@ Regards`
               >
                 <Zap className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Approve All Reminders</span>
-                <span className="sm:hidden">Approve All</span> ({allInvoices.filter(inv => inv.status === "overdue").length})
+                <span className="sm:hidden">Approve All</span> ({allInvoices.filter(inv => inv.status === "OVERDUE").length})
               </Button>
             </div>
           </CardHeader>
@@ -1572,7 +1588,7 @@ Regards`
             ) : (
               filteredInvoices.map((invoice) => {
                 const days = invoice.daysOverdue ?? 0;
-                if (invoice.status === "paid") {
+                if (invoice.status === "PAID") {
                   // Render paid invoice
                   const insights = getPaymentInsights(invoice)
                   return (
@@ -1727,7 +1743,7 @@ Regards`
                         ) : (
                           <Button
                             size="sm"
-                            onClick={() => setSelectedInvoice({ ...invoice, status: "overdue" })}
+                            onClick={() => setSelectedInvoice({ ...invoice, status: "OVERDUE" })}
                             className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
                           >
                             <span className="hidden sm:inline">Review & Approve</span>
@@ -2168,7 +2184,7 @@ Regards`
                         >
                           Close
                         </Button>
-                      ) : selectedInvoice.status === "due" ? (
+                      ) : selectedInvoice.status === "DUE" ? (
                         <>
                           <div className="flex-1 flex items-center justify-center gap-3 px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                             <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>

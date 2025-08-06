@@ -9,19 +9,19 @@ interface InvoiceStatusBadgeProps {
 export function InvoiceStatusBadge({ status, className }: InvoiceStatusBadgeProps) {
   const getStatusConfig = (status: InvoiceStatus) => {
     switch (status) {
-      case "paid":
+      case "PAID":
         return {
           variant: "default" as const,
           className: "bg-green-500",
           text: "Paid"
         };
-      case "overdue":
+      case "OVERDUE":
         return {
           variant: "destructive" as const,
           className: "",
           text: "Overdue"
         };
-      case "due":
+      case "DUE":
         return {
           variant: "outline" as const,
           className: "",

@@ -583,7 +583,7 @@ export async function getCheckoutSession(sessionId: string): Promise<any> {
 }
 
 // Invoice status enum
-export type InvoiceStatus = "paid" | "overdue" | "due";
+export type InvoiceStatus = "PAID" | "OVERDUE" | "DUE";
 
 // Test Invoice Generator API functions
 export interface InvoiceResponse {
