@@ -1761,7 +1761,7 @@ Regards`
 
         {/* Preview Modal */}
         {selectedInvoice && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
             <div className="bg-slate-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-700">
               <div className="p-8">
                 <div className="flex items-center justify-between mb-6">
