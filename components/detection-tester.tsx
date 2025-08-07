@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import { 
   Play, 
@@ -26,7 +27,10 @@ import {
   EyeOff,
   Zap,
   TestTube,
-  RefreshCw
+  RefreshCw,
+  Info,
+  X,
+  Link
 } from 'lucide-react'
 import { testDetection, getUsersWithGmail, type DetectionTestRequest, type DetectionTestResponse, type DetectionResult, type UserWithGmail } from '@/lib/api'
 
@@ -157,10 +161,6 @@ export default function DetectionTester() {
     }))
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString()
-  }
-
   const formatCurrency = (amount: number, currency: string = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -170,14 +170,76 @@ export default function DetectionTester() {
 
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 0.8) return 'bg-green-500'
-    if (confidence >= 0.6) return 'bg-yellow-500'
+    if (confidence >= 0.7) return 'bg-yellow-500'
     return 'bg-red-500'
   }
 
   const getConfidenceText = (confidence: number) => {
     if (confidence >= 0.8) return 'High'
-    if (confidence >= 0.6) return 'Medium'
+    if (confidence >= 0.7) return 'Medium'
     return 'Low'
+  }
+
+  const getConfidenceVariant = (confidence: number) => {
+    if (confidence >= 0.8) return 'default'
+    if (confidence >= 0.7) return 'secondary'
+    return 'destructive'
+  }
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })
+  }
+
+  const ConfidenceBreakdown = ({ confidence, explanation }: { confidence: number, explanation?: Record<string, any> }) => {
+    if (!explanation) return null
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant={getConfidenceVariant(confidence)} className="cursor-help">
+              {getConfidenceText(confidence)} ({Math.round(confidence * 100)}%)
+              {confidence < 0.7 && <AlertTriangle className="w-3 h-3 ml-1" />}
+              <Info className="w-3 h-3 ml-1" />
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-sm">
+            <div className="space-y-2">
+              <div className="font-semibold">Confidence Breakdown:</div>
+              {explanation.base_score && (
+                <div className="text-sm">
+                  <span className="text-green-600">+{Math.round(explanation.base_score * 100)}%</span> Base score
+                </div>
+              )}
+              {explanation.bonuses && explanation.bonuses.length > 0 && (
+                <div className="space-y-1">
+                  {explanation.bonuses.map((bonus: any, idx: number) => (
+                    <div key={idx} className="text-sm">
+                      <span className="text-blue-600">+{Math.round(bonus.score * 100)}%</span> {bonus.reason}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {explanation.penalties && explanation.penalties.length > 0 && (
+                <div className="space-y-1">
+                  {explanation.penalties.map((penalty: any, idx: number) => (
+                    <div key={idx} className="text-sm">
+                      <span className="text-red-600">-{Math.round(penalty.score * 100)}%</span> {penalty.reason}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
   }
 
   return (
@@ -338,8 +400,21 @@ export default function DetectionTester() {
               </TabsList>
 
               <TabsContent value="results" className="space-y-4">
-                {results.results.map((result, index) => (
-                  <Card key={result.message_id} className="border-l-4 border-l-blue-500">
+                {results.results.map((result, index) => {
+                  // Determine card border color based on detection results
+                  let borderColor = 'border-l-gray-300' // Default
+                  if (result.error || result.gmail_error) {
+                    borderColor = 'border-l-red-500' // Error
+                  } else if (result.is_invoice && result.invoice_confidence && result.invoice_confidence >= 0.7) {
+                    borderColor = 'border-l-green-500' // High confidence invoice
+                  } else if (result.is_payment_confirmation && result.payment_confidence && result.payment_confidence >= 0.7) {
+                    borderColor = 'border-l-blue-500' // High confidence payment
+                  } else if (result.is_invoice || result.is_payment_confirmation) {
+                    borderColor = 'border-l-yellow-500' // Low confidence detection
+                  }
+                  
+                  return (
+                    <Card key={result.message_id} className={`border-l-4 ${borderColor}`}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -426,9 +501,15 @@ export default function DetectionTester() {
                             <div className="flex items-center gap-2">
                               <span className="text-sm">Is Invoice:</span>
                               {result.is_invoice ? (
-                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="w-4 h-4 text-green-500" />
+                                  <span className="text-green-600 font-medium">Yes</span>
+                                </div>
                               ) : (
-                                <AlertTriangle className="w-4 h-4 text-gray-400" />
+                                <div className="flex items-center gap-1">
+                                  <X className="w-4 h-4 text-red-500" />
+                                  <span className="text-red-600 font-medium">No</span>
+                                </div>
                               )}
                             </div>
                             {result.invoice_amount && (
@@ -444,9 +525,10 @@ export default function DetectionTester() {
                             {result.invoice_confidence !== undefined && (
                               <div className="flex items-center gap-2">
                                 <span className="text-sm">Confidence:</span>
-                                <Badge className={getConfidenceColor(result.invoice_confidence)}>
-                                  {getConfidenceText(result.invoice_confidence)} ({Math.round(result.invoice_confidence * 100)}%)
-                                </Badge>
+                                <ConfidenceBreakdown 
+                                  confidence={result.invoice_confidence} 
+                                  explanation={result.invoice_confidence_explanation}
+                                />
                               </div>
                             )}
                           </div>
@@ -479,9 +561,15 @@ export default function DetectionTester() {
                             <div className="flex items-center gap-2">
                               <span className="text-sm">Confirmation:</span>
                               {result.is_payment_confirmation ? (
-                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="w-4 h-4 text-green-500" />
+                                  <span className="text-green-600 font-medium">Yes</span>
+                                </div>
                               ) : (
-                                <AlertTriangle className="w-4 h-4 text-gray-400" />
+                                <div className="flex items-center gap-1">
+                                  <X className="w-4 h-4 text-red-500" />
+                                  <span className="text-red-600 font-medium">No</span>
+                                </div>
                               )}
                             </div>
                             <div className="flex items-center gap-2">
@@ -500,9 +588,10 @@ export default function DetectionTester() {
                             {result.payment_confidence !== undefined && (
                               <div className="flex items-center gap-2">
                                 <span className="text-sm">Confidence:</span>
-                                <Badge className={getConfidenceColor(result.payment_confidence)}>
-                                  {getConfidenceText(result.payment_confidence)} ({Math.round(result.payment_confidence * 100)}%)
-                                </Badge>
+                                <ConfidenceBreakdown 
+                                  confidence={result.payment_confidence} 
+                                  explanation={result.payment_confidence_explanation}
+                                />
                               </div>
                             )}
                           </div>
@@ -515,20 +604,64 @@ export default function DetectionTester() {
                       )}
 
                       {/* Matching Results */}
-                      {mode === 'match' && result.matched_invoice_id && (
+                      {mode === 'match' && (
                         <div className="space-y-2">
                           <h4 className="font-medium flex items-center gap-2">
                             <Zap className="w-4 h-4" />
                             Invoice Match
                           </h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="text-sm">
-                              Matched Invoice ID: <Badge variant="outline">{result.matched_invoice_id}</Badge>
+                          {result.matched_invoice_id ? (
+                            <div className="space-y-2">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="text-sm">
+                                  Matched Invoice ID: <Badge variant="outline">{result.matched_invoice_id}</Badge>
+                                </div>
+                                <div className="text-sm">
+                                  Match Reason: <Badge variant="outline">{result.match_reason}</Badge>
+                                </div>
+                              </div>
+                              {result.match_details && (
+                                <div className="text-sm space-y-1">
+                                  <div className="font-medium">Match Details:</div>
+                                  {result.match_details.amount_match !== undefined && (
+                                    <div className="flex items-center gap-2">
+                                      <span>Amount Match:</span>
+                                      {result.match_details.amount_match ? (
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                      ) : (
+                                        <X className="w-4 h-4 text-red-500" />
+                                      )}
+                                    </div>
+                                  )}
+                                  {result.match_details.invoice_number_match !== undefined && (
+                                    <div className="flex items-center gap-2">
+                                      <span>Invoice Number:</span>
+                                      {result.match_details.invoice_number_match ? (
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                      ) : (
+                                        <X className="w-4 h-4 text-red-500" />
+                                      )}
+                                    </div>
+                                  )}
+                                  {result.match_details.thread_match !== undefined && (
+                                    <div className="flex items-center gap-2">
+                                      <span>Gmail Thread:</span>
+                                      {result.match_details.thread_match ? (
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                      ) : (
+                                        <X className="w-4 h-4 text-red-500" />
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div className="text-sm">
-                              Match Reason: <Badge variant="outline">{result.match_reason}</Badge>
+                          ) : (
+                            <div className="flex items-center gap-2 text-red-600">
+                              <X className="w-4 h-4" />
+                              <span className="font-medium">No invoice match found</span>
                             </div>
-                          </div>
+                          )}
                         </div>
                       )}
 
@@ -550,7 +683,8 @@ export default function DetectionTester() {
                       )}
                     </CardContent>
                   </Card>
-                ))}
+                )
+                })}
               </TabsContent>
 
               <TabsContent value="raw">
