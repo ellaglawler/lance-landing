@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import AdminGuard from '@/components/admin-guard'
 import TestInvoiceGenerator from '@/components/test-invoice-generator'
@@ -25,7 +26,8 @@ import {
   Settings,
   FileText,
   Zap,
-  TestTube
+  TestTube,
+  Trash2
 } from 'lucide-react'
 import {
   getSchedulerStatus,
@@ -41,6 +43,7 @@ import {
   getUserDebugInfo,
   setUserAdminStatus,
   getUserInvoices,
+  deleteInvoice,
   type SchedulerStatus,
   type WebhookStatus,
   type AdminUser,
@@ -270,6 +273,31 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to load user invoices",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleDeleteInvoice = async (invoiceId: number, clientName: string, amount: number) => {
+    if (!confirm(`Are you sure you want to delete the invoice for ${clientName} ($${amount.toFixed(2)})? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      await deleteInvoice(invoiceId)
+      toast({
+        title: "Success",
+        description: `Invoice for ${clientName} deleted successfully`
+      })
+      
+      // Refresh the user's invoices if we have a selected user
+      if (selectedUser) {
+        await loadUserInvoices(selectedUser.user.id)
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to delete invoice",
         variant: "destructive"
       })
     }
@@ -680,6 +708,7 @@ export default function AdminDashboard() {
                         <TableHead>Due Date</TableHead>
                         <TableHead>Detected</TableHead>
                         <TableHead>Subject</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -710,6 +739,25 @@ export default function AdminDashboard() {
                           <TableCell>{formatDate(invoice.detected_at)}</TableCell>
                           <TableCell className="max-w-xs truncate">
                             {invoice.subject || 'No subject'}
+                          </TableCell>
+                          <TableCell>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button 
+                                    onClick={() => handleDeleteInvoice(invoice.id, invoice.client_name, invoice.amount)}
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-500 hover:text-red-600"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Delete Invoice</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </TableCell>
                         </TableRow>
                       ))}

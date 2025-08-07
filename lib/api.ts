@@ -687,11 +687,17 @@ export async function getUserInvoices(userId: number, params?: {
   status?: string;
   limit?: number;
 }): Promise<InvoiceResponse[]> {
-  const res = await api.get(`/admin/users/${userId}/invoices`, {
-    params: {
-      status: params?.status || 'all',
-      limit: params?.limit || 50
-    }
-  });
-  return res.data;
+  const response = await api.get(`/admin/users/${userId}/invoices`, { params });
+  return response.data;
+}
+
+export async function deleteInvoice(invoiceId: number): Promise<{
+  message: string;
+  invoice_id: number;
+  user_email: string;
+  client_name: string;
+  amount: number;
+}> {
+  const response = await api.delete(`/admin/invoices/${invoiceId}`);
+  return response.data;
 }
