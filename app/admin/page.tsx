@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast'
 import AdminGuard from '@/components/admin-guard'
 import TestInvoiceGenerator from '@/components/test-invoice-generator'
+import DetectionTester from '@/components/detection-tester'
 import { InvoiceStatusBadge } from '@/components/ui/invoice-status-badge'
 import { 
   Play, 
@@ -357,6 +358,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="test-invoices">Test Invoices</TabsTrigger>
+            <TabsTrigger value="detection-tester">Detection Tester</TabsTrigger>
             <TabsTrigger value="errors">Error Logs</TabsTrigger>
             <TabsTrigger value="scans">Scan Logs</TabsTrigger>
           </TabsList>
@@ -462,6 +464,17 @@ export default function AdminDashboard() {
                     >
                       <TestTube className="w-4 h-4 mr-2" />
                       Generate Test Invoices
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        const tabsList = document.querySelector('[role="tablist"]') as HTMLElement
+                        const detectionTesterTab = tabsList?.querySelector('[value="detection-tester"]') as HTMLElement
+                        detectionTesterTab?.click()
+                      }}
+                      variant="outline"
+                    >
+                      <Search className="w-4 h-4 mr-2" />
+                      Test Detection
                     </Button>
                   </div>
                   <Button 
@@ -770,6 +783,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="test-invoices" className="space-y-6">
             <TestInvoiceGenerator />
+          </TabsContent>
+
+          <TabsContent value="detection-tester" className="space-y-6">
+            <DetectionTester />
           </TabsContent>
 
           <TabsContent value="errors" className="space-y-6">

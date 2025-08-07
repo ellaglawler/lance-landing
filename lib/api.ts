@@ -701,3 +701,60 @@ export async function deleteInvoice(invoiceId: number): Promise<{
   const response = await api.delete(`/admin/invoices/${invoiceId}`);
   return response.data;
 }
+
+// Detection Tester Types and Functions
+export interface DetectionTestRequest {
+  message_ids: string[];
+  mode: 'invoice' | 'payment' | 'match';
+  user_id?: number;
+}
+
+export interface DetectionResult {
+  message_id: string;
+  subject?: string;
+  from_email?: string;
+  to_email?: string;
+  date?: string;
+  raw_text: string;
+  headers: Record<string, string>;
+  
+  // Invoice detection results
+  is_invoice?: boolean;
+  invoice_amount?: number;
+  invoice_currency?: string;
+  invoice_due_date?: string;
+  invoice_client_name?: string;
+  invoice_confidence?: number;
+  invoice_confidence_explanation?: Record<string, any>;
+  invoice_number?: string;
+  invoice_status?: string;
+  
+  // Payment detection results
+  is_payment_confirmation?: boolean;
+  is_payment_pending?: boolean;
+  payment_amount?: number;
+  payment_currency?: string;
+  payment_date?: string;
+  payment_confidence?: number;
+  payment_confidence_explanation?: Record<string, any>;
+  
+  // Matching results
+  matched_invoice_id?: number;
+  match_reason?: string;
+  match_details?: Record<string, any>;
+  
+  // Error information
+  error?: string;
+  gmail_error?: string;
+}
+
+export interface DetectionTestResponse {
+  results: DetectionResult[];
+  summary: Record<string, any>;
+  test_timestamp: string;
+}
+
+export async function testDetection(request: DetectionTestRequest): Promise<DetectionTestResponse> {
+  const response = await api.post('/admin/test-detection', request);
+  return response.data;
+}
