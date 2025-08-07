@@ -8,9 +8,11 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import AdminGuard from '@/components/admin-guard'
 import TestInvoiceGenerator from '@/components/test-invoice-generator'
+import DetectionTester from '@/components/detection-tester'
 import { InvoiceStatusBadge } from '@/components/ui/invoice-status-badge'
 import { 
   Play, 
@@ -25,7 +27,8 @@ import {
   Settings,
   FileText,
   Zap,
-  TestTube
+  TestTube,
+  Trash2
 } from 'lucide-react'
 import {
   getSchedulerStatus,
@@ -41,6 +44,7 @@ import {
   getUserDebugInfo,
   setUserAdminStatus,
   getUserInvoices,
+  deleteInvoice,
   type SchedulerStatus,
   type WebhookStatus,
   type AdminUser,
@@ -275,6 +279,31 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleDeleteInvoice = async (invoiceId: number, clientName: string, amount: number) => {
+    if (!confirm(`Are you sure you want to delete the invoice for ${clientName} ($${amount.toFixed(2)})? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      await deleteInvoice(invoiceId)
+      toast({
+        title: "Success",
+        description: `Invoice for ${clientName} deleted successfully`
+      })
+      
+      // Refresh the user's invoices if we have a selected user
+      if (selectedUser) {
+        await loadUserInvoices(selectedUser.user.id)
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to delete invoice",
+        variant: "destructive"
+      })
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString()
   }
@@ -329,6 +358,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="test-invoices">Test Invoices</TabsTrigger>
+            <TabsTrigger value="detection-tester">Detection Tester</TabsTrigger>
             <TabsTrigger value="errors">Error Logs</TabsTrigger>
             <TabsTrigger value="scans">Scan Logs</TabsTrigger>
           </TabsList>
@@ -434,6 +464,17 @@ export default function AdminDashboard() {
                     >
                       <TestTube className="w-4 h-4 mr-2" />
                       Generate Test Invoices
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        const tabsList = document.querySelector('[role="tablist"]') as HTMLElement
+                        const detectionTesterTab = tabsList?.querySelector('[value="detection-tester"]') as HTMLElement
+                        detectionTesterTab?.click()
+                      }}
+                      variant="outline"
+                    >
+                      <Search className="w-4 h-4 mr-2" />
+                      Test Detection
                     </Button>
                   </div>
                   <Button 
@@ -680,6 +721,7 @@ export default function AdminDashboard() {
                         <TableHead>Due Date</TableHead>
                         <TableHead>Detected</TableHead>
                         <TableHead>Subject</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -711,6 +753,25 @@ export default function AdminDashboard() {
                           <TableCell className="max-w-xs truncate">
                             {invoice.subject || 'No subject'}
                           </TableCell>
+                          <TableCell>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button 
+                                    onClick={() => handleDeleteInvoice(invoice.id, invoice.client_name, invoice.amount)}
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-500 hover:text-red-600"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Delete Invoice</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -722,6 +783,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="test-invoices" className="space-y-6">
             <TestInvoiceGenerator />
+          </TabsContent>
+
+          <TabsContent value="detection-tester" className="space-y-6">
+            <DetectionTester />
           </TabsContent>
 
           <TabsContent value="errors" className="space-y-6">
