@@ -703,6 +703,13 @@ export async function deleteInvoice(invoiceId: number): Promise<{
 }
 
 // Detection Tester Types and Functions
+export interface UserWithGmail {
+  id: number;
+  email: string;
+  name: string;
+  is_admin: boolean;
+}
+
 export interface DetectionTestRequest {
   message_ids: string[];
   mode: 'invoice' | 'payment' | 'match';
@@ -752,6 +759,11 @@ export interface DetectionTestResponse {
   results: DetectionResult[];
   summary: Record<string, any>;
   test_timestamp: string;
+}
+
+export async function getUsersWithGmail(): Promise<UserWithGmail[]> {
+  const response = await api.get('/admin/users/with-gmail');
+  return response.data;
 }
 
 export async function testDetection(request: DetectionTestRequest): Promise<DetectionTestResponse> {

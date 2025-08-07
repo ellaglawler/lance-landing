@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,79 +28,86 @@ import {
   TestTube,
   RefreshCw
 } from 'lucide-react'
-import { testDetection, type DetectionTestRequest, type DetectionTestResponse, type DetectionResult } from '@/lib/api'
+import { testDetection, getUsersWithGmail, type DetectionTestRequest, type DetectionTestResponse, type DetectionResult, type UserWithGmail } from '@/lib/api'
 
 export default function DetectionTester() {
   const [messageIds, setMessageIds] = useState('')
   const [mode, setMode] = useState<'invoice' | 'payment' | 'match'>('match')
-  const [userId, setUserId] = useState<string>('')
+  const [userId, setUserId] = useState<string>('default')
+  const [users, setUsers] = useState<UserWithGmail[]>([])
   const [results, setResults] = useState<DetectionTestResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [showRawText, setShowRawText] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
 
-  const extractMessageIdFromUrl = (url: string): string | null => {
-    // Handle different Gmail URL formats
-    const patterns = [
-      /permmsgid=msg-f:(\d+)/,  // New Gmail format (web_id/threadId)
-      /#inbox\/([a-zA-Z0-9]+)/,  // Classic Gmail format (API message ID)
-      /#search\/([a-zA-Z0-9]+)/,  // Search results (API message ID)
-      /#sent\/([a-zA-Z0-9]+)/,    // Sent folder (API message ID)
-      /#all\/([a-zA-Z0-9]+)/,     // All mail (API message ID)
-    ]
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern)
-      if (match) {
-        return match[1]
+  // Load users with Gmail access on component mount
+  React.useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const usersWithGmail = await getUsersWithGmail()
+        setUsers(usersWithGmail)
+      } catch (error) {
+        console.error('Failed to load users:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load users with Gmail access",
+          variant: "destructive"
+        })
       }
     }
-    return null
-  }
+    loadUsers()
+  }, [toast])
 
-  const isMessageIdHeader = (input: string): boolean => {
-    // Message-ID headers look like: <CA+...@mail.gmail.com>
-    return input.startsWith('<') && input.endsWith('>') && input.includes('@')
-  }
+
 
   const handleTest = async () => {
+    console.log('🔍 handleTest called')
+    console.log('messageIds:', messageIds)
+    console.log('mode:', mode)
+    console.log('userId:', userId)
+    
     if (!messageIds.trim()) {
+      console.log('❌ No message IDs provided')
       toast({
         title: "Error",
-        description: "Please enter at least one Gmail Message ID or URL",
+        description: "Please enter at least one RFC822 Message-ID header",
         variant: "destructive"
       })
       return
     }
 
     setLoading(true)
+    console.log('🔄 Starting test...')
     try {
-      // Process input to handle URLs, Message-ID headers, and message IDs
+      // Process input to handle Message-ID headers
       const items = messageIds.split(/[,\n]/).map(item => item.trim()).filter(item => item)
+      console.log('📝 Processed items:', items)
+      
       const processedItems = items.map(item => {
-        if (item.startsWith('http') && item.includes('mail.google.com')) {
-          const messageId = extractMessageIdFromUrl(item)
-          if (messageId) {
-            return messageId
+        // Ensure it's a valid Message-ID header format
+        if (!item.startsWith('<') || !item.endsWith('>')) {
+          // Try to add angle brackets if missing
+          if (item.includes('@') && item.includes('.')) {
+            return `<${item}>`
           } else {
             toast({
               title: "Warning",
-              description: `Could not extract Message ID from URL: ${item}`,
+              description: `Invalid Message-ID format: ${item}. Expected format: <...@...>`,
               variant: "destructive"
             })
             return null
           }
-        } else if (isMessageIdHeader(item)) {
-          // Keep Message-ID headers as-is (they'll be resolved on the backend)
-          return item
         }
         return item
       }).filter(item => item !== null) as string[]
 
+      console.log('✅ Final processed items:', processedItems)
+
       if (processedItems.length === 0) {
+        console.log('❌ No valid items after processing')
         toast({
           title: "Error",
-          description: "No valid Message IDs or URLs found",
+          description: "No valid Message-ID headers found",
           variant: "destructive"
         })
         setLoading(false)
@@ -110,10 +117,12 @@ export default function DetectionTester() {
       const request: DetectionTestRequest = {
         message_ids: processedItems,
         mode,
-        user_id: userId ? parseInt(userId) : undefined
+        user_id: userId && userId !== 'default' ? parseInt(userId) : undefined
       }
 
+      console.log('📤 Sending request:', request)
       const response = await testDetection(request)
+      console.log('📥 Received response:', response)
       setResults(response)
       
       toast({
@@ -121,6 +130,7 @@ export default function DetectionTester() {
         description: `Test completed: ${response.summary.successful_fetches}/${response.summary.total_messages} messages processed`
       })
     } catch (error: any) {
+      console.error('❌ Error in handleTest:', error)
       toast({
         title: "Error",
         description: error.response?.data?.detail || "Failed to run detection test",
@@ -128,6 +138,7 @@ export default function DetectionTester() {
       })
     } finally {
       setLoading(false)
+      console.log('🏁 Test completed')
     }
   }
 
@@ -178,22 +189,25 @@ export default function DetectionTester() {
             Manual Email Detection Tester
           </CardTitle>
           <CardDescription>
-            Test invoice and payment detection on specific Gmail messages by Message ID, Gmail URL, or Message-ID header
+            Test invoice and payment detection on specific Gmail messages using RFC822 Message-ID headers
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Gmail Message IDs or URLs</label>
+                              <label className="text-sm font-medium">RFC822 Message-ID Headers</label>
               <Textarea
-                placeholder="Enter Gmail Message IDs, URLs, or Message-ID headers (comma or newline separated)"
+                                  placeholder="Enter RFC822 Message-ID headers (e.g. <CA+fU2QoKeRPMVkB864rk0ukA6c13tZeL481DsqxKhs3heZ10sA@mail.gmail.com>)"
                 value={messageIds}
                 onChange={(e) => setMessageIds(e.target.value)}
                 rows={4}
                 className="font-mono text-xs"
               />
               <p className="text-xs text-muted-foreground">
-                Examples: 18c1234567890abcdef, https://mail.google.com/mail/u/0/?ik=cf6fad45e1&view=om&permmsgid=msg-f:1839743770647179390, &lt;CA+...@mail.gmail.com&gt;
+                Example: &lt;CA+fU2QoKeRPMVkB864rk0ukA6c13tZeL481DsqxKhs3heZ10sA@mail.gmail.com&gt;
+              </p>
+              <p className="text-xs text-muted-foreground">
+                💡 <strong>How to find this:</strong> Gmail ⋮ → Show original → Copy Message-ID header
               </p>
             </div>
             
@@ -227,21 +241,40 @@ export default function DetectionTester() {
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">User ID (Optional)</label>
-              <Input
-                placeholder="Leave empty for auto-select"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                type="number"
-              />
+              <label className="text-sm font-medium">Gmail Account (Optional)</label>
+              <Select value={userId} onValueChange={setUserId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Use logged-in admin account" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">
+                    <div className="flex items-center gap-2">
+                      <span>Use logged-in admin account</span>
+                    </div>
+                  </SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id.toString()}>
+                      <div className="flex items-center gap-2">
+                        <span>{user.email}</span>
+                        {user.is_admin && (
+                          <Badge variant="secondary" className="text-xs">Admin</Badge>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-muted-foreground">
-                Specific user's Gmail to test against
+                Choose which user's Gmail account to test against (defaults to your admin account)
               </p>
             </div>
           </div>
           
           <Button 
-            onClick={handleTest} 
+            onClick={() => {
+              console.log('🎯 Button clicked!')
+              handleTest()
+            }} 
             disabled={loading || !messageIds.trim()}
             className="w-full"
           >
