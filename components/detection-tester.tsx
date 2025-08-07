@@ -39,11 +39,35 @@ export default function DetectionTester() {
   const [showRawText, setShowRawText] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
 
+  const extractMessageIdFromUrl = (url: string): string | null => {
+    // Handle different Gmail URL formats
+    const patterns = [
+      /permmsgid=msg-f:(\d+)/,  // New Gmail format (web_id/threadId)
+      /#inbox\/([a-zA-Z0-9]+)/,  // Classic Gmail format (API message ID)
+      /#search\/([a-zA-Z0-9]+)/,  // Search results (API message ID)
+      /#sent\/([a-zA-Z0-9]+)/,    // Sent folder (API message ID)
+      /#all\/([a-zA-Z0-9]+)/,     // All mail (API message ID)
+    ]
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern)
+      if (match) {
+        return match[1]
+      }
+    }
+    return null
+  }
+
+  const isMessageIdHeader = (input: string): boolean => {
+    // Message-ID headers look like: <CA+...@mail.gmail.com>
+    return input.startsWith('<') && input.endsWith('>') && input.includes('@')
+  }
+
   const handleTest = async () => {
     if (!messageIds.trim()) {
       toast({
         title: "Error",
-        description: "Please enter at least one Gmail Message ID",
+        description: "Please enter at least one Gmail Message ID or URL",
         variant: "destructive"
       })
       return
@@ -51,8 +75,40 @@ export default function DetectionTester() {
 
     setLoading(true)
     try {
+      // Process input to handle URLs, Message-ID headers, and message IDs
+      const items = messageIds.split(/[,\n]/).map(item => item.trim()).filter(item => item)
+      const processedItems = items.map(item => {
+        if (item.startsWith('http') && item.includes('mail.google.com')) {
+          const messageId = extractMessageIdFromUrl(item)
+          if (messageId) {
+            return messageId
+          } else {
+            toast({
+              title: "Warning",
+              description: `Could not extract Message ID from URL: ${item}`,
+              variant: "destructive"
+            })
+            return null
+          }
+        } else if (isMessageIdHeader(item)) {
+          // Keep Message-ID headers as-is (they'll be resolved on the backend)
+          return item
+        }
+        return item
+      }).filter(item => item !== null) as string[]
+
+      if (processedItems.length === 0) {
+        toast({
+          title: "Error",
+          description: "No valid Message IDs or URLs found",
+          variant: "destructive"
+        })
+        setLoading(false)
+        return
+      }
+
       const request: DetectionTestRequest = {
-        message_ids: messageIds.split(/[,\n]/).map(id => id.trim()).filter(id => id),
+        message_ids: processedItems,
         mode,
         user_id: userId ? parseInt(userId) : undefined
       }
@@ -122,22 +178,22 @@ export default function DetectionTester() {
             Manual Email Detection Tester
           </CardTitle>
           <CardDescription>
-            Test invoice and payment detection on specific Gmail messages by Message ID
+            Test invoice and payment detection on specific Gmail messages by Message ID, Gmail URL, or Message-ID header
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Gmail Message IDs</label>
+              <label className="text-sm font-medium">Gmail Message IDs or URLs</label>
               <Textarea
-                placeholder="Enter Gmail Message IDs (comma or newline separated)"
+                placeholder="Enter Gmail Message IDs, URLs, or Message-ID headers (comma or newline separated)"
                 value={messageIds}
                 onChange={(e) => setMessageIds(e.target.value)}
                 rows={4}
                 className="font-mono text-xs"
               />
               <p className="text-xs text-muted-foreground">
-                Example: 18c1234567890abcdef, 18c1234567890abcdeg
+                Examples: 18c1234567890abcdef, https://mail.google.com/mail/u/0/?ik=cf6fad45e1&view=om&permmsgid=msg-f:1839743770647179390, &lt;CA+...@mail.gmail.com&gt;
               </p>
             </div>
             
