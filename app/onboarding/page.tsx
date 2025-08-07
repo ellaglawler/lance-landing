@@ -402,41 +402,31 @@ export default function OnboardingPage() {
               <CardTitle className="text-center text-3xl font-bold text-white mb-2">
                 {step === STEP.SIGNIN && (
                   <>
-                    Welcome to Lance<br />
-                    <span className="gradient-text-enhanced">your smarter way to get paid.</span>
+                    Welcome to Lance <span className="gradient-text-enhanced">your smarter way to get paid.</span>
                   </>
                 )}
                 {step === STEP.SCANNING && "Scanning your inbox…"}
-                {step === STEP.RESULTS && (noInvoices ? "No Unpaid Invoices Found" : "Here's what we found!")}
-                {step === STEP.ERROR && (
-                  <>
-                    Oops, we couldn't<br />
-                    connect to your inbox.
-                  </>
-                )}
+                {step === STEP.RESULTS && (noInvoices ? "No Unpaid Invoices Found" : "Here’s what we found!")}
+                {step === STEP.ERROR && "Oops, we couldn’t connect to your inbox."}
               </CardTitle>
               {step === STEP.SIGNIN && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Let us find and follow up on unpaid invoices in your inbox,<br />
-                  so you can spend less time chasing clients and more time doing what you love.
+                  Let us find and follow up on unpaid invoices in your inbox, so you can spend less time chasing clients and more time doing what you love.
                 </CardDescription>
               )}
               {step === STEP.SCANNING && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Hang tight while we search your inbox for unpaid invoices and set things up.<br />
-                  This usually takes just a few seconds.
+                  Hang tight while we search your inbox for unpaid invoices and set things up.<br />This usually takes just a few seconds.
                 </CardDescription>
               )}
               {step === STEP.RESULTS && noInvoices && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  You can still use Lance to track and manage future invoices<br />
-                  from your dashboard.
+                  You can still use Lance to track and manage future invoices from your dashboard.
                 </CardDescription>
               )}
               {step === STEP.ERROR && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Without access, we can't find or follow up on your invoices. You can try again or explore the<br />
-                  dashboard and connect later.
+                  Without access, we can’t find or follow up on your invoices.<br />You can try again or explore the dashboard and connect later.
                 </CardDescription>
               )}
             </CardHeader>
