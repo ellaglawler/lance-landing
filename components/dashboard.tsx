@@ -379,10 +379,10 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     invoices.forEach(inv => {
       const baseInvoice = {
         id: inv.id,
-        client: inv.client_name,
+        client: inv.client_name || inv.client,
         amount: inv.amount,
-        avatar: inv.client_name
-          ? inv.client_name
+        avatar: (inv.client_name || inv.client)
+          ? (inv.client_name || inv.client)
               .split(" ")
               .map((w: string) => w[0])
               .join("")
