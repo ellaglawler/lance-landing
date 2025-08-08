@@ -206,15 +206,87 @@ export async function removeProfilePicture(): Promise<{ message: string }> {
   return res.data;
 }
 
+// Job Status Types
+export interface JobStatusResponse {
+  job_id: string;
+  status: 'queued' | 'started' | 'finished' | 'failed' | 'error';
+  result?: string;
+  enqueued_at?: string;
+  started_at?: string;
+  ended_at?: string;
+}
+
+export interface AsyncJobResponse {
+  type: 'job';
+  status: string;
+  job_id: string;
+  message: string;
+}
+
+export interface SyncResultsResponse {
+  type: 'results';
+  invoices: InvoiceResponse[];
+  total_found: number;
+  overdue_count: number;
+}
+
+export type ScanResponse = AsyncJobResponse | SyncResultsResponse;
+
 // Scan Gmail for invoices for the current user
-export async function scanInvoices(query?: string, maxResults: number = 50) {
+export async function scanInvoices(query?: string, maxResults: number = 50): Promise<ScanResponse> {
   const res = await api.get('/invoices/scan/', {
     params: {
       ...(query ? { query } : {}),
       max_results: maxResults,
     },
   });
-  return res.data; // { invoices, total_found, overdue_count }
+  
+  // Handle new async format
+  if (res.data.job_id) {
+    return { type: 'job', ...res.data };
+  }
+  
+  // Handle legacy sync format (fallback)
+  return { type: 'results', ...res.data };
+}
+
+// Job status polling functions
+export async function getJobStatus(jobId: string): Promise<JobStatusResponse> {
+  const res = await api.get(`/invoices/jobs/${jobId}`);
+  return res.data;
+}
+
+export async function pollJobStatus(
+  jobId: string, 
+  onUpdate?: (status: JobStatusResponse) => void,
+  intervalMs: number = 3000
+): Promise<JobStatusResponse> {
+  return new Promise((resolve, reject) => {
+    const poll = async () => {
+      try {
+        const status = await getJobStatus(jobId);
+        onUpdate?.(status);
+        
+        if (status.status === 'finished' || status.status === 'failed' || status.status === 'error') {
+          resolve(status);
+        } else {
+          setTimeout(poll, intervalMs);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    poll();
+  });
+}
+
+// Payment status check function
+export async function checkPaymentStatus(maxResults: number = 50): Promise<AsyncJobResponse> {
+  const res = await api.get('/invoices/payment-status', {
+    params: { max_results: maxResults }
+  });
+  return res.data;
 }
 
 // Fetch all invoices for the current user, with optional status/client filters

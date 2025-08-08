@@ -7,9 +7,10 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode, scanInvoices } from '@/lib/api';
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode, scanInvoices, pollJobStatus, JobStatusResponse } from '@/lib/api';
 import { useAuth } from '@/components/auth-context';
 import { WaitlistForm } from '@/components/waitlist-form';
+import { JobStatusIndicator } from '@/components/job-status-indicator';
 
 const STEP = {
   ENTRY: -1,
@@ -43,9 +44,73 @@ export default function OnboardingPage() {
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [jobId, setJobId] = useState<string | null>(null);
   const router = useRouter();
   const { login } = useAuth();
   const userLocale = typeof navigator !== "undefined" ? navigator.language : "en-US";
+
+  // Helper function to handle scan results
+  const handleScanResults = (data: any) => {
+    if (data && data.invoices && data.invoices.length > 0) {
+      const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
+      setScanResult({ count: data.invoices.length, total });
+      setNoInvoices(false);
+    } else {
+      setNoInvoices(true);
+    }
+    setStep(STEP.RESULTS);
+  };
+
+  // Helper function to fetch invoice results after job completion
+  const fetchInvoiceResults = async () => {
+    try {
+      // Fetch invoices directly since job is complete
+      const response = await fetch('/api/invoices/', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      });
+      const data = await response.json();
+      handleScanResults(data);
+    } catch (error) {
+      console.error('Failed to fetch invoice results:', error);
+      setError('Failed to fetch scan results.');
+      setStep(STEP.ERROR);
+    }
+  };
+
+  // Helper function to handle scan invoices
+  const handleScanInvoices = async () => {
+    try {
+      setLoading(true);
+      const response = await scanInvoices();
+      
+      if (response.type === 'job') {
+        // New async format - show job status
+        setStep(STEP.SCANNING);
+        setJobId(response.job_id);
+        
+        // Poll for completion
+        pollJobStatus(response.job_id, (status) => {
+          if (status.status === 'finished') {
+            // Job completed - fetch results
+            fetchInvoiceResults();
+          } else if (status.status === 'failed' || status.status === 'error') {
+            setError('Failed to scan for invoices.');
+            setStep(STEP.ERROR);
+          }
+        });
+      } else {
+        // Legacy sync format - handle directly
+        handleScanResults(response);
+      }
+    } catch (error) {
+      setError('Failed to scan for invoices.');
+      setStep(STEP.ERROR);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Listen for OAuth callback via postMessage
   useEffect(() => {
@@ -62,22 +127,7 @@ export default function OnboardingPage() {
           if (isSignUp) {
             setStep(STEP.SCANNING);
             // Call scanInvoices API here
-            scanInvoices()
-              .then((data) => {
-                if (data && data.invoices && data.invoices.length > 0) {
-                  const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
-                  setScanResult({ count: data.invoices.length, total });
-                  setNoInvoices(false);
-                } else {
-                  setNoInvoices(true);
-                }
-                setStep(STEP.RESULTS);
-              })
-              .catch(() => {
-                setError('Failed to scan for invoices.');
-                setStep(STEP.ERROR);
-              })
-              .finally(() => setLoading(false));
+            handleScanInvoices();
           } else {
             setStep(STEP.SCANNING);
             checkGmailToken()
@@ -108,22 +158,7 @@ export default function OnboardingPage() {
             if (isSignUp) {
               setStep(STEP.SCANNING);
               // Call scanInvoices API here
-              scanInvoices()
-                .then((data) => {
-                  if (data && data.invoices && data.invoices.length > 0) {
-                    const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
-                    setScanResult({ count: data.invoices.length, total });
-                    setNoInvoices(false);
-                  } else {
-                    setNoInvoices(true);
-                  }
-                  setStep(STEP.RESULTS);
-                })
-                .catch(() => {
-                  setError('Failed to scan for invoices.');
-                  setStep(STEP.ERROR);
-                })
-                .finally(() => setLoading(false));
+              handleScanInvoices();
             } else {
               setStep(STEP.SCANNING);
               checkGmailToken()
@@ -470,8 +505,27 @@ export default function OnboardingPage() {
               )}
               {step === STEP.SCANNING && (
                 <div className="flex flex-col items-center gap-6 mt-4">
-                  <Progress value={progress} className="w-full h-3 bg-[#232B3A]" />
-                  <div className="text-xs text-gray-400">We only scan emails related to invoices, never your personal conversations.</div>
+                  {jobId ? (
+                    <JobStatusIndicator 
+                      jobId={jobId}
+                      title="Scanning Invoices"
+                      onComplete={(status) => {
+                        if (status.status === 'finished') {
+                          fetchInvoiceResults();
+                        }
+                      }}
+                      onError={(error) => {
+                        setError('Failed to scan for invoices.');
+                        setStep(STEP.ERROR);
+                      }}
+                      className="w-full max-w-md"
+                    />
+                  ) : (
+                    <>
+                      <Progress value={progress} className="w-full h-3 bg-[#232B3A]" />
+                      <div className="text-xs text-gray-400">We only scan emails related to invoices, never your personal conversations.</div>
+                    </>
+                  )}
                 </div>
               )}
               {step === STEP.RESULTS && !noInvoices && (

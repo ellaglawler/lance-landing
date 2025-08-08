@@ -31,9 +31,10 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useCallback } from "react"
-import { getInvoices } from "@/lib/api"
+import { getInvoices, scanInvoices, pollJobStatus, JobStatusResponse } from "@/lib/api"
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
 import { getActivities, createActivity, Activity as ActivityType } from "@/lib/api"
+import { JobStatusIndicator } from '@/components/job-status-indicator'
 
 // Email and Invoice types for type safety
 interface Email {
@@ -265,6 +266,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const [invoices, setInvoices] = useState<any[]>([])
   const [loadingInvoices, setLoadingInvoices] = useState(true)
   const [invoicesError, setInvoicesError] = useState<string | null>(null)
+  const [activeJobs, setActiveJobs] = useState<Map<string, JobStatusResponse>>(new Map())
 
   const fetchInvoices = useCallback(async () => {
     setLoadingInvoices(true)
@@ -278,6 +280,45 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       setLoadingInvoices(false)
     }
   }, [])
+
+  // Handle scan invoices with job status tracking
+  const handleScanInvoices = useCallback(async () => {
+    try {
+      const response = await scanInvoices();
+      
+      if (response.type === 'job') {
+        // New async format - show job status
+        setActiveJobs(prev => new Map(prev.set(response.job_id, {
+          job_id: response.job_id,
+          status: 'queued',
+          result: 'Job queued for processing'
+        })));
+        
+        // Poll for completion
+        pollJobStatus(response.job_id, (status) => {
+          setActiveJobs(prev => new Map(prev.set(response.job_id, status)));
+          
+          if (status.status === 'finished') {
+            // Refresh invoice list
+            fetchInvoices();
+            // Remove from active jobs after delay
+            setTimeout(() => {
+              setActiveJobs(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(response.job_id);
+                return newMap;
+              });
+            }, 5000);
+          }
+        });
+      } else {
+        // Handle legacy sync response
+        setInvoices(response.invoices);
+      }
+    } catch (error) {
+      console.error('Scan failed:', error);
+    }
+  }, [fetchInvoices]);
 
   // Fetch email threads for selected invoice
   const fetchEmailThreads = useCallback(async (invoiceId: number) => {
@@ -1058,9 +1099,9 @@ Regards`
                           <td className="px-2 py-1">${inv.amount.toLocaleString()}</td>
                           <td className="px-2 py-1">{inv.days}</td>
                           <td className="px-2 py-1">
-                            <span className="inline-flex items-center gap-1 font-semibold text-red-400">
-                              <CircleDot className="h-4 w-4 text-red-400" /> High
-                            </span>
+                            <Badge variant="destructive" className="text-xs">
+                              {inv.days >= 30 ? 'Critical' : inv.days >= 21 ? 'High' : 'Medium'}
+                            </Badge>
                           </td>
                         </tr>
                       ))}
@@ -1186,7 +1227,26 @@ Regards`
           </CardContent>
         </Card>
 
-
+        {/* Active Operations */}
+        {activeJobs.size > 0 && (
+          <Card className="bg-slate-800 border-slate-700 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white text-lg">Active Operations</CardTitle>
+              <CardDescription className="text-slate-400">Background tasks currently running</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.from(activeJobs.values()).map((job) => (
+                <JobStatusIndicator
+                  key={job.job_id}
+                  jobId={job.job_id}
+                  title="Background Operation"
+                  autoPoll={false}
+                  className="border-l-4 border-blue-500"
+                />
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Lance Activity Bar */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
