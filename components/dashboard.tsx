@@ -30,10 +30,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
-import { useEffect, useCallback } from "react"
-import { getInvoices } from "@/lib/api"
+import { useEffect, useCallback, useMemo } from "react"
+import { getInvoices, scanInvoices, pollJobStatus, JobStatusResponse } from "@/lib/api"
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
 import { getActivities, createActivity, Activity as ActivityType } from "@/lib/api"
+import { JobStatusIndicator } from '@/components/job-status-indicator'
 
 // Email and Invoice types for type safety
 interface Email {
@@ -49,7 +50,7 @@ interface InvoiceUI {
   client: string;
   amount: number;
   avatar: string;
-  status: "OVERDUE" | "PAID" | "DUE";
+  status: "OVERDUE" | "PAID" | "DUE" | "REMINDER_SENT";
   tone?: string;
   customMessage?: string;
   daysOverdue?: number;
@@ -64,6 +65,8 @@ interface InvoiceUI {
   nextFollowUpDate?: string;
   reminderCount?: number;
   lastReminderTone?: string | null;
+  reminderSentAt?: string; // New field to track when reminder was sent
+  uniqueKey?: string; // Unique identifier for React keys
 }
 
 interface ActivityFeedItem {
@@ -265,6 +268,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const [invoices, setInvoices] = useState<any[]>([])
   const [loadingInvoices, setLoadingInvoices] = useState(true)
   const [invoicesError, setInvoicesError] = useState<string | null>(null)
+  const [activeJobs, setActiveJobs] = useState<Map<string, JobStatusResponse>>(new Map())
 
   const fetchInvoices = useCallback(async () => {
     setLoadingInvoices(true)
@@ -278,6 +282,45 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       setLoadingInvoices(false)
     }
   }, [])
+
+  // Handle scan invoices with job status tracking
+  const handleScanInvoices = useCallback(async () => {
+    try {
+      const response = await scanInvoices();
+      
+      if (response.type === 'job') {
+        // New async format - show job status
+        setActiveJobs(prev => new Map(prev.set(response.job_id, {
+          job_id: response.job_id,
+          status: 'queued',
+          result: 'Job queued for processing'
+        })));
+        
+        // Poll for completion
+        pollJobStatus(response.job_id, (status) => {
+          setActiveJobs(prev => new Map(prev.set(response.job_id, status)));
+          
+          if (status.status === 'finished') {
+            // Refresh invoice list
+            fetchInvoices();
+            // Remove from active jobs after delay
+            setTimeout(() => {
+              setActiveJobs(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(response.job_id);
+                return newMap;
+              });
+            }, 5000);
+          }
+        });
+      } else {
+        // Handle legacy sync response
+        setInvoices(response.invoices);
+      }
+    } catch (error) {
+      console.error('Scan failed:', error);
+    }
+  }, [fetchInvoices]);
 
   // Fetch email threads for selected invoice
   const fetchEmailThreads = useCallback(async (invoiceId: number) => {
@@ -321,77 +364,106 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     }
   }, [fetchInvoices, fetchActivities, demoMode])
 
-  // Split invoices by status and map to UI shape
-  const mappedOverdueInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.status === "OVERDUE")
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      daysOverdue: inv.days_overdue,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      status: "OVERDUE" as const,
-      tone: inv.tone || "Polite",
-      emailThread: inv.emailThread,
-      lastReminderSent: inv.last_reminder_sent,
-      nextFollowUpDate: inv.next_follow_up_date,
-      reminderCount: inv.reminder_count || 0,
-      lastReminderTone: inv.last_reminder_tone || null,
-    }))
+  // Create a single mapping function to ensure each invoice only appears once
+  const processInvoices = (invoices: any[]): {
+    overdue: InvoiceUI[];
+    recentlySent: InvoiceUI[];
+    due: InvoiceUI[];
+    paid: InvoiceUI[];
+  } => {
+    const overdue: InvoiceUI[] = [];
+    const recentlySent: InvoiceUI[] = [];
+    const due: InvoiceUI[] = [];
+    const paid: InvoiceUI[] = [];
 
-  const dueInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.status === "DUE")
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      status: "DUE" as const,
-      tone: inv.tone || "Polite",
-      emailThread: inv.emailThread,
-      lastReminderSent: inv.last_reminder_sent,
-      nextFollowUpDate: inv.next_follow_up_date,
-      reminderCount: inv.reminder_count || 0,
-      lastReminderTone: inv.last_reminder_tone || null,
-    }))
+    invoices.forEach(inv => {
+      const baseInvoice = {
+        id: inv.id,
+        client: inv.client_name || inv.client,
+        amount: inv.amount,
+        avatar: (inv.client_name || inv.client)
+          ? (inv.client_name || inv.client)
+              .split(" ")
+              .map((w: string) => w[0])
+              .join("")
+              .toUpperCase()
+          : "--",
+        tone: inv.tone || "Polite",
+        emailThread: inv.emailThread,
+        lastReminderSent: inv.last_reminder_sent || inv.lastReminderSent,
+        nextFollowUpDate: inv.next_follow_up_date || inv.nextFollowUpDate,
+        reminderCount: inv.reminder_count || inv.reminderCount || 0,
+        lastReminderTone: inv.last_reminder_tone || inv.lastReminderTone || null,
+      };
 
-  const pastInvoices: InvoiceUI[] = invoices
-    .filter(inv => inv.status === "PAID")
-    .map(inv => ({
-      id: inv.id,
-      client: inv.client_name,
-      amount: inv.amount,
-      avatar: inv.client_name
-        ? inv.client_name
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-        : "--",
-      dateSent: inv.detected_at,
-      datePaid: inv.paid_at,
-      messageType: inv.message_type,
-      messageSent: inv.message_sent,
-      daysToPayment: inv.days_to_payment,
-      status: "PAID" as const,
-      emailThread: inv.emailThread,
-      reminderCount: inv.reminder_count || 0,
-      lastReminderTone: inv.last_reminder_tone || null,
-    }))
+      // Check if this invoice has had a reminder sent recently
+      if (inv.last_reminder_sent || inv.lastReminderSent) {
+        const reminderSentDate = new Date(inv.last_reminder_sent || inv.lastReminderSent);
+        const now = new Date();
+        const hoursSinceSent = (now.getTime() - reminderSentDate.getTime()) / (1000 * 60 * 60);
+        
+        // Only show reminders sent in the last 24 hours
+        if (hoursSinceSent <= 24) {
+          recentlySent.push({
+            ...baseInvoice,
+            status: "REMINDER_SENT" as const,
+            reminderSentAt: inv.last_reminder_sent || inv.lastReminderSent,
+          });
+          return; // Don't add to other categories
+        }
+      }
 
-  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...dueInvoices, ...pastInvoices]
+      // Categorize based on status
+      if (inv.status === "PAID") {
+        paid.push({
+          ...baseInvoice,
+          status: "PAID" as const,
+          dateSent: inv.detected_at,
+          datePaid: inv.paid_at,
+          messageType: inv.message_type,
+          messageSent: inv.message_sent,
+          daysToPayment: inv.days_to_payment,
+        });
+      } else if (inv.status === "OVERDUE") {
+        overdue.push({
+          ...baseInvoice,
+          status: "OVERDUE" as const,
+          daysOverdue: inv.days_overdue,
+        });
+      } else if (inv.status === "DUE") {
+        due.push({
+          ...baseInvoice,
+          status: "DUE" as const,
+        });
+      }
+    });
+
+    return { overdue, recentlySent, due, paid };
+  };
+
+  // Process invoices whenever the invoices state changes
+  const { overdue: mappedOverdueInvoices, recentlySent: recentlySentReminders, due: dueInvoices, paid: pastInvoices } = useMemo(() => {
+    return processInvoices(invoices);
+  }, [invoices]);
+
+  const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...recentlySentReminders, ...dueInvoices, ...pastInvoices]
+  
+  // Ensure unique keys by adding status prefix to invoice IDs
+  const allInvoicesWithUniqueKeys: InvoiceUI[] = allInvoices.map((invoice, index) => ({
+    ...invoice,
+    // Add a unique identifier that combines status and ID
+    uniqueKey: `${invoice.status}-${invoice.id}-${index}`
+  }))
+
+  // Debug logging to help identify duplicates
+  if (process.env.NODE_ENV === 'development') {
+    const invoiceIds = allInvoices.map(inv => inv.id)
+    const duplicateIds = invoiceIds.filter((id, index) => invoiceIds.indexOf(id) !== index)
+    if (duplicateIds.length > 0) {
+      console.log('Duplicate invoice IDs found:', duplicateIds)
+      console.log('All invoices:', allInvoices.map(inv => ({ id: inv.id, status: inv.status, lastReminderSent: inv.lastReminderSent })))
+    }
+  }
 
   // --- UX: Send Reminder Logic ---
   function generateEmailContent(invoice: InvoiceUI): string {
@@ -499,9 +571,10 @@ Regards`
       // Update local state with the sent email
       const updatedInvoice = {
         ...invoice,
-        status: "due" as const,
+        status: "REMINDER_SENT" as const, // Change to new status
         lastReminderSent: sentEmail.sent_at || new Date().toISOString(),
         nextFollowUpDate: sentEmail.next_follow_up_date || nextFollowUp.toISOString(),
+        reminderSentAt: sentEmail.sent_at || new Date().toISOString(), // Track when reminder was sent
         emailThread: [
           ...(invoice.emailThread || []),
           {
@@ -733,7 +806,7 @@ Regards`
   })
 
   const getFilteredInvoices = () => {
-    let filtered = allInvoices
+    let filtered = allInvoicesWithUniqueKeys
 
     // Filter by amount
     if (amountFilter !== "all") {
@@ -815,6 +888,7 @@ Regards`
     lastReminderDate: string;
     lastReminderTone: string;
     hasReminders: boolean;
+    timeSinceLastReminder?: string;
   } => {
     if (demoMode) {
       // Demo data based on invoice ID
@@ -837,11 +911,13 @@ Regards`
     } else {
       // Use reminder summary data from API response
       if (invoice.reminderCount && invoice.reminderCount > 0) {
+        const timeSinceLastReminder = invoice.lastReminderSent ? formatRelativeTime(invoice.lastReminderSent) : undefined
         return {
           reminderCount: invoice.reminderCount,
           lastReminderDate: invoice.lastReminderSent ? formatDate(invoice.lastReminderSent) : "Unknown",
           lastReminderTone: invoice.lastReminderTone || "Unknown",
-          hasReminders: true
+          hasReminders: true,
+          timeSinceLastReminder
         }
       }
     }
@@ -985,7 +1061,7 @@ Regards`
                 <div>
                   <div className="text-slate-400 text-xs font-medium">You're Owed</div>
                   <div className="text-white text-xl font-bold">
-                    ${(isDemoMode ? 2450 : mappedOverdueInvoices.reduce((sum, inv) => sum + inv.amount, 0)).toLocaleString()}
+                    ${(isDemoMode ? 2450 : mappedOverdueInvoices.reduce((sum: number, inv: InvoiceUI) => sum + inv.amount, 0)).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -995,12 +1071,12 @@ Regards`
                 <div>
                   <div className="text-slate-400 text-xs font-medium">Collected This Week</div>
                   <div className="text-white text-xl font-bold">
-                    ${(isDemoMode ? 1980 : pastInvoices.filter(inv => {
+                    ${(isDemoMode ? 1980 : pastInvoices.filter((inv: InvoiceUI) => {
                       const paid = inv.datePaid ? new Date(inv.datePaid) : new Date()
                       const now = new Date()
                       const diff = (now.getTime() - paid.getTime()) / (1000 * 60 * 60 * 24)
                       return diff <= 7
-                    }).reduce((sum, inv) => sum + inv.amount, 0)).toLocaleString()}
+                    }).reduce((sum: number, inv: InvoiceUI) => sum + inv.amount, 0)).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -1042,10 +1118,10 @@ Regards`
                   </thead>
                   <tbody>
                     {mappedOverdueInvoices
-                      .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
-                      .filter(inv => inv.days >= 14)
+                      .map((inv: InvoiceUI) => ({...inv, days: inv.daysOverdue ?? 0}))
+                      .filter((inv: any) => inv.days >= 14)
                       .slice(0, 2)
-                      .map(inv => (
+                      .map((inv: any) => (
                         <tr key={inv.id} className="hover:bg-slate-700 cursor-pointer transition" onClick={() => {
                           const el = document.getElementById(`invoice-${inv.id}`)
                           if (el) {
@@ -1058,13 +1134,13 @@ Regards`
                           <td className="px-2 py-1">${inv.amount.toLocaleString()}</td>
                           <td className="px-2 py-1">{inv.days}</td>
                           <td className="px-2 py-1">
-                            <span className="inline-flex items-center gap-1 font-semibold text-red-400">
-                              <CircleDot className="h-4 w-4 text-red-400" /> High
-                            </span>
+                            <Badge variant="destructive" className="text-xs">
+                              {inv.days >= 30 ? 'Critical' : inv.days >= 21 ? 'High' : 'Medium'}
+                            </Badge>
                           </td>
                         </tr>
                       ))}
-                    {mappedOverdueInvoices.filter(inv => (inv.daysOverdue ?? 0) >= 14).length === 0 && (
+                    {mappedOverdueInvoices.filter((inv: InvoiceUI) => (inv.daysOverdue ?? 0) >= 14).length === 0 && (
                       <tr><td colSpan={4} className="text-slate-500 py-2">No high-risk clients this week.</td></tr>
                     )}
                   </tbody>
@@ -1080,9 +1156,9 @@ Regards`
               </div>
               <ul className="space-y-2">
                 {mappedOverdueInvoices
-                  .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
-                  .filter(inv => inv.days >= 21 && !actedRecommendations.has(inv.id))
-                  .map(inv => (
+                  .map((inv: InvoiceUI) => ({...inv, days: inv.daysOverdue ?? 0}))
+                  .filter((inv: any) => inv.days >= 21 && !actedRecommendations.has(inv.id))
+                  .map((inv: any) => (
                   <li 
                     key={inv.id} 
                     className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
@@ -1138,9 +1214,9 @@ Regards`
                 ))}
                 {/* Example: View action for a client with 7-20 days overdue */}
                 {mappedOverdueInvoices
-                  .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
-                  .filter(inv => inv.days >= 8 && inv.days < 21 && !actedRecommendations.has(inv.id))
-                  .map(inv => (
+                  .map((inv: InvoiceUI) => ({...inv, days: inv.daysOverdue ?? 0}))
+                  .filter((inv: any) => inv.days >= 8 && inv.days < 21 && !actedRecommendations.has(inv.id))
+                  .map((inv: any) => (
                   <li 
                     key={inv.id} 
                     className="flex items-center gap-3 bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-700 transition-colors"
@@ -1176,8 +1252,8 @@ Regards`
                 ))}
                 {/* If no next steps */}
                 {mappedOverdueInvoices
-                  .map(inv => ({...inv, days: inv.daysOverdue ?? 0}))
-                  .filter(inv => inv.days >= 8 && !actedRecommendations.has(inv.id))
+                  .map((inv: InvoiceUI) => ({...inv, days: inv.daysOverdue ?? 0}))
+                  .filter((inv: any) => inv.days >= 8 && !actedRecommendations.has(inv.id))
                   .length === 0 && (
                   <li className="text-slate-500 py-2">No urgent actions needed this week.</li>
                 )}
@@ -1186,7 +1262,26 @@ Regards`
           </CardContent>
         </Card>
 
-
+        {/* Active Operations */}
+        {activeJobs.size > 0 && (
+          <Card className="bg-slate-800 border-slate-700 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white text-lg">Active Operations</CardTitle>
+              <CardDescription className="text-slate-400">Background tasks currently running</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.from(activeJobs.values()).map((job) => (
+                <JobStatusIndicator
+                  key={job.job_id}
+                  jobId={job.job_id}
+                  title="Background Operation"
+                  autoPoll={false}
+                  className="border-l-4 border-blue-500"
+                />
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Lance Activity Bar */}
         <Card className="bg-slate-800 border-slate-700 shadow-xl">
@@ -1408,7 +1503,7 @@ Regards`
                 const IconComponent = activity.icon
                 return (
                   <div
-                    key={activity.id}
+                    key={`${activity.id}-${index}`}
                     className="flex items-start gap-3 p-3 bg-slate-700/50 rounded-lg hover:bg-slate-700 transition-colors"
                   >
                     <div className={`p-1.5 rounded-full bg-slate-600 ${activity.color}`}>
@@ -1466,7 +1561,7 @@ Regards`
                 }}
               >
                 <Zap className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Approve All Reminders</span>
+                <span className="hidden sm:inline">Approve All Overdue</span>
                 <span className="sm:hidden">Approve All</span> ({allInvoices.filter(inv => inv.status === "OVERDUE").length})
               </Button>
             </div>
@@ -1593,7 +1688,7 @@ Regards`
                   const insights = getPaymentInsights(invoice)
                   return (
                     <div
-                      key={invoice.id}
+                      key={invoice.uniqueKey || `paid-${invoice.id}`}
                       className="flex items-center justify-between p-5 bg-slate-700/30 rounded-xl shadow-md transition-all duration-300 hover:bg-slate-700 hover:shadow-lg hover:scale-[1.02]"
                     >
                       <div className="flex items-center gap-4">
@@ -1651,6 +1746,67 @@ Regards`
                       </div>
                     </div>
                   )
+                } else if (invoice.status === "REMINDER_SENT") {
+                  // Render recently sent reminder
+                  const history = getReminderHistory(invoice)
+                  return (
+                    <div
+                      key={invoice.uniqueKey || `reminder-sent-${invoice.id}`}
+                      id={`invoice-${invoice.id}`}
+                      className="flex items-center justify-between p-5 border-l-4 border-l-blue-400 bg-blue-500/5 rounded-xl shadow-md transition-all duration-300 hover:bg-blue-500/10 hover:shadow-lg hover:scale-[1.02] animate-in slide-in-from-left duration-500"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-14 w-14 ring-4 ring-blue-500/20 shadow-lg">
+                          <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
+                            {invoice.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="font-bold text-xl text-white">
+                            {invoice.client}
+                            {invoice.id && (
+                              <span className="text-slate-400 font-normal text-lg ml-2">
+                                #{invoice.id}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-slate-300 font-medium">
+                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
+                          </div>
+                          <div className="text-xs mt-1 font-medium text-blue-400">
+                            Reminder sent {history.timeSinceLastReminder}
+                          </div>
+                          
+                          {/* Success indicator */}
+                          <div className="mt-2 space-y-1">
+                            <div className="text-xs text-blue-400 flex items-center gap-1 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
+                              <CheckCircle className="h-3 w-3" />
+                              <span>Reminder sent successfully • {history.lastReminderTone} tone</span>
+                            </div>
+                            <div className="text-xs text-slate-400 flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              <span>Next follow-up: {invoice.nextFollowUpDate ? formatDate(invoice.nextFollowUpDate) : 'Scheduled'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                          <span className="text-sm text-blue-400 font-medium">Monitoring</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedInvoice({ ...invoice, status: "REMINDER_SENT" })}
+                          className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
+                        >
+                          <span className="hidden sm:inline">View Details</span>
+                          <span className="sm:hidden">View</span>
+                        </Button>
+                      </div>
+                    </div>
+                  )
                 } else {
                   // Render overdue invoice
                   const getStatusColor = (days: number) => {
@@ -1673,7 +1829,7 @@ Regards`
 
                   return (
                     <div
-                      key={invoice.id}
+                      key={invoice.uniqueKey || `overdue-${invoice.id}`}
                       id={`invoice-${invoice.id}`}
                       className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getStatusColor(days)}`}
                     >
@@ -1770,6 +1926,8 @@ Regards`
                       ? "Invoice Details" 
                       : isEditingMessage 
                         ? "Edit Message" 
+                        : selectedInvoice.status === "REMINDER_SENT"
+                        ? `Reminder Sent - Invoice #${selectedInvoice.id} - ${selectedInvoice.client}`
                         : `Overdue Invoice #${selectedInvoice.id} - ${selectedInvoice.client}`}
                   </h3>
                   <Button
@@ -1799,6 +1957,25 @@ Regards`
                           </div>
                           <div className="text-green-300 text-sm mt-1">
                             Great work! Lance helped streamline your payment process.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Success Banner for Recently Sent Reminders */}
+                  {selectedInvoice.status === "REMINDER_SENT" && (
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-500 rounded-lg">
+                          <Send className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-blue-400 font-semibold text-lg">
+                            Reminder Sent Successfully
+                          </div>
+                          <div className="text-blue-300 text-sm mt-1">
+                            Your reminder has been sent to {selectedInvoice.client}. Lance will monitor for responses and schedule the next follow-up automatically.
                           </div>
                         </div>
                       </div>
@@ -1874,14 +2051,19 @@ Regards`
                               <Badge 
                                 variant="outline" 
                                 className={
-                                  (selectedInvoice.daysOverdue ?? 0) <= 7 
+                                  selectedInvoice.status === "REMINDER_SENT"
+                                    ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                    : (selectedInvoice.daysOverdue ?? 0) <= 7 
                                     ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" 
                                     : (selectedInvoice.daysOverdue ?? 0) <= 14 
                                     ? "bg-orange-500/10 text-orange-400 border-orange-500/20"
                                     : "bg-red-500/10 text-red-400 border-red-500/20"
                                 }
                               >
-                                {selectedInvoice.daysOverdue} Days Overdue
+                                {selectedInvoice.status === "REMINDER_SENT" 
+                                  ? "Reminder Sent" 
+                                  : `${selectedInvoice.daysOverdue} Days Overdue`
+                                }
                               </Badge>
                             </div>
                           </div>
@@ -1892,14 +2074,19 @@ Regards`
                                 <Badge 
                                   variant="outline" 
                                   className={
-                                    (selectedInvoice.daysOverdue ?? 0) <= 7 
+                                    selectedInvoice.status === "REMINDER_SENT"
+                                      ? "bg-blue-500/10 text-blue-400 border-blue-500/20 cursor-help"
+                                      : (selectedInvoice.daysOverdue ?? 0) <= 7 
                                       ? "bg-green-500/10 text-green-400 border-green-500/20 cursor-help" 
                                       : (selectedInvoice.daysOverdue ?? 0) <= 14 
                                       ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20 cursor-help"
                                       : "bg-red-500/10 text-red-400 border-red-500/20 cursor-help"
                                   }
                                 >
-                                  {(selectedInvoice.daysOverdue ?? 0) <= 7 ? "Low" : (selectedInvoice.daysOverdue ?? 0) <= 14 ? "Medium" : "High"}
+                                  {selectedInvoice.status === "REMINDER_SENT" 
+                                    ? "Monitoring" 
+                                    : (selectedInvoice.daysOverdue ?? 0) <= 7 ? "Low" : (selectedInvoice.daysOverdue ?? 0) <= 14 ? "Medium" : "High"
+                                  }
                                 </Badge>
                                 {demoMode && getRiskHistory(selectedInvoice.client) && (
                                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800 text-slate-200 text-xs rounded-lg shadow-lg border border-slate-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
@@ -1933,6 +2120,11 @@ Regards`
                             <div className="text-sm">
                               <span className="text-slate-400">Last Reminder Sent:</span>
                               <div className="text-slate-300 font-medium">{formatDate(selectedInvoice.lastReminderSent)}</div>
+                              {selectedInvoice.status === "REMINDER_SENT" && (
+                                <div className="text-xs text-blue-400 mt-1">
+                                  {formatRelativeTime(selectedInvoice.lastReminderSent)}
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
@@ -1972,9 +2164,9 @@ Regards`
                             subject: thread.subject,
                             tone: thread.tone,
                             content: thread.content
-                          }))).map((email) => (
+                          }))).map((email, index) => (
                             <div 
-                              key={email.id} 
+                              key={`${email.id}-${index}`} 
                               className="bg-slate-700/50 rounded-lg p-4 space-y-2 transition-all duration-300 hover:bg-slate-700"
                             >
                               <div className="flex items-center justify-between text-sm">
@@ -2008,7 +2200,7 @@ Regards`
                           {getPaymentTimeline(selectedInvoice).map((step, index) => {
                             const IconComponent = step.icon
                             return (
-                              <div key={index} className="flex items-center gap-3">
+                              <div key={`timeline-${index}-${step.step}`} className="flex items-center gap-3">
                                 <div className={`p-1.5 rounded-full bg-slate-600 ${step.color}`}>
                                   <IconComponent className="h-3 w-3" />
                                 </div>
@@ -2184,12 +2376,14 @@ Regards`
                         >
                           Close
                         </Button>
-                      ) : selectedInvoice.status === "DUE" ? (
+                      ) : selectedInvoice.status === "DUE" || selectedInvoice.status === "REMINDER_SENT" ? (
                         <>
                           <div className="flex-1 flex items-center justify-center gap-3 px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                             <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                             <div className="text-sm">
-                              <span className="text-blue-400 font-medium">Lance is monitoring</span>
+                              <span className="text-blue-400 font-medium">
+                                {selectedInvoice.status === "REMINDER_SENT" ? "Reminder sent" : "Lance is monitoring"}
+                              </span>
                               <span className="text-slate-400"> • Next follow-up in {(() => {
                                 if (!selectedInvoice?.nextFollowUpDate) return '...'
                                 const nextDate = new Date(selectedInvoice.nextFollowUpDate)
