@@ -1561,7 +1561,7 @@ Regards`
                 }}
               >
                 <Zap className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Approve All Reminders</span>
+                <span className="hidden sm:inline">Approve All Overdue</span>
                 <span className="sm:hidden">Approve All</span> ({allInvoices.filter(inv => inv.status === "OVERDUE").length})
               </Button>
             </div>
