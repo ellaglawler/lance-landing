@@ -35,6 +35,7 @@ import { getInvoices, scanInvoices, pollJobStatus, JobStatusResponse } from "@/l
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
 import { getActivities, createActivity, Activity as ActivityType } from "@/lib/api"
 import { JobStatusIndicator } from '@/components/job-status-indicator'
+import { useAuth } from '@/components/auth-context'
 
 // Email and Invoice types for type safety
 interface Email {
@@ -82,6 +83,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   // Demo mode toggle (set to true for demo/mock data)
   // const demoMode = true // Set to true to enable demo mode
   const demoMode = isDemoMode;
+  const { user } = useAuth();
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceUI | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [amountFilter, setAmountFilter] = useState("all")
@@ -470,18 +472,22 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     const tone = invoice.tone ?? "Polite"
     const amount = invoice.amount.toLocaleString()
     const daysOverdue = invoice.daysOverdue ?? 0
+    const userName = user?.name || "Lance"
+    
     if (tone === "Polite") {
-      return `Hi there!\n\nI hope you're doing well! I wanted to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nI know things can get busy, so I wanted to send a gentle reminder. If you have any questions about the invoice or need any additional information, please don't hesitate to reach out!\n\nThanks for your time, and I look forward to hearing from you soon!\n\nBest regards`
+      return `Hi there!\n\nI hope you're doing well! I wanted to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nI know things can get busy, so I wanted to send a gentle reminder. If you have any questions about the invoice or need any additional information, please don't hesitate to reach out!\n\nThanks for your time, and I look forward to hearing from you soon!\n\nBest regards,\n${userName}`
     }
     if (tone === "Professional") {
-      return `Hello,\n\nI'm writing to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nPlease let me know when I can expect payment, or if there are any issues that need to be addressed. I'm happy to discuss payment arrangements if needed.\n\nThank you for your prompt attention to this matter.\n\nBest regards`
+      return `Hello,\n\nI'm writing to follow up on invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nPlease let me know when I can expect payment, or if there are any issues that need to be addressed. I'm happy to discuss payment arrangements if needed.\n\nThank you for your prompt attention to this matter.\n\nBest regards,\n${userName}`
     }
-    return `Dear ${invoice.client},\n\nThis is a formal notice regarding overdue invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nImmediate payment is required to avoid any disruption to our business relationship. Please remit payment within 5 business days of receiving this notice.\n\nIf payment has already been sent, please disregard this notice and provide payment confirmation.\n\nRegards`
+    return `Dear ${invoice.client},\n\nThis is a formal notice regarding overdue invoice #${invoice.id} for $${amount}, which was due ${daysOverdue} days ago.\n\nImmediate payment is required to avoid any disruption to our business relationship. Please remit payment within 5 business days of receiving this notice.\n\nIf payment has already been sent, please disregard this notice and provide payment confirmation.\n\nRegards,\n${userName}`
   }
 
   function generateDefaultMessage(invoice: InvoiceUI, tone: string): string {
     const amount = invoice.amount.toLocaleString()
     const daysOverdue = invoice.daysOverdue ?? 0
+    const userName = user?.name || "Lance"
+    
     if (tone === "Polite") {
       return `Hi there!
 
@@ -491,7 +497,8 @@ I know things can get busy, so I wanted to send a gentle reminder. If you have a
 
 Thanks for your time, and I look forward to hearing from you soon!
 
-Best regards`
+Best regards,
+${userName}`
     } else if (tone === "Professional") {
       return `Hello,
 
@@ -501,7 +508,8 @@ Please let me know when I can expect payment, or if there are any issues that ne
 
 Thank you for your prompt attention to this matter.
 
-Best regards`
+Best regards,
+${userName}`
     } else if (tone === "Firm") {
       return `Dear ${invoice.client},
 
@@ -511,7 +519,8 @@ Immediate payment is required to avoid any disruption to our business relationsh
 
 If payment has already been sent, please disregard this notice and provide payment confirmation.
 
-Regards`
+Regards,
+${userName}`
     }
     return ""
   }
@@ -563,7 +572,8 @@ Regards`
         subject,
         content,
         is_automated: false,
-        next_follow_up_date: nextFollowUp.toISOString()
+        next_follow_up_date: nextFollowUp.toISOString(),
+        user_name: user?.name
       }
 
       const sentEmail = await sendEmail(emailRequest)
@@ -633,7 +643,7 @@ Regards`
     }
 
     try {
-      const result = await sendBulkEmails(invoiceIds, tone)
+      const result = await sendBulkEmails(invoiceIds, tone, user?.name)
       
       // Refresh invoices to get updated status
       await fetchInvoices()

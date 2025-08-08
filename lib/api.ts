@@ -331,6 +331,7 @@ export interface SendEmailRequest {
   content: string;
   is_automated?: boolean;
   next_follow_up_date?: string;
+  user_name?: string;
 }
 
 // Get email threads for a specific invoice
@@ -346,7 +347,7 @@ export async function sendEmail(request: SendEmailRequest): Promise<EmailThread>
 }
 
 // Send bulk emails to multiple invoices
-export async function sendBulkEmails(invoiceIds: number[], tone: string = 'polite'): Promise<{
+export async function sendBulkEmails(invoiceIds: number[], tone: string = 'polite', userName?: string): Promise<{
   message: string;
   sent_count: number;
   failed_count: number;
@@ -354,7 +355,8 @@ export async function sendBulkEmails(invoiceIds: number[], tone: string = 'polit
 }> {
   const res = await api.post('/email-threads/send-bulk', {
     invoice_ids: invoiceIds,
-    tone
+    tone,
+    user_name: userName
   });
   return res.data;
 }
