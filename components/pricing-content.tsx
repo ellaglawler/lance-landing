@@ -28,7 +28,7 @@ import { WaitlistForm } from "@/components/waitlist-form"
 
 // Countdown component
 function BetaCountdown() {
-  const endDate = new Date('2025-08-31T23:59:59Z');
+  const endDate = new Date('2025-09-14T23:59:59Z');
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -301,7 +301,7 @@ export function PricingContent() {
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
-                      Coming Sept 1
+                      Coming Sept 15
                     </Badge>
                   </div>
                   <CardHeader className="text-center">
@@ -341,7 +341,7 @@ export function PricingContent() {
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming September 1
+                      Coming September 15
                     </Button>
                   </CardContent>
                 </Card>
@@ -399,7 +399,7 @@ export function PricingContent() {
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-blue-600/20 text-blue-300 border border-blue-500/30 px-2 py-1 text-xs">
-                      Coming Sept 1
+                      Coming Sept 15
                     </Badge>
                   </div>
                   <CardHeader className="text-center">
@@ -431,7 +431,7 @@ export function PricingContent() {
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming September 1
+                      Coming September 15
                     </Button>
                   </CardContent>
                 </Card>
@@ -440,7 +440,7 @@ export function PricingContent() {
                 <Card className="relative border-slate-700 bg-slate-800/50 flex flex-col h-full">
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-1 text-xs">
-                      Coming Sept 1
+                      Coming Sept 15
                     </Badge>
                   </div>
                   <CardHeader className="text-center">
@@ -480,7 +480,7 @@ export function PricingContent() {
                       </div>
                     </div>
                     <Button className="w-full bg-slate-600 text-slate-400 cursor-not-allowed mt-auto" disabled>
-                      Coming September 1
+                      Coming September 15
                     </Button>
                   </CardContent>
                 </Card>
