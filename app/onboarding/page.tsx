@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Mail, Shield, Zap, UserCheck, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode, scanInvoices, pollJobStatus, JobStatusResponse } from '@/lib/api';
+import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogleCode, scanInvoices, pollJobStatus, JobStatusResponse, getInvoices } from '@/lib/api';
 import { useAuth } from '@/components/auth-context';
 import { WaitlistForm } from '@/components/waitlist-form';
 import { JobStatusIndicator } from '@/components/job-status-indicator';
@@ -64,13 +64,8 @@ export default function OnboardingPage() {
   // Helper function to fetch invoice results after job completion
   const fetchInvoiceResults = async () => {
     try {
-      // Fetch invoices directly since job is complete
-      const response = await fetch('/api/invoices/', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
-      const data = await response.json();
+      // Use the proper API function from api.ts
+      const data = await getInvoices();
       handleScanResults(data);
     } catch (error) {
       console.error('Failed to fetch invoice results:', error);
