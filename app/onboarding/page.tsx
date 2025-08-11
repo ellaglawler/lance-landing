@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -46,6 +46,7 @@ export default function OnboardingPage() {
   const [progress, setProgress] = useState(0);
   const [jobId, setJobId] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const userLocale = typeof navigator !== "undefined" ? navigator.language : "en-US";
 
@@ -208,7 +209,8 @@ export default function OnboardingPage() {
 
   // 1. Update the ENTRY step UI to use the improved layout, padding, and text from page copy.tsx, but keep the logic for allowSignup and WaitlistForm.
   if (step === STEP.ENTRY) {
-    const allowSignup = process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== 'false';
+    const overrideAllowSignup = searchParams.get('override_allow_signup') === 'true';
+    const allowSignup = overrideAllowSignup || process.env.NEXT_PUBLIC_ALLOW_SIGNUP !== 'false';
     return (
       <div className="min-h-screen flex flex-col justify-center items-center relative">
         <div
