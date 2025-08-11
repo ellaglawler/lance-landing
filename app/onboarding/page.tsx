@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ const checklist = [
   },
 ];
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const [step, setStep] = useState(STEP.ENTRY);
   const [scanResult, setScanResult] = useState<null | { count: number; total: number }>(null);
   const [noInvoices, setNoInvoices] = useState(false);
@@ -556,4 +556,12 @@ export default function OnboardingPage() {
       </main>
     </div>
   );
-} 
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+      <OnboardingContent />
+    </Suspense>
+  );
+}
