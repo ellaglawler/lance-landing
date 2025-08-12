@@ -33,7 +33,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useCallback, useMemo } from "react"
 import { getInvoices, scanInvoices, pollJobStatus, JobStatusResponse } from "@/lib/api"
 import { getEmailThreadsForInvoice, sendEmail, sendBulkEmails, EmailThread } from "@/lib/api"
-import { getActivities, createActivity, Activity as ActivityType } from "@/lib/api"
+import { getActivities, Activity as ActivityType } from "@/lib/api"
 import { JobStatusIndicator } from '@/components/job-status-indicator'
 import { useAuth } from '@/components/auth-context'
 
@@ -79,10 +79,29 @@ interface ActivityFeedItem {
   color: string;
 }
 
-export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boolean }) {
+export default function LanceDashboard({ 
+  isDemoMode = true, 
+  debugMode = false 
+}: { 
+  isDemoMode?: boolean;
+  debugMode?: boolean;
+}) {
   // Demo mode toggle (set to true for demo/mock data)
   // const demoMode = true // Set to true to enable demo mode
   const demoMode = isDemoMode;
+  
+  // Debug logging function that only logs when debugMode is true
+  const debugLog = (message: string, ...args: any[]) => {
+    if (debugMode) {
+      console.log(`🔍 [DEBUG] ${message}`, ...args);
+    }
+  };
+  
+  const debugError = (message: string, ...args: any[]) => {
+    if (debugMode) {
+      console.error(`🔍 [DEBUG] ${message}`, ...args);
+    }
+  };
   const { user } = useAuth();
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceUI | null>(null)
   const [showFilters, setShowFilters] = useState(false)
@@ -273,33 +292,33 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const [activeJobs, setActiveJobs] = useState<Map<string, JobStatusResponse>>(new Map())
 
   const fetchInvoices = useCallback(async () => {
-    console.log('🔍 [DEBUG] fetchInvoices: Starting invoice fetch...')
+    debugLog('fetchInvoices: Starting invoice fetch...')
     setLoadingInvoices(true)
     setInvoicesError(null)
     try {
       const data = await getInvoices()
-      console.log('🔍 [DEBUG] fetchInvoices: Raw API response:', data)
-      console.log('🔍 [DEBUG] fetchInvoices: Response type:', typeof data)
-      console.log('🔍 [DEBUG] fetchInvoices: Is array:', Array.isArray(data))
-      console.log('🔍 [DEBUG] fetchInvoices: Length:', Array.isArray(data) ? data.length : 'N/A')
+      debugLog('fetchInvoices: Raw API response:', data)
+      debugLog('fetchInvoices: Response type:', typeof data)
+      debugLog('fetchInvoices: Is array:', Array.isArray(data))
+      debugLog('fetchInvoices: Length:', Array.isArray(data) ? data.length : 'N/A')
       
       if (Array.isArray(data) && data.length > 0) {
-        console.log('🔍 [DEBUG] fetchInvoices: First invoice sample:', data[0])
-        console.log('🔍 [DEBUG] fetchInvoices: Invoice fields:', Object.keys(data[0]))
+        debugLog('fetchInvoices: First invoice sample:', data[0])
+        debugLog('fetchInvoices: Invoice fields:', Object.keys(data[0]))
       }
       
       setInvoices(data)
-      console.log('🔍 [DEBUG] fetchInvoices: Successfully set invoices state')
+      debugLog('fetchInvoices: Successfully set invoices state')
     } catch (err: any) {
-      console.error('🔍 [DEBUG] fetchInvoices: Error occurred:', err)
-      console.error('🔍 [DEBUG] fetchInvoices: Error message:', err?.message)
-      console.error('🔍 [DEBUG] fetchInvoices: Error stack:', err?.stack)
+      debugError('fetchInvoices: Error occurred:', err)
+      debugError('fetchInvoices: Error message:', err?.message)
+      debugError('fetchInvoices: Error stack:', err?.stack)
       setInvoicesError(err?.message || "Failed to fetch invoices")
     } finally {
       setLoadingInvoices(false)
-      console.log('🔍 [DEBUG] fetchInvoices: Completed')
+      debugLog('fetchInvoices: Completed')
     }
-  }, [])
+  }, [debugMode])
 
   // Handle scan invoices with job status tracking
   const handleScanInvoices = useCallback(async () => {
@@ -344,89 +363,89 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const fetchEmailThreads = useCallback(async (invoiceId: number) => {
     if (demoMode) return;
     
-    console.log('🔍 [DEBUG] fetchEmailThreads: Starting email threads fetch for invoice:', invoiceId)
+    debugLog('fetchEmailThreads: Starting email threads fetch for invoice:', invoiceId)
     setLoadingEmailThreads(true)
     try {
       const response = await getEmailThreadsForInvoice(invoiceId)
-      console.log('🔍 [DEBUG] fetchEmailThreads: Raw API response:', response)
-      console.log('🔍 [DEBUG] fetchEmailThreads: Response type:', typeof response)
-      console.log('🔍 [DEBUG] fetchEmailThreads: Response keys:', Object.keys(response))
+      debugLog('fetchEmailThreads: Raw API response:', response)
+      debugLog('fetchEmailThreads: Response type:', typeof response)
+      debugLog('fetchEmailThreads: Response keys:', Object.keys(response))
       
       if (response.email_threads) {
-        console.log('🔍 [DEBUG] fetchEmailThreads: Email threads array type:', typeof response.email_threads)
-        console.log('🔍 [DEBUG] fetchEmailThreads: Email threads is array:', Array.isArray(response.email_threads))
-        console.log('🔍 [DEBUG] fetchEmailThreads: Email threads length:', Array.isArray(response.email_threads) ? response.email_threads.length : 'N/A')
+        debugLog('fetchEmailThreads: Email threads array type:', typeof response.email_threads)
+        debugLog('fetchEmailThreads: Email threads is array:', Array.isArray(response.email_threads))
+        debugLog('fetchEmailThreads: Email threads length:', Array.isArray(response.email_threads) ? response.email_threads.length : 'N/A')
         
         if (Array.isArray(response.email_threads) && response.email_threads.length > 0) {
-          console.log('🔍 [DEBUG] fetchEmailThreads: First email thread sample:', response.email_threads[0])
-          console.log('🔍 [DEBUG] fetchEmailThreads: Email thread fields:', Object.keys(response.email_threads[0]))
+          debugLog('fetchEmailThreads: First email thread sample:', response.email_threads[0])
+          debugLog('fetchEmailThreads: Email thread fields:', Object.keys(response.email_threads[0]))
         }
       }
       
       setEmailThreads(response.email_threads)
-      console.log('🔍 [DEBUG] fetchEmailThreads: Successfully set email threads state')
+      debugLog('fetchEmailThreads: Successfully set email threads state')
     } catch (err: any) {
-      console.error('🔍 [DEBUG] fetchEmailThreads: Error occurred:', err)
-      console.error('🔍 [DEBUG] fetchEmailThreads: Error message:', err?.message)
-      console.error('🔍 [DEBUG] fetchEmailThreads: Error stack:', err?.stack)
+      debugError('fetchEmailThreads: Error occurred:', err)
+      debugError('fetchEmailThreads: Error message:', err?.message)
+      debugError('fetchEmailThreads: Error stack:', err?.stack)
       setEmailThreads([])
     } finally {
       setLoadingEmailThreads(false)
-      console.log('🔍 [DEBUG] fetchEmailThreads: Completed')
+      debugLog('fetchEmailThreads: Completed')
     }
-  }, [demoMode])
+  }, [demoMode, debugMode, debugLog, debugError])
 
   // Fetch activities for the current user
   const fetchActivities = useCallback(async () => {
     if (demoMode) return;
     
-    console.log('🔍 [DEBUG] fetchActivities: Starting activities fetch...')
+    debugLog('fetchActivities: Starting activities fetch...')
     setLoadingActivities(true)
     try {
       const response = await getActivities({ limit: 50, days: 7 })
-      console.log('🔍 [DEBUG] fetchActivities: Raw API response:', response)
-      console.log('🔍 [DEBUG] fetchActivities: Response type:', typeof response)
-      console.log('🔍 [DEBUG] fetchActivities: Response keys:', Object.keys(response))
+      debugLog('fetchActivities: Raw API response:', response)
+      debugLog('fetchActivities: Response type:', typeof response)
+      debugLog('fetchActivities: Response keys:', Object.keys(response))
       
       if (response.activities) {
-        console.log('🔍 [DEBUG] fetchActivities: Activities array type:', typeof response.activities)
-        console.log('🔍 [DEBUG] fetchActivities: Activities is array:', Array.isArray(response.activities))
-        console.log('🔍 [DEBUG] fetchActivities: Activities length:', Array.isArray(response.activities) ? response.activities.length : 'N/A')
+        debugLog('fetchActivities: Activities array type:', typeof response.activities)
+        debugLog('fetchActivities: Activities is array:', Array.isArray(response.activities))
+        debugLog('fetchActivities: Activities length:', Array.isArray(response.activities) ? response.activities.length : 'N/A')
         
         if (Array.isArray(response.activities) && response.activities.length > 0) {
-          console.log('🔍 [DEBUG] fetchActivities: First activity sample:', response.activities[0])
-          console.log('🔍 [DEBUG] fetchActivities: Activity fields:', Object.keys(response.activities[0]))
-          console.log('🔍 [DEBUG] fetchActivities: Activity types found:', [...new Set(response.activities.map(a => a.activity_type))])
+          debugLog('fetchActivities: First activity sample:', response.activities[0])
+          debugLog('fetchActivities: Activity fields:', Object.keys(response.activities[0]))
+          debugLog('fetchActivities: Activity types found:', [...new Set(response.activities.map(a => a.activity_type))])
         }
       }
       
       setActivities(response.activities)
-      console.log('🔍 [DEBUG] fetchActivities: Successfully set activities state')
+      debugLog('fetchActivities: Successfully set activities state')
     } catch (err: any) {
-      console.error('🔍 [DEBUG] fetchActivities: Error occurred:', err)
-      console.error('🔍 [DEBUG] fetchActivities: Error message:', err?.message)
-      console.error('🔍 [DEBUG] fetchActivities: Error stack:', err?.stack)
+      debugError('fetchActivities: Error occurred:', err)
+      debugError('fetchActivities: Error message:', err?.message)
+      debugError('fetchActivities: Error stack:', err?.stack)
       setActivities([])
     } finally {
       setLoadingActivities(false)
-      console.log('🔍 [DEBUG] fetchActivities: Completed')
+      debugLog('fetchActivities: Completed')
     }
-  }, [demoMode])
+  }, [demoMode, debugMode, debugLog, debugError])
 
   useEffect(() => {
-    console.log('🔍 [DEBUG] useEffect: Component mounted/updated')
-    console.log('🔍 [DEBUG] useEffect: demoMode:', demoMode)
+    debugLog('useEffect: Component mounted/updated')
+    debugLog('useEffect: demoMode:', demoMode)
     
     if (!demoMode) {
-      console.log('🔍 [DEBUG] useEffect: Production mode - fetching real data')
+      debugLog('useEffect: Production mode - fetching real data')
       fetchInvoices()
       fetchActivities()
     } else {
-      console.log('🔍 [DEBUG] useEffect: Demo mode - using mock data')
+      debugLog('useEffect: Demo mode - using mock data')
       setInvoices(mockInvoices)
       setLoadingInvoices(false)
     }
-  }, [fetchInvoices, fetchActivities, demoMode])
+  }, [fetchInvoices, fetchActivities, demoMode, debugMode, debugLog])
 
   // Create a single mapping function to ensure each invoice only appears once
   const processInvoices = (invoices: any[]): {
@@ -435,9 +454,9 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     due: InvoiceUI[];
     paid: InvoiceUI[];
   } => {
-    console.log('🔍 [DEBUG] processInvoices: Starting invoice processing...')
-    console.log('🔍 [DEBUG] processInvoices: Input invoices count:', invoices.length)
-    console.log('🔍 [DEBUG] processInvoices: Input invoices type:', typeof invoices)
+    debugLog('processInvoices: Starting invoice processing...')
+    debugLog('processInvoices: Input invoices count:', invoices.length)
+    debugLog('processInvoices: Input invoices type:', typeof invoices)
     
     const overdue: InvoiceUI[] = [];
     const recentlySent: InvoiceUI[] = [];
@@ -446,8 +465,8 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
 
     invoices.forEach((inv, index) => {
       if (index === 0) {
-        console.log('🔍 [DEBUG] processInvoices: Processing first invoice:', inv)
-        console.log('🔍 [DEBUG] processInvoices: First invoice keys:', Object.keys(inv))
+        debugLog('processInvoices: Processing first invoice:', inv)
+        debugLog('processInvoices: First invoice keys:', Object.keys(inv))
       }
       
       const baseInvoice = {
@@ -512,19 +531,19 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       }
     });
 
-    console.log('🔍 [DEBUG] processInvoices: Processing complete')
-    console.log('🔍 [DEBUG] processInvoices: Results - overdue:', overdue.length, 'recentlySent:', recentlySent.length, 'due:', due.length, 'paid:', paid.length)
+    debugLog('processInvoices: Processing complete')
+    debugLog('processInvoices: Results - overdue:', overdue.length, 'recentlySent:', recentlySent.length, 'due:', due.length, 'paid:', paid.length)
     
     return { overdue, recentlySent, due, paid };
   };
 
   // Process invoices whenever the invoices state changes
   const { overdue: mappedOverdueInvoices, recentlySent: recentlySentReminders, due: dueInvoices, paid: pastInvoices } = useMemo(() => {
-    console.log('🔍 [DEBUG] useMemo: Processing invoices, count:', invoices.length)
+    debugLog('useMemo: Processing invoices, count:', invoices.length)
     const result = processInvoices(invoices);
-    console.log('🔍 [DEBUG] useMemo: Processed result:', result)
+    debugLog('useMemo: Processed result:', result)
     return result;
-  }, [invoices]);
+  }, [invoices, debugMode, debugLog]);
 
   const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...recentlySentReminders, ...dueInvoices, ...pastInvoices]
   
@@ -682,29 +701,18 @@ ${userName}`
       // Track sent reminder
       setSentReminders(prev => new Set([...prev, invoice.id]))
 
-      // Create activity record for the sent email
-      try {
-        await createActivity({
-          activity_type: 'follow_up_sent',
-          message: `Sent ${tone.toLowerCase()} follow-up to ${invoice.client}`,
-          invoice_id: invoice.id,
-          email_thread_id: sentEmail.id,
-          metadata: {
-            tone,
-            amount: invoice.amount,
-            days_overdue: invoice.daysOverdue
-          }
-        })
-      } catch (error) {
-        console.error('Failed to create activity record:', error)
-      }
+      // Note: Activity record is already created by the backend when email is sent
+      // No need to create duplicate activity here
+      
+      // Refresh activities to show the new activity created by the backend
+      await fetchActivities()
 
       return updatedInvoice
     } catch (error) {
       console.error('Failed to send email:', error)
       throw error
     }
-  }, [demoMode])
+  }, [demoMode, fetchActivities])
 
   // Send bulk emails via backend API
   const sendBulkEmailsViaAPI = useCallback(async (invoiceIds: number[], tone: string = 'polite') => {
@@ -726,27 +734,18 @@ ${userName}`
       // Refresh invoices to get updated status
       await fetchInvoices()
       
-      // Create activity record for bulk email
-      try {
-        await createActivity({
-          activity_type: 'bulk_email_sent',
-          message: `Sent bulk ${tone} reminders to ${result.sent_count} clients`,
-          metadata: {
-            sent_count: result.sent_count,
-            failed_count: result.failed_count,
-            tone
-          }
-        })
-      } catch (error) {
-        console.error('Failed to create activity record:', error)
-      }
+      // Note: Activity record is already created by the backend for bulk email operations
+      // No need to create duplicate activity here
+      
+      // Refresh activities to show the new bulk email activity created by the backend
+      await fetchActivities()
       
       return result
     } catch (error) {
       console.error('Failed to send bulk emails:', error)
       throw error
     }
-  }, [demoMode, allInvoices, fetchInvoices])
+  }, [demoMode, allInvoices, fetchInvoices, fetchActivities])
 
   // Load email threads when invoice is selected
   useEffect(() => {
@@ -773,8 +772,8 @@ ${userName}`
 
   // Helper function to get icon and color for activity type
   const getActivityIconAndColor = (activityType: string): { icon: any; color: string } => {
-    console.log('🔍 [DEBUG] getActivityIconAndColor: Input activityType:', activityType)
-    console.log('🔍 [DEBUG] getActivityIconAndColor: Input type:', typeof activityType)
+    debugLog('getActivityIconAndColor: Input activityType:', activityType)
+    debugLog('getActivityIconAndColor: Input type:', typeof activityType)
     
     let result: { icon: any; color: string }
     
@@ -810,12 +809,12 @@ ${userName}`
         result = { icon: AlertTriangle, color: 'text-red-400' }
         break
       default:
-        console.log('🔍 [DEBUG] getActivityIconAndColor: No match found for activityType:', activityType)
+        debugLog('getActivityIconAndColor: No match found for activityType:', activityType)
         result = { icon: Bot, color: 'text-slate-400' }
         break
     }
     
-    console.log('🔍 [DEBUG] getActivityIconAndColor: Result:', result)
+    debugLog('getActivityIconAndColor: Result:', result)
     return result
   }
 
@@ -903,10 +902,10 @@ ${userName}`
     },
   ] : activities.map((activity, index) => {
     if (index === 0) {
-      console.log('🔍 [DEBUG] activityFeed: Processing first activity:', activity)
-      console.log('🔍 [DEBUG] activityFeed: First activity keys:', Object.keys(activity))
-      console.log('🔍 [DEBUG] activityFeed: Activity type:', activity.activity_type)
-      console.log('🔍 [DEBUG] activityFeed: Activity type typeof:', typeof activity.activity_type)
+      debugLog('activityFeed: Processing first activity:', activity)
+      debugLog('activityFeed: First activity keys:', Object.keys(activity))
+      debugLog('activityFeed: Activity type:', activity.activity_type)
+      debugLog('activityFeed: Activity type typeof:', typeof activity.activity_type)
     }
     
     const { icon, color } = getActivityIconAndColor(activity.activity_type)
@@ -920,7 +919,7 @@ ${userName}`
     }
     
     if (index === 0) {
-      console.log('🔍 [DEBUG] activityFeed: First activity result:', result)
+      debugLog('activityFeed: First activity result:', result)
     }
     
     return result
