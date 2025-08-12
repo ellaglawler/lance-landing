@@ -75,7 +75,7 @@ export function Footer() {
             <h3 className="text-white font-semibold mb-4">Connect</h3>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon" asChild className="text-gray-400 hover:text-white">
-                <Link href="https://twitter.com/LawlerElla51672" target="_blank" rel="noopener noreferrer">
+                <Link href="https://twitter.com/LawlerElla35298" target="_blank" rel="noopener noreferrer">
                 <Image
                   src={"/images/x-logo/logo-white.svg"}
                   alt="X"
