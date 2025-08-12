@@ -273,15 +273,31 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const [activeJobs, setActiveJobs] = useState<Map<string, JobStatusResponse>>(new Map())
 
   const fetchInvoices = useCallback(async () => {
+    console.log('🔍 [DEBUG] fetchInvoices: Starting invoice fetch...')
     setLoadingInvoices(true)
     setInvoicesError(null)
     try {
       const data = await getInvoices()
+      console.log('🔍 [DEBUG] fetchInvoices: Raw API response:', data)
+      console.log('🔍 [DEBUG] fetchInvoices: Response type:', typeof data)
+      console.log('🔍 [DEBUG] fetchInvoices: Is array:', Array.isArray(data))
+      console.log('🔍 [DEBUG] fetchInvoices: Length:', Array.isArray(data) ? data.length : 'N/A')
+      
+      if (Array.isArray(data) && data.length > 0) {
+        console.log('🔍 [DEBUG] fetchInvoices: First invoice sample:', data[0])
+        console.log('🔍 [DEBUG] fetchInvoices: Invoice fields:', Object.keys(data[0]))
+      }
+      
       setInvoices(data)
+      console.log('🔍 [DEBUG] fetchInvoices: Successfully set invoices state')
     } catch (err: any) {
+      console.error('🔍 [DEBUG] fetchInvoices: Error occurred:', err)
+      console.error('🔍 [DEBUG] fetchInvoices: Error message:', err?.message)
+      console.error('🔍 [DEBUG] fetchInvoices: Error stack:', err?.stack)
       setInvoicesError(err?.message || "Failed to fetch invoices")
     } finally {
       setLoadingInvoices(false)
+      console.log('🔍 [DEBUG] fetchInvoices: Completed')
     }
   }, [])
 
@@ -328,15 +344,35 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const fetchEmailThreads = useCallback(async (invoiceId: number) => {
     if (demoMode) return;
     
+    console.log('🔍 [DEBUG] fetchEmailThreads: Starting email threads fetch for invoice:', invoiceId)
     setLoadingEmailThreads(true)
     try {
       const response = await getEmailThreadsForInvoice(invoiceId)
+      console.log('🔍 [DEBUG] fetchEmailThreads: Raw API response:', response)
+      console.log('🔍 [DEBUG] fetchEmailThreads: Response type:', typeof response)
+      console.log('🔍 [DEBUG] fetchEmailThreads: Response keys:', Object.keys(response))
+      
+      if (response.email_threads) {
+        console.log('🔍 [DEBUG] fetchEmailThreads: Email threads array type:', typeof response.email_threads)
+        console.log('🔍 [DEBUG] fetchEmailThreads: Email threads is array:', Array.isArray(response.email_threads))
+        console.log('🔍 [DEBUG] fetchEmailThreads: Email threads length:', Array.isArray(response.email_threads) ? response.email_threads.length : 'N/A')
+        
+        if (Array.isArray(response.email_threads) && response.email_threads.length > 0) {
+          console.log('🔍 [DEBUG] fetchEmailThreads: First email thread sample:', response.email_threads[0])
+          console.log('🔍 [DEBUG] fetchEmailThreads: Email thread fields:', Object.keys(response.email_threads[0]))
+        }
+      }
+      
       setEmailThreads(response.email_threads)
+      console.log('🔍 [DEBUG] fetchEmailThreads: Successfully set email threads state')
     } catch (err: any) {
-      console.error('Failed to fetch email threads:', err)
+      console.error('🔍 [DEBUG] fetchEmailThreads: Error occurred:', err)
+      console.error('🔍 [DEBUG] fetchEmailThreads: Error message:', err?.message)
+      console.error('🔍 [DEBUG] fetchEmailThreads: Error stack:', err?.stack)
       setEmailThreads([])
     } finally {
       setLoadingEmailThreads(false)
+      console.log('🔍 [DEBUG] fetchEmailThreads: Completed')
     }
   }, [demoMode])
 
@@ -344,23 +380,49 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
   const fetchActivities = useCallback(async () => {
     if (demoMode) return;
     
+    console.log('🔍 [DEBUG] fetchActivities: Starting activities fetch...')
     setLoadingActivities(true)
     try {
       const response = await getActivities({ limit: 50, days: 7 })
+      console.log('🔍 [DEBUG] fetchActivities: Raw API response:', response)
+      console.log('🔍 [DEBUG] fetchActivities: Response type:', typeof response)
+      console.log('🔍 [DEBUG] fetchActivities: Response keys:', Object.keys(response))
+      
+      if (response.activities) {
+        console.log('🔍 [DEBUG] fetchActivities: Activities array type:', typeof response.activities)
+        console.log('🔍 [DEBUG] fetchActivities: Activities is array:', Array.isArray(response.activities))
+        console.log('🔍 [DEBUG] fetchActivities: Activities length:', Array.isArray(response.activities) ? response.activities.length : 'N/A')
+        
+        if (Array.isArray(response.activities) && response.activities.length > 0) {
+          console.log('🔍 [DEBUG] fetchActivities: First activity sample:', response.activities[0])
+          console.log('🔍 [DEBUG] fetchActivities: Activity fields:', Object.keys(response.activities[0]))
+          console.log('🔍 [DEBUG] fetchActivities: Activity types found:', [...new Set(response.activities.map(a => a.activity_type))])
+        }
+      }
+      
       setActivities(response.activities)
+      console.log('🔍 [DEBUG] fetchActivities: Successfully set activities state')
     } catch (err: any) {
-      console.error('Failed to fetch activities:', err)
+      console.error('🔍 [DEBUG] fetchActivities: Error occurred:', err)
+      console.error('🔍 [DEBUG] fetchActivities: Error message:', err?.message)
+      console.error('🔍 [DEBUG] fetchActivities: Error stack:', err?.stack)
       setActivities([])
     } finally {
       setLoadingActivities(false)
+      console.log('🔍 [DEBUG] fetchActivities: Completed')
     }
   }, [demoMode])
 
   useEffect(() => {
+    console.log('🔍 [DEBUG] useEffect: Component mounted/updated')
+    console.log('🔍 [DEBUG] useEffect: demoMode:', demoMode)
+    
     if (!demoMode) {
+      console.log('🔍 [DEBUG] useEffect: Production mode - fetching real data')
       fetchInvoices()
       fetchActivities()
     } else {
+      console.log('🔍 [DEBUG] useEffect: Demo mode - using mock data')
       setInvoices(mockInvoices)
       setLoadingInvoices(false)
     }
@@ -373,12 +435,21 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
     due: InvoiceUI[];
     paid: InvoiceUI[];
   } => {
+    console.log('🔍 [DEBUG] processInvoices: Starting invoice processing...')
+    console.log('🔍 [DEBUG] processInvoices: Input invoices count:', invoices.length)
+    console.log('🔍 [DEBUG] processInvoices: Input invoices type:', typeof invoices)
+    
     const overdue: InvoiceUI[] = [];
     const recentlySent: InvoiceUI[] = [];
     const due: InvoiceUI[] = [];
     const paid: InvoiceUI[] = [];
 
-    invoices.forEach(inv => {
+    invoices.forEach((inv, index) => {
+      if (index === 0) {
+        console.log('🔍 [DEBUG] processInvoices: Processing first invoice:', inv)
+        console.log('🔍 [DEBUG] processInvoices: First invoice keys:', Object.keys(inv))
+      }
+      
       const baseInvoice = {
         id: inv.id,
         client: inv.client_name || inv.client,
@@ -441,12 +512,18 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
       }
     });
 
+    console.log('🔍 [DEBUG] processInvoices: Processing complete')
+    console.log('🔍 [DEBUG] processInvoices: Results - overdue:', overdue.length, 'recentlySent:', recentlySent.length, 'due:', due.length, 'paid:', paid.length)
+    
     return { overdue, recentlySent, due, paid };
   };
 
   // Process invoices whenever the invoices state changes
   const { overdue: mappedOverdueInvoices, recentlySent: recentlySentReminders, due: dueInvoices, paid: pastInvoices } = useMemo(() => {
-    return processInvoices(invoices);
+    console.log('🔍 [DEBUG] useMemo: Processing invoices, count:', invoices.length)
+    const result = processInvoices(invoices);
+    console.log('🔍 [DEBUG] useMemo: Processed result:', result)
+    return result;
   }, [invoices]);
 
   const allInvoices: InvoiceUI[] = [...mappedOverdueInvoices, ...recentlySentReminders, ...dueInvoices, ...pastInvoices]
@@ -696,30 +773,50 @@ ${userName}`
 
   // Helper function to get icon and color for activity type
   const getActivityIconAndColor = (activityType: string): { icon: any; color: string } => {
+    console.log('🔍 [DEBUG] getActivityIconAndColor: Input activityType:', activityType)
+    console.log('🔍 [DEBUG] getActivityIconAndColor: Input type:', typeof activityType)
+    
+    let result: { icon: any; color: string }
+    
     switch (activityType) {
       case 'follow_up_sent':
-        return { icon: Mail, color: 'text-blue-400' }
+        result = { icon: Mail, color: 'text-blue-400' }
+        break
       case 'overdue_detected':
-        return { icon: AlertTriangle, color: 'text-orange-400' }
+        result = { icon: AlertTriangle, color: 'text-orange-400' }
+        break
       case 'payment_received':
-        return { icon: CheckCircle, color: 'text-green-400' }
+        result = { icon: CheckCircle, color: 'text-green-400' }
+        break
       case 'invoice_processed':
-        return { icon: FileText, color: 'text-indigo-400' }
+        result = { icon: FileText, color: 'text-indigo-400' }
+        break
       case 'bulk_email_sent':
-        return { icon: Zap, color: 'text-purple-400' }
+        result = { icon: Zap, color: 'text-purple-400' }
+        break
       case 'gmail_scan_completed':
-        return { icon: Bot, color: 'text-yellow-400' }
+        result = { icon: Bot, color: 'text-yellow-400' }
+        break
       case 'tone_adjusted':
-        return { icon: Bot, color: 'text-yellow-400' }
+        result = { icon: Bot, color: 'text-yellow-400' }
+        break
       case 'follow_up_scheduled':
-        return { icon: Clock, color: 'text-purple-400' }
+        result = { icon: Clock, color: 'text-purple-400' }
+        break
       case 'payment_detected':
-        return { icon: CheckCircle, color: 'text-green-400' }
+        result = { icon: CheckCircle, color: 'text-green-400' }
+        break
       case 'invoice_escalated':
-        return { icon: AlertTriangle, color: 'text-red-400' }
+        result = { icon: AlertTriangle, color: 'text-red-400' }
+        break
       default:
-        return { icon: Bot, color: 'text-slate-400' }
+        console.log('🔍 [DEBUG] getActivityIconAndColor: No match found for activityType:', activityType)
+        result = { icon: Bot, color: 'text-slate-400' }
+        break
     }
+    
+    console.log('🔍 [DEBUG] getActivityIconAndColor: Result:', result)
+    return result
   }
 
   // Activity feed data
@@ -804,9 +901,16 @@ ${userName}`
       icon: FileText,
       color: "text-indigo-400",
     },
-  ] : activities.map(activity => {
+  ] : activities.map((activity, index) => {
+    if (index === 0) {
+      console.log('🔍 [DEBUG] activityFeed: Processing first activity:', activity)
+      console.log('🔍 [DEBUG] activityFeed: First activity keys:', Object.keys(activity))
+      console.log('🔍 [DEBUG] activityFeed: Activity type:', activity.activity_type)
+      console.log('🔍 [DEBUG] activityFeed: Activity type typeof:', typeof activity.activity_type)
+    }
+    
     const { icon, color } = getActivityIconAndColor(activity.activity_type)
-    return {
+    const result = {
       id: activity.id,
       type: activity.activity_type,
       message: activity.message,
@@ -814,6 +918,12 @@ ${userName}`
       icon,
       color,
     }
+    
+    if (index === 0) {
+      console.log('🔍 [DEBUG] activityFeed: First activity result:', result)
+    }
+    
+    return result
   })
 
   const getFilteredInvoices = () => {
