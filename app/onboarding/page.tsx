@@ -51,9 +51,12 @@ function OnboardingContent() {
 
   // Helper function to handle scan results
   const handleScanResults = (data: any) => {
-    if (data && data.invoices && data.invoices.length > 0) {
-      const total = data.invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
-      setScanResult({ count: data.invoices.length, total });
+    // Handle both formats: direct array from getInvoices() and wrapped object from scan results
+    const invoices = Array.isArray(data) ? data : (data?.invoices || []);
+    
+    if (invoices && invoices.length > 0) {
+      const total = invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
+      setScanResult({ count: invoices.length, total });
       setNoInvoices(false);
     } else {
       setNoInvoices(true);
