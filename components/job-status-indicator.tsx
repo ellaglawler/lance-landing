@@ -27,10 +27,13 @@ export function JobStatusIndicator({
   const { toast } = useToast();
 
   useEffect(() => {
+    let isCancelled = false;
+    
     if (jobId && autoPoll) {
       setIsPolling(true);
       pollJobStatus(jobId, setStatus)
         .then((finalStatus) => {
+          if (isCancelled) return;
           setIsPolling(false);
           onComplete?.(finalStatus);
           
@@ -49,6 +52,7 @@ export function JobStatusIndicator({
           }
         })
         .catch((error) => {
+          if (isCancelled) return;
           setIsPolling(false);
           onError?.(error.message);
           toast({
@@ -58,6 +62,10 @@ export function JobStatusIndicator({
           });
         });
     }
+    
+    return () => {
+      isCancelled = true;
+    };
   }, [jobId, autoPoll, onComplete, onError, toast]);
 
   const getStatusIcon = (status: string) => {
