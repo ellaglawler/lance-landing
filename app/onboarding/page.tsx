@@ -43,7 +43,6 @@ function OnboardingContent() {
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false); // Track if user is new or returning
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [jobId, setJobId] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -112,7 +111,7 @@ function OnboardingContent() {
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      const { code, error, success, access_token, refresh_token, user } = event.data || {};
+      const { code, error, success, access_token, refresh_token, user, initial_scan_job_id } = event.data || {};
       
       if (success && access_token && user) {
         // Direct token response from backend
@@ -122,8 +121,22 @@ function OnboardingContent() {
           login(access_token, user);
           if (isSignUp) {
             setStep(STEP.SCANNING);
-            // Call scanInvoices API here
-            handleScanInvoices();
+            // Use the initial scan job ID if available, otherwise start a new scan
+            if (initial_scan_job_id) {
+              setJobId(initial_scan_job_id);
+              // Poll the existing job instead of starting a new one
+              pollJobStatus(initial_scan_job_id, (status) => {
+                if (status.status === 'finished') {
+                  fetchInvoiceResults();
+                } else if (status.status === 'failed' || status.status === 'error') {
+                  setError('Failed to scan for invoices.');
+                  setStep(STEP.ERROR);
+                }
+              });
+            } else {
+              // Fallback: start a new scan if no initial job ID
+              handleScanInvoices();
+            }
           } else {
             setStep(STEP.SCANNING);
             checkGmailToken()
@@ -153,8 +166,22 @@ function OnboardingContent() {
             login(data.access_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
-              // Call scanInvoices API here
-              handleScanInvoices();
+              // Use the initial scan job ID if available, otherwise start a new scan
+              if (data.initial_scan_job_id) {
+                setJobId(data.initial_scan_job_id);
+                // Poll the existing job instead of starting a new one
+                pollJobStatus(data.initial_scan_job_id, (status) => {
+                  if (status.status === 'finished') {
+                    fetchInvoiceResults();
+                  } else if (status.status === 'failed' || status.status === 'error') {
+                    setError('Failed to scan for invoices.');
+                    setStep(STEP.ERROR);
+                  }
+                });
+              } else {
+                // Fallback: start a new scan if no initial job ID
+                handleScanInvoices();
+              }
             } else {
               setStep(STEP.SCANNING);
               checkGmailToken()
@@ -186,26 +213,7 @@ function OnboardingContent() {
     return () => window.removeEventListener("message", handleMessage);
   }, [isSignUp, router, login]);
 
-  // Animate progress bar
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (step === STEP.SCANNING) {
-      setProgress(0);
-      interval = setInterval(() => {
-        setProgress((old) => {
-          if (old < 95) return Math.min(old + Math.random() * 7, 95);
-          return old;
-        });
-      }, 200);
-    }
-    if (step === STEP.RESULTS || step === STEP.ERROR) {
-      setProgress(100);
-      if (interval) clearInterval(interval);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [step]);
+  // Progress animation removed - now using JobStatusIndicator for real-time progress
 
   // 1. Update the ENTRY step UI to use the improved layout, padding, and text from page copy.tsx, but keep the logic for allowSignup and WaitlistForm.
   if (step === STEP.ENTRY) {
@@ -448,7 +456,11 @@ function OnboardingContent() {
               )}
               {step === STEP.SCANNING && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Hang tight while we search your inbox for unpaid invoices and set things up.<br />This usually takes just a few seconds.
+                  {jobId ? (
+                    "We're scanning your inbox for unpaid invoices and setting up your account.<br />This usually takes just a few seconds."
+                  ) : (
+                    "Hang tight while we search your inbox for unpaid invoices and set things up.<br />This usually takes just a few seconds."
+                  )}
                 </CardDescription>
               )}
               {step === STEP.RESULTS && noInvoices && (
@@ -518,11 +530,12 @@ function OnboardingContent() {
                       className="w-full max-w-md"
                     />
                   ) : (
-                    <>
-                      <Progress value={progress} className="w-full h-3 bg-[#232B3A]" />
-                      <div className="text-xs text-gray-400">We only scan emails related to invoices, never your personal conversations.</div>
-                    </>
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                      <div className="text-sm text-gray-300">Preparing to scan your inbox...</div>
+                    </div>
                   )}
+                  <div className="text-xs text-gray-400">We only scan emails related to invoices, never your personal conversations.</div>
                 </div>
               )}
               {step === STEP.RESULTS && !noInvoices && (
