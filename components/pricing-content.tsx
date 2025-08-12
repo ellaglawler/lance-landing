@@ -557,7 +557,7 @@ export function PricingContent() {
               Lance isn't a tool. It's revenue insurance.
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              Freelancers lose up to <strong className="text-red-400">$12K/year</strong> to unpaid invoices. Lance helps you get it back.
+              Every year, freelancers like you lose up to <strong className="text-red-400">$12K/year</strong> to unpaid invoices. Lance gets it back, fast.
             </p>
           </div>
 
@@ -565,19 +565,19 @@ export function PricingContent() {
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl font-bold text-green-400 mb-2">$748</div>
-                <p className="text-slate-300">Average recovered per month</p>
+                <p className="text-slate-300">Back in your pocket every month</p>
               </CardContent>
             </Card>
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl font-bold text-blue-400 mb-2">8+</div>
-                <p className="text-slate-300">Hours saved monthly</p>
+                <p className="text-slate-300">Hours of admin saved monthly</p>
               </CardContent>
             </Card>
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl font-bold text-purple-400 mb-2">3 days</div>
-                <p className="text-slate-300">Lance pays for itself</p>
+                <p className="text-slate-300">Lance pays for itself, the rest is pure gain</p>
               </CardContent>
             </Card>
           </div>
