@@ -385,6 +385,7 @@ export default function LanceDashboard({ isDemoMode = true }: { isDemoMode?: boo
         amount: inv.amount,
         avatar: (inv.client_name || inv.client)
           ? (inv.client_name || inv.client)
+              .split(" (")[0] // Remove email address part before parentheses
               .split(" ")
               .map((w: string) => w[0])
               .join("")
