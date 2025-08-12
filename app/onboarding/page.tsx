@@ -117,7 +117,7 @@ function OnboardingContent() {
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      const { code, error, success, access_token, refresh_token, user, initial_scan_job_id } = event.data || {};
+      const { code, error, success, access_token, refresh_token, user, scan_job_id } = event.data || {};
       
       if (success && access_token && user) {
         // Direct token response from backend
@@ -129,13 +129,13 @@ function OnboardingContent() {
           login(access_token, user);
           if (isSignUp) {
             setStep(STEP.SCANNING);
-            // Use the initial scan job ID if available, otherwise start a new scan
-            if (initial_scan_job_id) {
-              console.log('[ONBOARDING] Using initial_scan_job_id:', initial_scan_job_id);
-              setJobId(initial_scan_job_id);
+            // Use the scan job ID if available, otherwise start a new scan
+            if (scan_job_id) {
+              console.log('[ONBOARDING] Using scan_job_id:', scan_job_id);
+              setJobId(scan_job_id);
               // JobStatusIndicator will handle polling automatically
             } else {
-              console.log('[ONBOARDING] No initial_scan_job_id, starting new scan');
+              console.log('[ONBOARDING] No scan_job_id, starting new scan');
               // Fallback: start a new scan if no initial job ID
               handleScanInvoices();
             }
@@ -171,13 +171,13 @@ function OnboardingContent() {
             login(data.access_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
-              // Use the initial scan job ID if available, otherwise start a new scan
-              if (data.initial_scan_job_id) {
-                console.log('[ONBOARDING] Using initial_scan_job_id from code exchange:', data.initial_scan_job_id);
-                setJobId(data.initial_scan_job_id);
+              // Use the scan job ID if available, otherwise start a new scan
+              if (data.scan_job_id) {
+                console.log('[ONBOARDING] Using scan_job_id from code exchange:', data.scan_job_id);
+                setJobId(data.scan_job_id);
                 // JobStatusIndicator will handle polling automatically
               } else {
-                console.log('[ONBOARDING] No initial_scan_job_id from code exchange, starting new scan');
+                console.log('[ONBOARDING] No scan_job_id from code exchange, starting new scan');
                 // Fallback: start a new scan if no initial job ID
                 handleScanInvoices();
               }
