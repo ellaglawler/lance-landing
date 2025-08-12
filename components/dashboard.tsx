@@ -1432,11 +1432,11 @@ ${userName}`
                 <span className="text-xs text-slate-400">Last 24 hours</span>
               </div>
               <div className="relative">
-                {/* Timeline base line */}
-                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-600 transform -translate-y-1/2"></div>
+                {/* Timeline base line - hidden on mobile */}
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-600 transform -translate-y-1/2 hidden sm:block mt-4"></div>
 
                 {/* Timeline points */}
-                <div className="relative flex justify-between items-center h-8">
+                <div className="relative flex justify-between items-center h-8 mt-4 sm:mt-0">
                   {demoMode ? (
                     // Demo timeline points
                     <>
@@ -1582,26 +1582,53 @@ ${userName}`
                 </div>
 
                 {/* Activity summary */}
-                <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center sm:justify-center gap-3 sm:gap-6 text-xs">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span className="text-slate-400">Follow-ups</span>
+                <div className="mt-8">
+                  {/* Desktop layout - horizontal */}
+                  <div className="hidden sm:flex flex-row items-center justify-center gap-6 text-xs">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                      <span className="text-slate-400">Follow-ups</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                      <span className="text-slate-400">Detections</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-slate-400">Payments</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                      <span className="text-slate-400">Scheduling</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                      <span className="text-slate-400">Adjustments</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    <span className="text-slate-400">Detections</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-slate-400">Payments</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-slate-400">Scheduling</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <span className="text-slate-400">Adjustments</span>
+                  
+                  {/* Mobile layout - grid underneath */}
+                  <div className="sm:hidden grid grid-cols-3 gap-3 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                      <span className="text-slate-400">Follow-ups</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                      <span className="text-slate-400">Detections</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                      <span className="text-slate-400">Payments</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                      <span className="text-slate-400">Scheduling</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                      <span className="text-slate-400">Adjustments</span>
+                    </div>
                   </div>
                 </div>
               </div>
