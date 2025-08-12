@@ -91,17 +91,17 @@ export default function LanceDashboard({
   const demoMode = isDemoMode;
   
   // Debug logging function that only logs when debugMode is true
-  const debugLog = (message: string, ...args: any[]) => {
+  const debugLog = useCallback((message: string, ...args: any[]) => {
     if (debugMode) {
       console.log(`🔍 [DEBUG] ${message}`, ...args);
     }
-  };
+  }, [debugMode]);
   
-  const debugError = (message: string, ...args: any[]) => {
+  const debugError = useCallback((message: string, ...args: any[]) => {
     if (debugMode) {
       console.error(`🔍 [DEBUG] ${message}`, ...args);
     }
-  };
+  }, [debugMode]);
   const { user } = useAuth();
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceUI | null>(null)
   const [showFilters, setShowFilters] = useState(false)
@@ -318,7 +318,7 @@ export default function LanceDashboard({
       setLoadingInvoices(false)
       debugLog('fetchInvoices: Completed')
     }
-  }, [debugMode])
+  }, [])
 
   // Handle scan invoices with job status tracking
   const handleScanInvoices = useCallback(async () => {
@@ -430,7 +430,7 @@ export default function LanceDashboard({
       setLoadingActivities(false)
       debugLog('fetchActivities: Completed')
     }
-  }, [demoMode, debugMode, debugLog, debugError])
+  }, [demoMode])
 
   useEffect(() => {
     debugLog('useEffect: Component mounted/updated')
@@ -445,7 +445,7 @@ export default function LanceDashboard({
       setInvoices(mockInvoices)
       setLoadingInvoices(false)
     }
-  }, [fetchInvoices, fetchActivities, demoMode, debugMode, debugLog])
+  }, [demoMode])
 
   // Create a single mapping function to ensure each invoice only appears once
   const processInvoices = (invoices: any[]): {
@@ -1433,10 +1433,10 @@ ${userName}`
               </div>
               <div className="relative">
                 {/* Timeline base line */}
-                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-600 transform -translate-y-1/2"></div>
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-600 transform -translate-y-1/2 mt-1 sm:mt-4"></div>
 
                 {/* Timeline points */}
-                <div className="relative flex justify-between items-center h-8">
+                <div className="relative flex justify-between items-center h-8 mt-2 sm:mt-0">
                   {demoMode ? (
                     // Demo timeline points
                     <>
@@ -1582,26 +1582,53 @@ ${userName}`
                 </div>
 
                 {/* Activity summary */}
-                <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center sm:justify-center gap-3 sm:gap-6 text-xs">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span className="text-slate-400">Follow-ups</span>
+                <div className="mt-8">
+                  {/* Desktop layout - horizontal */}
+                  <div className="hidden sm:flex flex-row items-center justify-center gap-6 text-xs">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                      <span className="text-slate-400">Follow-ups</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                      <span className="text-slate-400">Detections</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-slate-400">Payments</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                      <span className="text-slate-400">Scheduling</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                      <span className="text-slate-400">Adjustments</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    <span className="text-slate-400">Detections</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-slate-400">Payments</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-slate-400">Scheduling</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <span className="text-slate-400">Adjustments</span>
+                  
+                  {/* Mobile layout - grid underneath */}
+                  <div className="sm:hidden grid grid-cols-3 gap-3 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                      <span className="text-slate-400">Follow-ups</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                      <span className="text-slate-400">Detections</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                      <span className="text-slate-400">Payments</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                      <span className="text-slate-400">Scheduling</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                      <span className="text-slate-400">Adjustments</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1809,28 +1836,90 @@ ${userName}`
                   return (
                     <div
                       key={invoice.uniqueKey || `paid-${invoice.id}`}
-                      className="flex items-center justify-between p-5 bg-slate-700/30 rounded-xl shadow-md transition-all duration-300 hover:bg-slate-700 hover:shadow-lg hover:scale-[1.02]"
+                      className="p-5 bg-slate-700/30 rounded-xl shadow-md transition-all duration-300 hover:bg-slate-700 hover:shadow-lg hover:scale-[1.02]"
                     >
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14 shadow-lg">
-                          <AvatarFallback className="bg-slate-600 text-white font-bold text-lg">
-                            {invoice.avatar}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="font-bold text-xl text-white">
-                            {invoice.client}
-                            {invoice.id && (
-                              <span className="text-slate-400 font-normal text-lg ml-2">
-                                #{invoice.id}
-                              </span>
-                            )}
+                      {/* Desktop layout - horizontal with button on right */}
+                      <div className="hidden sm:flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-14 w-14 shadow-lg">
+                            <AvatarFallback className="bg-slate-600 text-white font-bold text-lg">
+                              {invoice.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="font-bold text-xl text-white">
+                              {invoice.client}
+                              {invoice.id && (
+                                <span className="text-slate-400 font-normal text-lg ml-2">
+                                  #{invoice.id}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-300 font-medium">
+                              <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
+                              {'daysToPayment' in invoice && invoice.daysToPayment !== null ? ` in ${invoice.daysToPayment} days` : ' (unknown)'}
+                            </div>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className="h-3 w-3 text-green-400" />
+                                Paid: {'datePaid' in invoice ? formatDate(invoice.datePaid) : ''}
+                              </div>
+                            </div>
+                            
+                            {/* Payment Insights */}
+                            <div className="mt-2 space-y-1">
+                              <div className="text-xs text-green-400 flex items-center gap-1">
+                                <CheckCircle className="h-3 w-3" />
+                                <span className="font-medium">{insights.successMessage}</span>
+                              </div>
+                              <div className="text-xs text-slate-400">
+                                {insights.clientPattern} • {insights.comparisonToAverage}
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
-                            {'daysToPayment' in invoice && invoice.daysToPayment !== null ? ` in ${invoice.daysToPayment} days` : ' (unknown)'}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
+                            className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
+                          >
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Mobile layout - vertical with button at bottom */}
+                      <div className="sm:hidden">
+                        <div className="flex items-center gap-4 mb-4">
+                          <Avatar className="h-14 w-14 shadow-lg">
+                            <AvatarFallback className="bg-slate-600 text-white font-bold text-lg">
+                              {invoice.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="font-bold text-xl text-white">
+                              {invoice.client}
+                              {invoice.id && (
+                                <span className="text-slate-400 font-normal text-lg ml-2">
+                                  #{invoice.id}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-300 font-medium">
+                              <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • Paid
+                              {'daysToPayment' in invoice && invoice.daysToPayment !== null ? ` in ${invoice.daysToPayment} days` : ' (unknown)'}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                        </div>
+                        
+                        <div className="mb-4">
+                          <div className="flex items-center gap-4 text-xs text-slate-400">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               Sent: {'dateSent' in invoice ? formatDate(invoice.dateSent) : ''}
@@ -1852,17 +1941,18 @@ ${userName}`
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
-                          className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
-                        >
-                          <span className="hidden sm:inline">View Details</span>
-                          <span className="sm:hidden">View</span>
-                        </Button>
+
+                        {/* Button at bottom for mobile */}
+                        <div className="flex justify-end">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedInvoice({ ...invoice, isPastInvoice: true })}
+                            className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
+                          >
+                            View Details
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )
@@ -1873,57 +1963,114 @@ ${userName}`
                     <div
                       key={invoice.uniqueKey || `reminder-sent-${invoice.id}`}
                       id={`invoice-${invoice.id}`}
-                      className="flex items-center justify-between p-5 border-l-4 border-l-blue-400 bg-blue-500/5 rounded-xl shadow-md transition-all duration-300 hover:bg-blue-500/10 hover:shadow-lg hover:scale-[1.02] animate-in slide-in-from-left duration-500"
+                      className="p-5 border-l-4 border-l-blue-400 bg-blue-500/5 rounded-xl shadow-md transition-all duration-300 hover:bg-blue-500/10 hover:shadow-lg hover:scale-[1.02] animate-in slide-in-from-left duration-500"
                     >
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14 ring-4 ring-blue-500/20 shadow-lg">
-                          <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
-                            {invoice.avatar}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="font-bold text-xl text-white">
-                            {invoice.client}
-                            {invoice.id && (
-                              <span className="text-slate-400 font-normal text-lg ml-2">
-                                #{invoice.id}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
-                          </div>
-                          <div className="text-xs mt-1 font-medium text-blue-400">
-                            Reminder sent {history.timeSinceLastReminder}
-                          </div>
-                          
-                          {/* Success indicator */}
-                          <div className="mt-2 space-y-1">
-                            <div className="text-xs text-blue-400 flex items-center gap-1 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
-                              <CheckCircle className="h-3 w-3" />
-                              <span>Reminder sent successfully • {history.lastReminderTone} tone</span>
+                      {/* Desktop layout - horizontal with button on right */}
+                      <div className="hidden sm:flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-14 w-14 ring-4 ring-blue-500/20 shadow-lg">
+                            <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
+                              {invoice.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="font-bold text-xl text-white">
+                              {invoice.client}
+                              {invoice.id && (
+                                <span className="text-slate-400 font-normal text-lg ml-2">
+                                  #{invoice.id}
+                                </span>
+                              )}
                             </div>
-                            <div className="text-xs text-slate-400 flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              <span>Next follow-up: {invoice.nextFollowUpDate ? formatDate(invoice.nextFollowUpDate) : 'Scheduled'}</span>
+                            <div className="text-sm text-slate-300 font-medium">
+                              <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
+                            </div>
+                            <div className="text-xs mt-1 font-medium text-blue-400">
+                              Reminder sent {history.timeSinceLastReminder}
+                            </div>
+                            
+                            {/* Success indicator */}
+                            <div className="mt-2 space-y-1">
+                              <div className="text-xs text-blue-400 flex items-center gap-1 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
+                                <CheckCircle className="h-3 w-3" />
+                                <span>Reminder sent successfully • {history.lastReminderTone} tone</span>
+                              </div>
+                              <div className="text-xs text-slate-400 flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                <span>Next follow-up: {invoice.nextFollowUpDate ? formatDate(invoice.nextFollowUpDate) : 'Scheduled'}</span>
+                              </div>
                             </div>
                           </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                            <span className="text-sm text-blue-400 font-medium">Monitoring</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedInvoice({ ...invoice, status: "REMINDER_SENT" })}
+                            className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
+                          >
+                            View Details
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                          <span className="text-sm text-blue-400 font-medium">Monitoring</span>
+
+                      {/* Mobile layout - vertical with button at bottom */}
+                      <div className="sm:hidden">
+                        <div className="flex items-center gap-4 mb-4">
+                          <Avatar className="h-14 w-14 ring-4 ring-blue-500/20 shadow-lg">
+                            <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
+                              {invoice.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="font-bold text-xl text-white">
+                              {invoice.client}
+                              {invoice.id && (
+                                <span className="text-slate-400 font-normal text-lg ml-2">
+                                  #{invoice.id}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-300 font-medium">
+                              <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
+                            </div>
+                            <div className="text-xs mt-1 font-medium text-blue-400">
+                              Reminder sent {history.timeSinceLastReminder}
+                            </div>
+                          </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedInvoice({ ...invoice, status: "REMINDER_SENT" })}
-                          className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
-                        >
-                          <span className="hidden sm:inline">View Details</span>
-                          <span className="sm:hidden">View</span>
-                        </Button>
+                        
+                        {/* Success indicator */}
+                        <div className="mb-4 space-y-1">
+                          <div className="text-xs text-blue-400 flex items-center gap-1 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
+                            <CheckCircle className="h-3 w-3" />
+                            <span>Reminder sent successfully • {history.lastReminderTone} tone</span>
+                          </div>
+                          <div className="text-xs text-slate-400 flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>Next follow-up: {invoice.nextFollowUpDate ? formatDate(invoice.nextFollowUpDate) : 'Scheduled'}</span>
+                          </div>
+                        </div>
+
+                        {/* Button and status at bottom for mobile */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                            <span className="text-sm text-blue-400 font-medium">Monitoring</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedInvoice({ ...invoice, status: "REMINDER_SENT" })}
+                            className="text-slate-400 hover:text-white hover:bg-slate-600 transition-all duration-300"
+                          >
+                            View Details
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )
@@ -1951,81 +2098,162 @@ ${userName}`
                     <div
                       key={invoice.uniqueKey || `overdue-${invoice.id}`}
                       id={`invoice-${invoice.id}`}
-                      className={`flex items-center justify-between p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getStatusColor(days)}`}
+                      className={`p-5 border-l-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getStatusColor(days)}`}
                     >
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14 ring-4 ring-slate-600 shadow-lg">
-                          <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
-                            {invoice.avatar}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="font-bold text-xl text-white">
-                            {invoice.client}
-                            {invoice.id && (
-                              <span className="text-slate-400 font-normal text-lg ml-2">
-                                #{invoice.id}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-slate-300 font-medium">
-                            <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
-                          </div>
-                          <div className={`text-xs mt-1 font-medium ${getStatusTextColor(days)}`}>
-                            {getStatusText(days)}
-                          </div>
-                          
-                          {/* Reminder History Context */}
-                          {(() => {
-                            const history = getReminderHistory(invoice)
-                            const suggestion = getSmartSuggestion(invoice)
+                      {/* Desktop layout - horizontal with button on right */}
+                      <div className="hidden sm:flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-14 w-14 ring-4 ring-slate-600 shadow-lg">
+                            <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
+                              {invoice.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="font-bold text-xl text-white">
+                              {invoice.client}
+                              {invoice.id && (
+                                <span className="text-slate-400 font-normal text-lg ml-2">
+                                  #{invoice.id}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-300 font-medium">
+                              <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
+                            </div>
+                            <div className={`text-xs mt-1 font-medium ${getStatusTextColor(days)}`}>
+                              {getStatusText(days)}
+                            </div>
                             
-                            return (
-                              <div className="mt-2 space-y-1">
-                                {history.hasReminders ? (
-                                  <div className="text-xs text-slate-400 flex items-center gap-1">
-                                    <Send className="h-3 w-3" />
-                                    <span>{history.reminderCount} reminder{history.reminderCount > 1 ? 's' : ''} sent</span>
-                                    <span>•</span>
-                                    <span>Last sent: {history.lastReminderDate}</span>
-                                    <span>•</span>
-                                    <span>Tone: {history.lastReminderTone}</span>
-                                  </div>
-                                ) : (
-                                  <div className="text-xs text-slate-400 flex items-center gap-1">
-                                    <Send className="h-3 w-3" />
-                                    <span>No reminders sent yet</span>
-                                  </div>
-                                )}
-                                
-                                {/* Smart Suggestion for High-Risk Clients */}
-                                {suggestion && (
-                                  <div className="text-xs text-yellow-400 flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
-                                    <Brain className="h-3 w-3" />
-                                    <span>{suggestion}</span>
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          })()}
+                            {/* Reminder History Context */}
+                            {(() => {
+                              const history = getReminderHistory(invoice)
+                              const suggestion = getSmartSuggestion(invoice)
+                              
+                              return (
+                                <div className="mt-2 space-y-1">
+                                  {history.hasReminders ? (
+                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                      <Send className="h-3 w-3" />
+                                      <span>{history.reminderCount} reminder{history.reminderCount > 1 ? 's' : ''} sent</span>
+                                      <span>•</span>
+                                      <span>Last sent: {history.lastReminderDate}</span>
+                                      <span>•</span>
+                                      <span>Tone: {history.lastReminderTone}</span>
+                                    </div>
+                                  ) : (
+                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                      <Send className="h-3 w-3" />
+                                      <span>No reminders sent yet</span>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Smart Suggestion for High-Risk Clients */}
+                                  {suggestion && (
+                                    <div className="text-xs text-yellow-400 flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
+                                      <Brain className="h-3 w-3" />
+                                      <span>{suggestion}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                            })()}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {sentReminders.has(invoice.id) ? (
+                            <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-lg border border-green-500/20">
+                              <CheckCircle className="h-4 w-4 text-green-400" />
+                              <span className="text-sm text-green-400 font-medium">Sent</span>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => setSelectedInvoice({ ...invoice, status: "OVERDUE" })}
+                              className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
+                            >
+                              Review & Approve
+                            </Button>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        {sentReminders.has(invoice.id) ? (
-                          <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-lg border border-green-500/20">
-                            <CheckCircle className="h-4 w-4 text-green-400" />
-                            <span className="text-sm text-green-400 font-medium">Sent</span>
+
+                      {/* Mobile layout - vertical with button at bottom */}
+                      <div className="sm:hidden">
+                        <div className="flex items-center gap-4 mb-4">
+                          <Avatar className="h-14 w-14 ring-4 ring-slate-600 shadow-lg">
+                            <AvatarFallback className="bg-blue-600 text-white font-bold text-lg">
+                              {invoice.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="font-bold text-xl text-white">
+                              {invoice.client}
+                              {invoice.id && (
+                                <span className="text-slate-400 font-normal text-lg ml-2">
+                                  #{invoice.id}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-300 font-medium">
+                              <span className="font-bold text-green-400">${invoice.amount.toLocaleString()}</span> • {days} days overdue
+                            </div>
+                            <div className={`text-xs mt-1 font-medium ${getStatusTextColor(days)}`}>
+                              {getStatusText(days)}
+                            </div>
                           </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            onClick={() => setSelectedInvoice({ ...invoice, status: "OVERDUE" })}
-                            className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
-                          >
-                            <span className="hidden sm:inline">Review & Approve</span>
-                            <span className="sm:hidden">Review</span>
-                          </Button>
-                        )}
+                        </div>
+                        
+                        {/* Reminder History Context */}
+                        {(() => {
+                          const history = getReminderHistory(invoice)
+                          const suggestion = getSmartSuggestion(invoice)
+                          
+                          return (
+                            <div className="mb-4 space-y-1">
+                              {history.hasReminders ? (
+                                <div className="text-xs text-slate-400 flex items-center gap-1">
+                                  <Send className="h-3 w-3" />
+                                  <span>{history.reminderCount} reminder{history.reminderCount > 1 ? 's' : ''} sent</span>
+                                  <span>•</span>
+                                  <span>Last sent: {history.lastReminderDate}</span>
+                                  <span>•</span>
+                                  <span>Tone: {history.lastReminderTone}</span>
+                                </div>
+                              ) : (
+                                <div className="text-xs text-slate-400 flex items-center gap-1">
+                                  <Send className="h-3 w-3" />
+                                  <span>No reminders sent yet</span>
+                                </div>
+                              )}
+                              
+                              {/* Smart Suggestion for High-Risk Clients */}
+                              {suggestion && (
+                                <div className="text-xs text-yellow-400 flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
+                                  <Brain className="h-3 w-3" />
+                                  <span>{suggestion}</span>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })()}
+
+                        {/* Button at bottom for mobile */}
+                        <div className="flex justify-end">
+                          {sentReminders.has(invoice.id) ? (
+                            <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-lg border border-green-500/20">
+                              <CheckCircle className="h-4 w-4 text-green-400" />
+                              <span className="text-sm text-green-400 font-medium">Sent</span>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => setSelectedInvoice({ ...invoice, status: "OVERDUE" })}
+                              className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-1"
+                            >
+                              Review & Approve
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )
