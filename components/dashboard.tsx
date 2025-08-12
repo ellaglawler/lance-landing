@@ -1587,7 +1587,7 @@ ${userName}`
                   <div className="hidden sm:flex flex-row items-center justify-center gap-6 text-xs">
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <span className="text-slate-400">Follow-ups</span>
+                      <span className="text-slate-400">Reminders</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
@@ -1611,7 +1611,7 @@ ${userName}`
                   <div className="sm:hidden grid grid-cols-3 gap-3 text-xs">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                      <span className="text-slate-400">Follow-ups</span>
+                      <span className="text-slate-400">Reminders</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
