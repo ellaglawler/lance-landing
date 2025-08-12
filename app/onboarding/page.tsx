@@ -64,6 +64,8 @@ function OnboardingContent() {
   // Helper function to fetch invoice results after job completion
   const fetchInvoiceResults = async () => {
     try {
+      // Small delay for eventual consistency
+      await new Promise(resolve => setTimeout(resolve, 200));
       // Use the proper API function from api.ts
       const data = await getInvoices();
       handleScanResults(data);
@@ -76,6 +78,7 @@ function OnboardingContent() {
 
   // Helper function to handle scan invoices
   const handleScanInvoices = async () => {
+    console.log('[ONBOARDING] Starting fallback scan via handleScanInvoices');
     try {
       setLoading(true);
       const response = await scanInvoices();
@@ -115,6 +118,8 @@ function OnboardingContent() {
       
       if (success && access_token && user) {
         // Direct token response from backend
+        console.log('[ONBOARDING] Using Path 1: Direct token response flow');
+        console.log('[ONBOARDING] User:', user.email, 'isSignUp:', isSignUp);
         setLoading(true);
         try {
           // Store JWT and user info in AuthContext
@@ -123,17 +128,11 @@ function OnboardingContent() {
             setStep(STEP.SCANNING);
             // Use the initial scan job ID if available, otherwise start a new scan
             if (initial_scan_job_id) {
+              console.log('[ONBOARDING] Using initial_scan_job_id:', initial_scan_job_id);
               setJobId(initial_scan_job_id);
-              // Poll the existing job instead of starting a new one
-              pollJobStatus(initial_scan_job_id, (status) => {
-                if (status.status === 'finished') {
-                  fetchInvoiceResults();
-                } else if (status.status === 'failed' || status.status === 'error') {
-                  setError('Failed to scan for invoices.');
-                  setStep(STEP.ERROR);
-                }
-              });
+              // JobStatusIndicator will handle polling automatically
             } else {
+              console.log('[ONBOARDING] No initial_scan_job_id, starting new scan');
               // Fallback: start a new scan if no initial job ID
               handleScanInvoices();
             }
@@ -159,26 +158,23 @@ function OnboardingContent() {
         }
       } else if (code) {
         // Legacy code-based flow (fallback)
+        console.log('[ONBOARDING] Using Path 2: Legacy code exchange flow');
+        console.log('[ONBOARDING] Code received, isSignUp:', isSignUp);
         setLoading(true);
         exchangeGoogleCode(code, isSignUp)
           .then((data) => {
+            console.log('[ONBOARDING] Code exchange successful, user:', data.user.email);
             // Store JWT and user info in AuthContext
             login(data.access_token, data.user);
             if (isSignUp) {
               setStep(STEP.SCANNING);
               // Use the initial scan job ID if available, otherwise start a new scan
               if (data.initial_scan_job_id) {
+                console.log('[ONBOARDING] Using initial_scan_job_id from code exchange:', data.initial_scan_job_id);
                 setJobId(data.initial_scan_job_id);
-                // Poll the existing job instead of starting a new one
-                pollJobStatus(data.initial_scan_job_id, (status) => {
-                  if (status.status === 'finished') {
-                    fetchInvoiceResults();
-                  } else if (status.status === 'failed' || status.status === 'error') {
-                    setError('Failed to scan for invoices.');
-                    setStep(STEP.ERROR);
-                  }
-                });
+                // JobStatusIndicator will handle polling automatically
               } else {
+                console.log('[ONBOARDING] No initial_scan_job_id from code exchange, starting new scan');
                 // Fallback: start a new scan if no initial job ID
                 handleScanInvoices();
               }
@@ -205,6 +201,7 @@ function OnboardingContent() {
           })
           .finally(() => setLoading(false));
       } else if (error) {
+        console.log('[ONBOARDING] OAuth error received:', error);
         setError("OAuth failed or was denied.");
         setStep(STEP.ERROR);
       }
@@ -275,7 +272,7 @@ function OnboardingContent() {
         setLoading(false);
         return;
       }
-      popup.document.write('<p style="font-family:sans-serif;text-align:center;margin-top:2em;">Loading Google sign-in…</p>');
+      popup.document.body.innerHTML = '<p style="font-family:sans-serif;text-align:center;margin-top:2em;">Loading Google sign-in…</p>';
       try {
         let url = '';
         if (isSignUp) {
@@ -368,7 +365,7 @@ function OnboardingContent() {
         setLoading(false);
         return;
       }
-      popup.document.write('<p style="font-family:sans-serif;text-align:center;margin-top:2em;">Loading Google sign-in…</p>');
+      popup.document.body.innerHTML = '<p style="font-family:sans-serif;text-align:center;margin-top:2em;">Loading Google sign-in…</p>';
       try {
         const url = await getGoogleSignupUrl();
         popup.location.href = url;
@@ -457,9 +454,17 @@ function OnboardingContent() {
               {step === STEP.SCANNING && (
                 <CardDescription className="text-center text-gray-300 text-lg">
                   {jobId ? (
-                    "We're scanning your inbox for unpaid invoices and setting up your account.<br />This usually takes just a few seconds."
+                    <>
+                      We're scanning your inbox for unpaid invoices and setting up your account.
+                      <br />
+                      This usually takes just a few seconds.
+                    </>
                   ) : (
-                    "Hang tight while we search your inbox for unpaid invoices and set things up.<br />This usually takes just a few seconds."
+                    <>
+                      Hang tight while we search your inbox for unpaid invoices and set things up.
+                      <br />
+                      This usually takes just a few seconds.
+                    </>
                   )}
                 </CardDescription>
               )}
@@ -470,48 +475,14 @@ function OnboardingContent() {
               )}
               {step === STEP.ERROR && (
                 <CardDescription className="text-center text-gray-300 text-lg">
-                  Without access, we can’t find or follow up on your invoices.<br />You can try again or explore the dashboard and connect later.
+                  Without access, we can't find or follow up on your invoices.
+                  <br />
+                  You can try again or explore the dashboard and connect later.
                 </CardDescription>
               )}
             </CardHeader>
             <CardContent className="px-8 pb-8 pt-2">
-              {step === STEP.SIGNIN && (
-                <>
-                  <ul className="mb-6 mt-2 space-y-3">
-                    {checklist.map((item, i) => (
-                      <li key={i} className="flex items-center text-base text-gray-200">
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className="w-full py-2 px-4 text-lg mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                    onClick={() => {
-                      setLoading(true);
-                      getGoogleSigninUrl()
-                        .then((url) => window.open(url, "google-oauth", "width=500,height=600"))
-                        .catch((err) => {
-                          setError('Failed to initiate Google authentication.');
-                          setStep(STEP.ERROR);
-                        })
-                        .finally(() => setLoading(false));
-                    }}
-                  >
-                    <UserCheck className="mr-2" /> Sign in with Google
-                  </Button>
-                  <div className="text-xs text-gray-400 mt-3 text-center">
-                    On the next screen, Google will ask you to confirm the permissions above. You can revoke access anytime at myaccount.google.com/security.
-                  </div>
-                  {/* Testimonial */}
-                  <div className="mt-8 p-4 bg-[#232B3A] rounded-xl border border-white/10 max-w-md mx-auto">
-                    <p className="text-sm text-blue-200 italic mb-1">
-                      "Lance found 3 overdue invoices I had completely forgotten about!"
-                    </p>
-                    <p className="text-xs text-blue-400">— Sarah Chen, Freelance Designer</p>
-                  </div>
-                </>
-              )}
+
               {step === STEP.SCANNING && (
                 <div className="flex flex-col items-center gap-6 mt-4">
                   {jobId ? (
