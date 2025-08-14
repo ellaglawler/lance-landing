@@ -259,7 +259,7 @@ export default function LanceLanding() {
           <div className="mx-auto max-w-4xl text-center">
             <div className="p-6 bg-red-600/10 rounded-2xl border border-red-500/20">
               <p className="text-red-300 text-lg font-semibold mb-2">
-                Freelancers lose $9-12K per year to unpaid invoices
+                Freelancers lose $9-12K per year on average to unpaid invoices
               </p>
               <p className="text-red-400 text-sm">
                 Don't let your hard work go unpaid. Let Lance help you recover what's yours.

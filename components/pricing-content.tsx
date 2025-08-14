@@ -557,7 +557,7 @@ export function PricingContent() {
               Lance isn't a tool. It's revenue insurance.
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              Every year, freelancers like you lose up to <strong className="text-red-400">$12K/year</strong> to unpaid invoices. Lance gets it back, fast.
+              Every year, freelancers like you lose up to <strong className="text-red-400">$12K/year on average</strong> to unpaid invoices. Lance gets it back, fast.
             </p>
           </div>
 
