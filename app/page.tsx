@@ -37,6 +37,7 @@ import {
 import { WaitlistForm } from "@/components/waitlist-form"
 import type { Metadata } from 'next'
 import { HeroStats } from "../components/hero-stats"
+import { VideoModal, FloatingVideoButton } from "@/components/video-modal"
 
 export const metadata: Metadata = {
   title: 'Lance - AI Collections Agent for Freelancers | Stop Chasing, Start Collecting',
@@ -168,6 +169,17 @@ export default function LanceLanding() {
             {/* CTA Buttons */}
             <WaitlistForm variant="hero" />
 
+            {/* Video Demo */}
+            <div className="mt-12 max-w-2xl mx-auto">
+              <VideoModal
+                videoUrl="https://fast.wistia.com/embed/iframe/6ur1wumjc2"
+                thumbnailUrl="/video-thumbnail.png"
+                title="Watch How Easy It Is to Use Lance"
+                duration="0:51"
+                variant="thumbnail"
+              />
+            </div>
+
             {/* Social Proof Testimonial */}
             <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 max-w-md mx-auto social-proof">
               <p className="text-sm text-blue-300 italic mb-1">
@@ -286,9 +298,28 @@ export default function LanceLanding() {
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="mx-auto max-w-7xl text-center">
             <h1 className="text-5xl font-bold text-white mb-4">How Lance Works</h1>
-            <p className="text-xl text-gray-400 mb-16 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 mb-8 max-w-3xl mx-auto">
               Recover overdue invoices automatically, in just 3 simple steps.
             </p>
+
+            {/* Video Demo Section */}
+            <div className="mb-16">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  🎥 Watch Lance In Action: From Sign-In to First Recovery in Under 1 Minute
+                </h2>
+                <VideoModal
+                  videoUrl="https://fast.wistia.com/embed/iframe/6ur1wumjc2"
+                  thumbnailUrl="/video-thumbnail.png"
+                  title="Lance Demo: Complete Workflow"
+                  duration="0:51"
+                  variant="thumbnail"
+                />
+                <p className="text-sm text-gray-400 mt-3 italic">
+                  "Lance found $7,000 in invoices I had completely forgotten." — Sarah Chen, Freelance Designer
+                </p>
+              </div>
+            </div>
 
             {/* Trust Signals */}
             {/* <div className="flex items-center justify-center gap-8 mb-16 opacity-60">
@@ -1013,6 +1044,9 @@ export default function LanceLanding() {
           </div>
         </div>
       </section>
+
+      {/* Floating Video Button */}
+      <FloatingVideoButton videoUrl="https://fast.wistia.com/embed/iframe/6ur1wumjc2" />
     </div>
   )
 }
