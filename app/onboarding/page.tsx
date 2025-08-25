@@ -11,6 +11,7 @@ import { getGoogleSignupUrl, getGoogleSigninUrl, checkGmailToken, exchangeGoogle
 import { useAuth } from '@/components/auth-context';
 import { WaitlistForm } from '@/components/waitlist-form';
 import { JobStatusIndicator } from '@/components/job-status-indicator';
+import confetti from 'canvas-confetti';
 
 const STEP = {
   ENTRY: -1,
@@ -58,6 +59,14 @@ function OnboardingContent() {
       const total = invoices.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0);
       setScanResult({ count: invoices.length, total });
       setNoInvoices(false);
+
+      // 🎉 Fire confetti when invoices are found!
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+
     } else {
       setNoInvoices(true);
     }
