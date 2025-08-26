@@ -173,7 +173,7 @@ export default function LanceLanding() {
             <div className="mt-12 max-w-2xl mx-auto">
               <VideoModal
                 videoUrl="https://fast.wistia.com/embed/iframe/6ur1wumjc2"
-                thumbnailUrl="/video-thumbnail.png"
+                thumbnailUrl="/video-thumbnail.jpg"
                 title="Watch How Easy It Is to Use Lance"
                 duration="0:51"
                 variant="thumbnail"
@@ -306,11 +306,11 @@ export default function LanceLanding() {
             <div className="mb-16">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold text-white mb-4">
-                  🎥 Watch Lance In Action: From Sign-In to First Recovery in Under 1 Minute
+                  Watch Lance In Action: From Sign-In to First Recovery in Under 1 Minute
                 </h2>
                 <VideoModal
                   videoUrl="https://fast.wistia.com/embed/iframe/6ur1wumjc2"
-                  thumbnailUrl="/video-thumbnail.png"
+                  thumbnailUrl="/video-thumbnail.jpg"
                   title="Lance Demo: Complete Workflow"
                   duration="0:51"
                   variant="thumbnail"

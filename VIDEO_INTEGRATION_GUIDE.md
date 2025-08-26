@@ -40,7 +40,7 @@ Wistia video ID `6ur1wumjc2` has been configured in:
 - **Controls**: Hidden for cleaner modal experience
 
 #### 2. **Thumbnail Image**
-Replace `/public/video-thumbnail.png` with:
+Replace `/public/video-thumbnail.jpg` with:
 - **Recommended**: 1280x720 PNG/JPG/WebP
 - **Alternative**: Use the gradient placeholder (already implemented)
 

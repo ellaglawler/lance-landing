@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { Play, X } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -116,13 +117,22 @@ export function VideoModal({
       </DialogTrigger>
       
       <DialogContent className="max-w-4xl w-[95vw] p-0 bg-black border-0">
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         <div className="relative">
           {/* Video container */}
-          <div className="relative aspect-video">
+          <div className="relative overflow-hidden" style={{ width: '100%', height: '558px', maxHeight: '80vh' }}>
             <iframe
-              src={`${videoUrl}?autoplay=1&muted=1&controlsVisibleOnLoad=false&playbar=false&fullscreenButton=false&volume=0`}
+              src={`${videoUrl}?autoplay=1&muted=1&controlsVisibleOnLoad=false&playbar=false&fullscreenButton=false&volume=0&videoFoam=true&fitToWindow=true&background=000000&videoFoam=true&videoFoam=true`}
               title={title}
               className="w-full h-full rounded-lg"
+              style={{ 
+                border: 'none',
+                margin: '0',
+                padding: '0',
+                display: 'block',
+                transform: 'scale(1.01)',
+                transformOrigin: 'center'
+              }}
               allow="autoplay; fullscreen"
               allowFullScreen
             />
